@@ -79,6 +79,13 @@ export default function Navigation() {
             </Link>
           </div>
 
+          {/* Mobile Center Workspace Link */}
+          <div className="md:hidden absolute left-1/2 transform -translate-x-1/2">
+            <Link href="/workspace" className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-brand-red/10 border border-brand-red/30 text-brand-red active:bg-brand-red/20 transition-all text-xs font-bold">
+              <Zap size={11} className="animate-pulse" /> Workspace
+            </Link>
+          </div>
+
           {/* Mobile Top Menu Button & Lang Switch */}
           <div className="md:hidden flex items-center gap-4">
             <button 
@@ -120,14 +127,6 @@ export default function Navigation() {
             <User size={20} className="transition-transform group-active:scale-90" />
             <span className="text-[10px] font-semibold tracking-wide">{t('nav.about')}</span>
             {pathname === '/about' && (
-              <motion.span layoutId="activeDot" className="absolute -bottom-2 w-1 h-1 bg-brand-red rounded-full shadow-[0_0_8px_#E11D48]" />
-            )}
-          </Link>
-
-          <Link href="/workspace" className={`flex flex-col items-center gap-1.5 transition-all duration-300 relative group ${pathname === '/workspace' ? 'text-brand-red scale-105' : 'text-muted hover:text-foreground'}`}>
-            <Zap size={20} className="transition-transform group-active:scale-90" />
-            <span className="text-[10px] font-semibold tracking-wide">Workspace</span>
-            {pathname === '/workspace' && (
               <motion.span layoutId="activeDot" className="absolute -bottom-2 w-1 h-1 bg-brand-red rounded-full shadow-[0_0_8px_#E11D48]" />
             )}
           </Link>
