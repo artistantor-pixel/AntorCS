@@ -105,22 +105,9 @@ export default function HeroSection() {
             {t("hero.download_cv")} <Download size={18} />
           </a>
         </motion.div>
-
-        {/* Workspace Teaser */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.4, duration: 0.8 }}
-        >
-          <Link href="/workspace" className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-red/5 border border-brand-red/20 hover:border-brand-red/50 hover:bg-brand-red/10 transition-all duration-300">
-            <span className="w-2 h-2 rounded-full bg-brand-red animate-pulse shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
-            <span className="text-xs font-semibold text-muted group-hover:text-brand-red transition-colors">
-              Live Creative Workspace
-            </span>
-            <ArrowRight size={12} className="text-brand-red opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all" />
-          </Link>
         </motion.div>
-      </motion.div>
+
+
 
 
     </section>

@@ -91,9 +91,8 @@ export default function Navigation() {
         </div>
       </motion.header>
 
-      {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full z-[100] bg-background/80 backdrop-blur-lg border-t border-white/5 pb-5 pt-3 px-6 shadow-[0_-10px_30px_rgba(0,0,0,0.3)]">
-        <div className="flex justify-between items-center max-w-md mx-auto">
+      <div className="md:hidden fixed bottom-0 left-0 w-full z-[100] bg-background/80 backdrop-blur-lg border-t border-white/5 pb-5 pt-3 px-3 shadow-[0_-10px_30px_rgba(0,0,0,0.3)]">
+        <div className="flex justify-between items-center max-w-md mx-auto gap-1">
           <Link href="/portfolio" className={`flex flex-col items-center gap-1.5 transition-all duration-300 relative group ${pathname === '/portfolio' ? 'text-brand-red scale-105' : 'text-muted hover:text-foreground'}`}>
             <Briefcase size={20} className="transition-transform group-active:scale-90" />
             <span className="text-[10px] font-semibold tracking-wide">{t('nav.works')}</span>
@@ -121,6 +120,14 @@ export default function Navigation() {
             <User size={20} className="transition-transform group-active:scale-90" />
             <span className="text-[10px] font-semibold tracking-wide">{t('nav.about')}</span>
             {pathname === '/about' && (
+              <motion.span layoutId="activeDot" className="absolute -bottom-2 w-1 h-1 bg-brand-red rounded-full shadow-[0_0_8px_#E11D48]" />
+            )}
+          </Link>
+
+          <Link href="/workspace" className={`flex flex-col items-center gap-1.5 transition-all duration-300 relative group ${pathname === '/workspace' ? 'text-brand-red scale-105' : 'text-muted hover:text-foreground'}`}>
+            <Zap size={20} className="transition-transform group-active:scale-90" />
+            <span className="text-[10px] font-semibold tracking-wide">Workspace</span>
+            {pathname === '/workspace' && (
               <motion.span layoutId="activeDot" className="absolute -bottom-2 w-1 h-1 bg-brand-red rounded-full shadow-[0_0_8px_#E11D48]" />
             )}
           </Link>
