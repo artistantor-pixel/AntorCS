@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "home": "Home",
+    "works": "Works",
+    "services": "Services",
+    "about": "About",
+    "journal": "Journal",
+    "shop": "Shop",
+    "cta": "Budget Calculator"
+  },
+  "hero": {
+    "title_1": "Elevate Your Brand,",
+    "title_2": "Dominate Your Market",
+    "subtitle": "Hi, I'm Antor Kumar Biswas, a Visual Communicator specializing in engaging educational content, e-learning visuals, and branding. Currently a 4th-year student of Graphic Design at the University of Dhaka.",
+    "cta": "Hire me",
+    "download_cv": "Download CV"
+  },
+  "social_proof": {
+    "title": "Trusted by innovators"
+  },
+  "features": {
+    "title": "Why Work With Me?",
+    "subtitle": "I blend creativity with purpose—from leading exhibition designs to producing national-level animation series.",
+    "feat1_t": "Graphic & Brand Design",
+    "feat1_d": "Creating unique visual identities, comprehensive branding materials, and illustrations that simplify complex concepts.",
+    "feat2_t": "Motion & Animation",
+    "feat2_d": "Developing engaging storyboards, e-learning animations, and high-impact visual assets for diverse audiences.",
+    "feat3_t": "Creative Leadership",
+    "feat3_d": "Spearheading visual strategies from curation to public promotion for workshops and large-scale creative events."
+  },
+  "services": {
+    "title": "My Expertise",
+    "subtitle": "A comprehensive suite of creative services tailored for ambitious brands looking to dominate their market.",
+    "view_all": "View all services",
+    "explore": "Explore",
+    "items": {
+      "graphic": { "title": "Graphic Design", "desc": "Crafting memorable visual identities, posters, and print materials that resonate with your target audience." },
+      "motion": { "title": "Motion Design", "desc": "Bringing concepts to life through dynamic motion graphics for e-learning, campaigns, and digital media." },
+      "animation": { "title": "Animation", "desc": "Character design, storyboarding, and full-scale 2D/3D animations for storytelling and education." },
+      "illustration": { "title": "Illustration", "desc": "Simplifying complex concepts through engaging digital and vector illustrations." },
+      "uiux": { "title": "UI/UX Design", "desc": "Designing intuitive, user-centric interfaces and digital playgrounds with modern aesthetics." },
+      "creative": { "title": "Creative Direction", "desc": "Guiding visual narratives from concept to completion for exhibitions and national events." }
+    }
+  },
+  "experience": {
+    "title": "Professional Experience",
+    "subtitle": "A track record of delivering high-impact creative solutions and leadership across various organizations.",
+    "jobs": [
+      {
+        "role": "Graphic Designer & Animator",
+        "company": "Communion Media Agency",
+        "period": "2023 - 2025",
+        "desc": "Produced motion designs for 30+ e-learning courses (ICT Division). Developed storyboards and animations for Deepto TV's 'Jhumur and Biva' and Radiant Pharmaceuticals campaigns."
+      },
+      {
+        "role": "Graphic Designer",
+        "company": "Centre for Climate Justice-Bangladesh",
+        "period": "2023 - Present",
+        "desc": "Designed comprehensive branding materials (posters, banners, flyers, and folders) and crests for 10+ climate-focused workshops."
+      },
+      {
+        "role": "Graphic Designer (Remote)",
+        "company": "Bisorgo Technology",
+        "period": "2025 - Present",
+        "desc": "Managed daily social media updates, designed promotional leaflets, catalogs, and branding materials for the Hotel Okada project."
+      }
+    ]
+  },
+  "process": {
+    "title": "How I Work",
+    "subtitle": "A streamlined, transparent process designed to deliver exceptional results without the friction of a large agency.",
+    "steps": [
+      { "title": "Discovery", "desc": "I dive deep into your brand, audience, and goals to align our vision." },
+      { "title": "Strategy", "desc": "Crafting a tailored blueprint for design, user experience, and technical architecture." },
+      { "title": "Execution", "desc": "I bring the strategy to life with precision design and flawless execution." },
+      { "title": "Launch", "desc": "Rigorous testing, optimization, and finally, launching your new digital presence." }
+    ]
+  },
+  "testimonials": {
+    "title": "Client Stories",
+    "review": "Antor is an exceptional visual communicator. His work on our educational animations significantly improved student engagement, blending artistic brilliance with clear storytelling.",
+    "name": "Project Manager",
+    "role": "E-Learning Initiative"
+  },
+  "faq": {
+    "title": "Questions?",
+    "q1": "How long does a typical project take?",
+    "a1": "Most branding and animation projects take between 2 to 6 weeks depending on the scope and complexity of the requirements.",
+    "q2": "Do you work with international clients?",
+    "a2": "Yes, I work with clients globally. My processes are optimized for remote collaboration across different time zones.",
+    "q3": "What is your pricing structure?",
+    "a3": "You can use the Budget Estimator on my website to get an instant quote based on your specific needs, whether it's branding, motion, or UI/UX.",
+    "q4": "Do you offer post-launch support?",
+    "a4": "Absolutely. I provide ongoing support for design updates and brand consistency to ensure your visuals remain flawless."
+  },
+  "cta": {
+    "title": "Ready to stand out?",
+    "subtitle": "Let's create something extraordinary together. Book a free discovery call to discuss your vision.",
+    "button": "Get Started Now"
+  },
+  "footer": {
+    "desc": "Visual Communicator | Creative Lead | Animator.",
+    "links_title": "Links",
+    "legal_title": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "rights": "All rights reserved."
+  },
+  "portfolio": {
+    "badge": "Selected Archive",
+    "title_1": "My",
+    "title_2": "Works",
+    "subtitle": "A curated collection of my most impactful projects across motion design, branding, and illustration.",
+    "categories": {
+      "all": "All",
+      "branding": "Branding",
+      "motion": "Motion Design",
+      "animation3d": "3D Animation",
+      "creative": "Creative Direction",
+      "uiux": "UI/UX"
+    },
+    "projects": {
+      "qera": "Animation Festival",
+      "dmatter": "Gallery Hamiduzzaman",
+      "lstate": "Fine Arts Workshop",
+      "ngenesis": "Deepto TV Series",
+      "etime": "ICT E-Learning",
+      "void": "Climate Justice Branding",
+      "cpunk": "Hotel Okada"
+    }
+  }
+}

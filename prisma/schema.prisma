@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  titleKey    String?
+  categoryKey String?
+  title       String
+  slug        String   @unique
+  image       String
+  size        String   @default("medium")
+  year        String
+  catId       String
+  client      String?
+  duration    String?
+  role        String?
+  liveLink    String?
+  videoUrl    String?
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  overview    String?
+  challenge   String?
+  solution    String?
+  results     Json?
+  gallery     Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Content {
+  id        String   @id @default("global")
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  price       Float
+  pdfUrl      String
+  image       String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id            Int      @id @default(autoincrement())
+  clientName    String
+  clientPhone   String
+  clientEmail   String   @default("")
+  whatsappNumber String   @default("")
+  productTitle  String
+  price         Float
+  paymentMethod String
+  trxId         String   @unique
+  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

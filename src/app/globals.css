@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-surface-heavy: var(--surface-heavy);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-brand-red: var(--brand-red);
+  --color-brand-tan: var(--brand-tan);
+  
+  --font-sans: var(--font-inter), sans-serif;
+  --font-serif: var(--font-playfair), serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #f6f3ee;
+  --foreground: #1c1b18;
+  --surface: #ffffff;
+  --surface-heavy: #e8dfcd;
+  --muted: #6b6a65;
+  --border: rgba(28, 27, 24, 0.1);
+  --brand-red: #ea3f40;
+  --brand-tan: #bba28a;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base text styling */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--foreground);
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+@layer utilities {
+
+.hoverable {
+  cursor: none;
+}
+
+/* Multilingual Font Support */
+.font-bengali,
+.font-bengali * {
+  font-family: var(--font-hind-siliguri), sans-serif !important;
+}
+
+.font-bengali .font-serif {
+  font-family: var(--font-hind-siliguri), serif !important;
+}
+
+  .hoverable {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .hoverable:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Hide scrollbar for immersive experience */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-heavy);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
 }

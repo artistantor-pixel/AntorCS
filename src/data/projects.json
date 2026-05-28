@@ -1,0 +1,198 @@
+[
+  {
+    "id": 1,
+    "titleKey": "qera",
+    "categoryKey": "motion",
+    "title": "Quantum Era",
+    "slug": "quantum-era",
+    "image": "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070",
+    "size": "large",
+    "year": "2026",
+    "catId": "Motion Design",
+    "client": "Global Tech",
+    "duration": "6 Months",
+    "role": "Creative Director",
+    "liveLink": "https://example.com",
+    "overview": "A visionary motion design project exploring the possibilities of quantum computing through abstract visual narratives.",
+    "challenge": "Translating complex quantum mechanics into digestible, visually stunning 3D animations for a general audience.",
+    "solution": "We utilized Houdini and Cinema4D to create procedural simulations that mimic quantum states, paired with an elegant, futuristic UI.",
+    "results": [
+      { "label": "Social Reach", "value": "2.5M+" },
+      { "label": "Client Satisfaction", "value": "100%" },
+      { "label": "Design Award", "value": "Gold" }
+    ],
+    "gallery": [
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000",
+      "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2000",
+      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000"
+    ]
+  },
+  {
+    "id": 2,
+    "titleKey": "dmatter",
+    "categoryKey": "branding",
+    "title": "Dark Matter",
+    "slug": "dark-matter",
+    "image": "https://images.unsplash.com/photo-1518818419601-129668d4076e?q=80&w=2070",
+    "size": "medium",
+    "year": "2025",
+    "catId": "Branding",
+    "client": "Stellar Labs",
+    "duration": "3 Months",
+    "role": "Brand Designer",
+    "liveLink": "https://example.com",
+    "overview": "A complete rebranding for a deep-tech space exploration startup, focusing on the mysteries of the universe.",
+    "challenge": "Creating a brand identity that feels both highly scientific and remarkably approachable to investors.",
+    "solution": "We developed a monolithic design system using deep blacks, stark whites, and a custom typeface inspired by aerospace engineering.",
+    "results": [
+      { "label": "Funding Raised", "value": "$12M" },
+      { "label": "Brand Recall", "value": "+85%" },
+      { "label": "Website Traffic", "value": "+320%" }
+    ],
+    "gallery": [
+      "https://images.unsplash.com/photo-1518818419601-129668d4076e?q=80&w=2000",
+      "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2000",
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000"
+    ]
+  },
+  {
+    "id": 3,
+    "titleKey": "lstate",
+    "categoryKey": "animation3d",
+    "title": "Liquid State",
+    "slug": "liquid-state",
+    "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964",
+    "size": "medium",
+    "year": "2026",
+    "catId": "3D Animation",
+    "client": "Aqua Corp",
+    "duration": "4 Months",
+    "role": "3D Artist",
+    "liveLink": "https://example.com",
+    "overview": "An experimental 3D animation project focusing on fluid dynamics and hyper-realistic material rendering.",
+    "challenge": "Achieving photorealistic water simulations that run efficiently in a real-time web environment.",
+    "solution": "By combining pre-rendered fluid simulations with WebGL shaders, we created a seamless, interactive aquatic experience.",
+    "results": [
+      { "label": "User Engagement", "value": "+200%" },
+      { "label": "Load Time", "value": "-40%" },
+      { "label": "FWA of the Day", "value": "Winner" }
+    ],
+    "gallery": [
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000",
+      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000",
+      "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2000"
+    ]
+  },
+  {
+    "id": 4,
+    "titleKey": "ngenesis",
+    "categoryKey": "uiux",
+    "title": "Neon Genesis",
+    "slug": "neon-genesis",
+    "image": "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2070",
+    "size": "small",
+    "year": "2025",
+    "catId": "UI/UX",
+    "client": "Cyber Dynamics",
+    "duration": "2 Months",
+    "role": "UI Designer",
+    "liveLink": "https://example.com",
+    "overview": "A cyberpunk-inspired UI/UX overhaul for a next-generation crypto trading platform.",
+    "challenge": "Balancing an extreme, neon-heavy aesthetic with the high usability required for financial trading.",
+    "solution": "We used a dark mode base with highly saturated neon accents strictly for functional data visualization and alerts.",
+    "results": [
+      { "label": "Trading Volume", "value": "+1.2B" },
+      { "label": "User Retention", "value": "+45%" },
+      { "label": "App Store Rating", "value": "4.9" }
+    ],
+    "gallery": [
+      "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2000",
+      "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2000",
+      "https://images.unsplash.com/photo-1518818419601-129668d4076e?q=80&w=2000"
+    ]
+  },
+  {
+    "id": 5,
+    "titleKey": "etime",
+    "categoryKey": "creative",
+    "title": "Echoes of Time",
+    "slug": "echoes-of-time",
+    "image": "https://images.unsplash.com/photo-1536699059885-cecc0e4787f7?q=80&w=2070",
+    "size": "large",
+    "year": "2026",
+    "catId": "Creative Direction",
+    "client": "Lumina Collective",
+    "duration": "4 Months",
+    "role": "Lead Product Designer",
+    "liveLink": "https://example.com",
+    "overview": "Lumina Collective needed a complete digital transformation. They wanted to move away from a traditional corporate look to a highly editorial, fashion-forward aesthetic.",
+    "challenge": "The primary challenge was balancing an avant-garde visual identity with seamless usability. Their existing architecture buried their best work.",
+    "solution": "We developed a minimal, typography-driven design system using fluid layouts and subtle micro-interactions. The new architecture prioritizes visual storytelling.",
+    "results": [
+      { "label": "Premium Leads", "value": "+145%" },
+      { "label": "Bounce Rate", "value": "-40%" },
+      { "label": "Session Time", "value": "+2m 15s" }
+    ],
+    "gallery": [
+      "https://images.unsplash.com/photo-1536699059885-cecc0e4787f7?q=80&w=2000",
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000",
+      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000"
+    ]
+  },
+  {
+    "id": 6,
+    "titleKey": "void",
+    "categoryKey": "motion",
+    "title": "The Void",
+    "slug": "the-void",
+    "image": "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=2093",
+    "size": "medium",
+    "year": "2024",
+    "catId": "Motion Design",
+    "client": "Null Space",
+    "duration": "5 Months",
+    "role": "Art Director",
+    "liveLink": "https://example.com",
+    "overview": "An award-winning short film exploring themes of isolation and technology through minimalist motion graphics.",
+    "challenge": "Conveying deep emotion using only basic geometric shapes and monochromatic color palettes.",
+    "solution": "We focused heavily on the timing, easing, and spatial relationships between shapes, using motion as the primary emotional driver.",
+    "results": [
+      { "label": "Views", "value": "4.2M" },
+      { "label": "Film Festivals", "value": "12" },
+      { "label": "Best Animation", "value": "Winner" }
+    ],
+    "gallery": [
+      "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=2000",
+      "https://images.unsplash.com/photo-1518818419601-129668d4076e?q=80&w=2000",
+      "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2000"
+    ]
+  },
+  {
+    "id": 7,
+    "titleKey": "cpunk",
+    "categoryKey": "animation3d",
+    "title": "Cyber Punk",
+    "slug": "cyber-punk",
+    "image": "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2070",
+    "size": "medium",
+    "year": "2026",
+    "catId": "3D Animation",
+    "client": "Neon Corp",
+    "duration": "2 Months",
+    "role": "Motion Designer",
+    "liveLink": "https://example.com",
+    "overview": "A high-octane 3D product reveal for a new line of gaming peripherals.",
+    "challenge": "Making standard computer hardware look exciting and futuristic while clearly showing functional details.",
+    "solution": "We placed the products in a dark, atmospheric cyberpunk environment lit purely by the products' own RGB lighting.",
+    "results": [
+      { "label": "Pre-orders", "value": "+400%" },
+      { "label": "Social Shares", "value": "50k+" },
+      { "label": "ROI", "value": "850%" }
+    ],
+    "gallery": [
+      "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2000",
+      "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2000",
+      "https://images.unsplash.com/photo-1536699059885-cecc0e4787f7?q=80&w=2000"
+    ]
+  }
+]
