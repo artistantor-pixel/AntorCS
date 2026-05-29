@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, use } from "react";
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, PlayCircle } from "lucide-react";
@@ -151,25 +151,13 @@ const BlockRenderer = ({ block }: { block: any }) => {
   }
 };
 
-export default function CaseStudyPage({ params }: { params: any }) {
+export default function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [slug, setSlug] = useState<string>("");
+  const resolvedParams = use(params);
+  const slug = resolvedParams.slug;
   const [project, setProject] = useState<any>(null);
   const [nextProject, setNextProject] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Robust parameter resolver supporting both Next.js 14 and 15 dynamic routing conventions
-  useEffect(() => {
-    if (params) {
-      if (typeof params.then === "function") {
-        params.then((resolved: any) => {
-          setSlug(resolved.slug);
-        });
-      } else {
-        setSlug(params.slug);
-      }
-    }
-  }, [params]);
 
   useEffect(() => {
     if (!slug) return;
@@ -204,7 +192,7 @@ export default function CaseStudyPage({ params }: { params: any }) {
   });
 
   // Parallax effects for Hero
-  const { scrollYProgress: heroScroll } = useScroll();
+  const { scrollY: heroScroll } = useScroll();
   const yHero = useTransform(heroScroll, [0, 1000], ["0%", "30%"]);
   const scaleHero = useTransform(heroScroll, [0, 1000], [1, 1.1]);
   const opacityHero = useTransform(heroScroll, [0, 800], [1, 0]);
