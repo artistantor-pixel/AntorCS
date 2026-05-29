@@ -5,7 +5,7 @@
     "categoryKey": "branding",
     "title": "Chitropot (চিত্রপট)",
     "slug": "chitropot-workshop",
-    "image": "/projects/image_001.jpg",
+    "image": "/projects/image_006.bmp",
     "size": "large",
     "year": "2025",
     "catId": "Branding",
@@ -21,10 +21,10 @@
       { "label": "Identity Recall", "value": "95%" }
     ],
     "gallery": [
-      "/projects/image_002.jpg",
-      "/projects/image_003.jpg",
-      "/projects/image_004.jpg",
-      "/projects/image_005.jpg"
+      "/projects/image_007.bmp",
+      "/projects/image_008.bmp",
+      "/projects/image_009.bmp",
+      "/projects/image_010.bmp"
     ]
   },
   {
@@ -33,7 +33,7 @@
     "categoryKey": "branding",
     "title": "Gallery Hamiduzzaman",
     "slug": "gallery-hamiduzzaman",
-    "image": "/projects/image_012.jpg",
+    "image": "/projects/image_014.bmp",
     "size": "medium",
     "year": "2026",
     "catId": "Creative Management",
@@ -49,9 +49,9 @@
       { "label": "Media Impression", "value": "100k+" }
     ],
     "gallery": [
-      "/projects/image_013.jpg",
-      "/projects/image_014.jpg",
-      "/projects/image_015.jpg"
+      "/projects/image_015.bmp",
+      "/projects/image_016.bmp",
+      "/projects/image_017.bmp"
     ]
   },
   {
@@ -60,7 +60,7 @@
     "categoryKey": "motion",
     "title": "Charukola Animation Festival",
     "slug": "charukola-animation-festival",
-    "image": "/projects/image_022.jpg",
+    "image": "/projects/image_025.bmp",
     "size": "large",
     "year": "2025",
     "catId": "Motion Design",
@@ -76,9 +76,9 @@
       { "label": "Engagement Increase", "value": "+180%" }
     ],
     "gallery": [
-      "/projects/image_023.jpg",
-      "/projects/image_024.jpg",
-      "/projects/image_025.jpg"
+      "/projects/image_026.bmp",
+      "/projects/image_027.bmp",
+      "/projects/image_028.bmp"
     ]
   },
   {
@@ -87,7 +87,7 @@
     "categoryKey": "branding",
     "title": "Woven Heritage",
     "slug": "woven-heritage-shital-pati",
-    "image": "/projects/image_039.jpg",
+    "image": "/projects/image_039.bmp",
     "size": "medium",
     "year": "2025",
     "catId": "Textile & Grid Design",
@@ -103,9 +103,9 @@
       { "label": "UNESCO Heritage Tribute", "value": "100%" }
     ],
     "gallery": [
-      "/projects/image_040.jpg",
-      "/projects/image_041.jpg",
-      "/projects/image_042.jpg"
+      "/projects/image_040.bmp",
+      "/projects/image_041.bmp",
+      "/projects/image_042.bmp"
     ]
   },
   {
@@ -114,7 +114,7 @@
     "categoryKey": "animation3d",
     "title": "Jhumur & Biva",
     "slug": "jhumur-biva-animation",
-    "image": "/projects/image_047.jpg",
+    "image": "/projects/image_049.bmp",
     "size": "large",
     "year": "2024",
     "catId": "Animation",
@@ -130,8 +130,8 @@
       { "label": "Awareness Index", "value": "High" }
     ],
     "gallery": [
-      "/projects/image_048.jpg",
-      "/projects/image_049.jpg"
+      "/projects/image_050.bmp",
+      "/projects/image_051.bmp"
     ]
   },
   {
@@ -140,7 +140,7 @@
     "categoryKey": "motion",
     "title": "DIKKHA E-Learning",
     "slug": "dikkha-e-learning",
-    "image": "/projects/image_052.jpg",
+    "image": "/projects/image_056.bmp",
     "size": "medium",
     "year": "2024",
     "catId": "Motion Graphics",
@@ -156,8 +156,8 @@
       { "label": "Concept Retention", "value": "+45%" }
     ],
     "gallery": [
-      "/projects/image_053.jpg",
-      "/projects/image_054.jpg"
+      "/projects/image_057.bmp",
+      "/projects/image_058.bmp"
     ]
   },
   {
@@ -166,7 +166,7 @@
     "categoryKey": "branding",
     "title": "Zainul Mela 2024",
     "slug": "zainul-mela-poster",
-    "image": "/projects/image_037.jpg",
+    "image": "/projects/image_043.bmp",
     "size": "medium",
     "year": "2024",
     "catId": "Poster Design",
@@ -182,7 +182,7 @@
       { "label": "Design Rating", "value": "Outstanding" }
     ],
     "gallery": [
-      "/projects/image_038.jpg"
+      "/projects/image_044.bmp"
     ]
   }
 ]
