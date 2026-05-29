@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowUpRight, BarChart3, Puzzle, Lightbulb, PlayCircle, Eye } from "lucide-react";
+import Image from "next/image";
+import { ArrowUpRight, BarChart3, Puzzle, Lightbulb, PlayCircle, Sparkles } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 const categories = ["All", "Branding", "Motion Design", "3D Animation", "Creative Direction", "UI/UX"];
 
-// Local Translations for Case Studies page
 const localT: Record<string, Record<string, string>> = {
   en: {
     badge: "CASE STUDIES",
@@ -21,7 +21,7 @@ const localT: Record<string, Record<string, string>> = {
     results: "Key Outcomes",
     client: "Client",
     role: "Role & Timeline",
-    read_more: "Read Full Case Study",
+    read_more: "Read Case Study",
     connect_title: "Have a design challenge?",
     connect_subtitle: "Let's co-create an extraordinary narrative that scales your business to new heights.",
     connect_btn: "Let's Work Together",
@@ -37,7 +37,7 @@ const localT: Record<string, Record<string, string>> = {
     results: "অর্জিত ফলাফল",
     client: "ক্লায়েন্ট",
     role: "ভূমিকা ও সময়কাল",
-    read_more: "সম্পূর্ণ কেইজ স্টাডি দেখুন",
+    read_more: "কেইজ স্টাডি দেখুন",
     connect_title: "আপনার কি কোনো ভিজ্যুয়াল চ্যালেঞ্জ আছে?",
     connect_subtitle: "চলুন একসাথে এমন একটি গল্প তৈরি করি যা আপনার ব্র্যান্ডকে এক অনন্য উচ্চতায় নিয়ে যাবে।",
     connect_btn: "একত্রে কাজ শুরু করুন",
@@ -56,49 +56,47 @@ export default function CaseStudiesPage() {
     fetch("/api/projects", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data)) {
-          setProjects(data);
-        }
+        if (Array.isArray(data)) setProjects(data);
         setIsLoading(false);
       })
-      .catch((err) => {
-        console.error("Error fetching projects for case studies:", err);
-        setIsLoading(false);
-      });
+      .catch(() => setIsLoading(false));
   }, []);
 
-  const filteredProjects =
-    filter === "All" ? projects : projects.filter((p) => p.catId === filter);
+  const filteredProjects = filter === "All" 
+    ? projects 
+    : projects.filter((p) => p.catId === filter);
 
   return (
-    <main className="relative min-h-screen pt-32 pb-32 bg-background">
-      {/* Decorative Grid Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+    <main className="relative min-h-screen pt-32 pb-32 bg-background overflow-hidden">
+      
+      {/* Visual background flares */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-brand-red/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-20 left-1/4 w-[500px] h-[500px] bg-rose-500/3 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
-        {/* 1. Header Hero */}
+        {/* Header Hero */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="mb-20 text-center flex flex-col items-center"
         >
-          <span className="text-brand-red text-sm tracking-[0.2em] uppercase mb-4 font-bold inline-block px-4 py-1.5 border border-brand-red/20 rounded-full bg-brand-red/5 shadow-sm">
-            {currentT.badge}
+          <span className="text-brand-red text-xs tracking-[0.2em] uppercase mb-4 font-bold inline-flex items-center gap-1.5 px-4 py-1.5 border border-brand-red/20 rounded-full bg-brand-red/5 shadow-inner">
+            <Sparkles size={12} className="animate-pulse" /> {currentT.badge}
           </span>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 font-serif max-w-4xl leading-[1.1]">
+          <h1 className="text-5xl md:text-7.5xl font-bold tracking-tight mb-6 font-serif leading-[1.05] max-w-4xl">
             {currentT.title_1}
             <span className="text-brand-red font-light italic block md:inline-block">
               {currentT.title_2}
             </span>
           </h1>
-          <p className="text-muted max-w-2xl mx-auto mb-12 text-base md:text-lg leading-relaxed font-light">
+          <p className="text-muted max-w-xl mx-auto mb-10 text-sm md:text-base leading-relaxed font-light">
             {currentT.subtitle}
           </p>
 
-          {/* Filter Bar */}
-          <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto bg-surface/50 p-2 rounded-[2rem] border border-border backdrop-blur-sm">
+          {/* Glassmorphic Filters */}
+          <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto bg-surface/50 p-2 rounded-[2rem] border border-border backdrop-blur-md shadow-sm">
             {categories.map((cat) => {
               const catKey = cat.toLowerCase().replace(" ", "").replace("/", "");
               const displayCat =
@@ -125,21 +123,20 @@ export default function CaseStudiesPage() {
           </div>
         </motion.div>
 
-        {/* 2. Case Studies List */}
+        {/* Case Studies List */}
         {isLoading ? (
           <div className="py-24 text-center">
             <div className="w-12 h-12 border-4 border-brand-red/20 border-t-brand-red rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-muted animate-pulse">Loading Case Studies...</p>
+            <p className="text-muted text-sm font-light animate-pulse">Loading editorial narratives...</p>
           </div>
         ) : filteredProjects.length === 0 ? (
-          <div className="py-24 text-center bg-surface border border-border rounded-3xl p-12">
-            <p className="text-muted text-lg font-light">No case studies found in this category.</p>
+          <div className="py-20 text-center bg-surface border border-border rounded-3xl p-12">
+            <p className="text-muted font-light">No case studies found in this category.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-16 md:gap-24">
             <AnimatePresence mode="popLayout">
               {filteredProjects.map((project, index) => {
-                // Parse results/metrics from JSON if stored as JSON in DB
                 let metricsList: Array<{ label: string; value: string }> = [];
                 if (project.results) {
                   try {
@@ -151,8 +148,7 @@ export default function CaseStudiesPage() {
                   }
                 }
 
-                // Check if video exists
-                const hasVideo = project.videoUrl || (project.image && project.image.includes("vimeo"));
+                const hasVideo = project.videoUrl;
 
                 return (
                   <motion.div
@@ -160,17 +156,21 @@ export default function CaseStudiesPage() {
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.8, delay: index * 0.1 }}
-                    className="group bg-surface border border-border rounded-[2.5rem] p-6 md:p-10 flex flex-col lg:grid lg:grid-cols-12 gap-10 hover:border-brand-red/30 hover:shadow-2xl hover:shadow-brand-red/5 transition-all duration-500 relative overflow-hidden"
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="group bg-surface border border-border rounded-[2.5rem] p-6 md:p-10 flex flex-col lg:grid lg:grid-cols-12 gap-10 hover:border-brand-red/30 hover:shadow-[0_20px_50px_rgba(220,38,38,0.1)] transition-all duration-500 relative overflow-hidden"
                   >
+                    
                     {/* Visual Media Container (Left 5 Cols) */}
-                    <div className="lg:col-span-5 h-[300px] md:h-[400px] lg:h-full rounded-2xl overflow-hidden relative border border-border bg-background">
-                      <img
+                    <div className="lg:col-span-5 h-[300px] md:h-[400px] lg:h-full min-h-[350px] rounded-2xl overflow-hidden relative border border-border bg-surface-heavy">
+                      <Image
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 40vw"
+                        priority={index < 2}
+                        className="object-cover transition-transform duration-[1.5s] group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-75 group-hover:opacity-85 transition-opacity pointer-events-none" />
 
                       {hasVideo && (
                         <div className="absolute top-4 right-4 bg-brand-red text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-bold shadow-lg shadow-brand-red/20 z-20">
@@ -181,7 +181,7 @@ export default function CaseStudiesPage() {
 
                       {/* Overlaid Title on Mobile/Tablet */}
                       <div className="absolute bottom-6 left-6 right-6 z-20 lg:hidden text-white pointer-events-none">
-                        <span className="text-[10px] tracking-widest uppercase font-bold text-brand-red bg-white/95 px-2 py-0.5 rounded shadow-sm inline-block mb-2">
+                        <span className="text-[9px] tracking-widest uppercase font-bold text-brand-red bg-white px-2.5 py-1 rounded-full shadow-md inline-block mb-2">
                           {project.catId}
                         </span>
                         <h2 className="text-2xl font-bold font-serif">{project.title}</h2>
@@ -194,38 +194,38 @@ export default function CaseStudiesPage() {
                         {/* Desktop Header */}
                         <div className="hidden lg:flex justify-between items-start mb-6">
                           <div>
-                            <span className="inline-block px-3 py-1.5 rounded-full border border-brand-red/20 text-brand-red text-[10px] font-bold tracking-widest uppercase mb-3 bg-brand-red/5">
+                            <span className="inline-block px-3 py-1 rounded-full border border-brand-red/20 text-brand-red text-[10px] font-bold tracking-widest uppercase mb-3 bg-brand-red/5">
                               {project.catId}
                             </span>
-                            <h2 className="text-4xl font-serif font-bold text-foreground group-hover:text-brand-red transition-colors duration-300">
+                            <h2 className="text-3.5xl font-serif font-bold text-foreground group-hover:text-brand-red transition-colors duration-300">
                               {project.title}
                             </h2>
                           </div>
-                          <span className="text-muted/60 text-sm font-medium tracking-widest">{project.year}</span>
+                          <span className="text-muted/60 text-xs font-medium tracking-widest">{project.year}</span>
                         </div>
 
                         {/* Summary */}
-                        <p className="text-muted leading-relaxed font-light mb-8 text-base">
+                        <p className="text-muted leading-relaxed font-light mb-8 text-sm md:text-base">
                           {project.overview}
                         </p>
 
                         {/* Process Splits (Challenge & Solution) */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 border-y border-border py-8">
                           <div>
-                            <p className="text-foreground font-bold text-sm tracking-wide mb-3 flex items-center gap-2">
-                              <Puzzle size={16} className="text-brand-red" />
+                            <p className="text-foreground font-bold text-xs tracking-wide mb-3 flex items-center gap-2">
+                              <Puzzle size={15} className="text-brand-red" />
                               <span>{currentT.problem}</span>
                             </p>
-                            <p className="text-muted text-sm leading-relaxed font-light">
+                            <p className="text-muted text-xs md:text-sm leading-relaxed font-light">
                               {project.challenge}
                             </p>
                           </div>
                           <div>
-                            <p className="text-foreground font-bold text-sm tracking-wide mb-3 flex items-center gap-2">
-                              <Lightbulb size={16} className="text-brand-red" />
+                            <p className="text-foreground font-bold text-xs tracking-wide mb-3 flex items-center gap-2">
+                              <Lightbulb size={15} className="text-brand-red" />
                               <span>{currentT.solution}</span>
                             </p>
-                            <p className="text-muted text-sm leading-relaxed font-light">
+                            <p className="text-muted text-xs md:text-sm leading-relaxed font-light">
                               {project.solution}
                             </p>
                           </div>
@@ -240,11 +240,11 @@ export default function CaseStudiesPage() {
                             </p>
                             <div className="grid grid-cols-3 gap-4">
                               {metricsList.slice(0, 3).map((met, i) => (
-                                <div key={i} className="bg-background border border-border p-3.5 rounded-2xl text-center group/metric hover:border-brand-red/20 hover:shadow-lg transition-all duration-300">
-                                  <h4 className="text-xl md:text-2xl font-black text-brand-red tracking-tight mb-1 group-hover/metric:scale-105 transition-transform duration-300">
+                                <div key={i} className="bg-background border border-border p-3 rounded-2xl text-center group/metric hover:border-brand-red/20 hover:shadow-lg transition-all duration-300">
+                                  <h4 className="text-lg md:text-2xl font-black text-brand-red tracking-tight mb-0.5 group-hover/metric:scale-105 transition-transform duration-300">
                                     {met.value}
                                   </h4>
-                                  <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground truncate leading-none">
+                                  <p className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground truncate leading-none">
                                     {met.label}
                                   </p>
                                 </div>
@@ -257,14 +257,14 @@ export default function CaseStudiesPage() {
                       {/* Footer Actions */}
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 pt-4 border-t border-border/50">
                         {/* Meta badge */}
-                        <div className="flex gap-6 text-[11px] text-muted font-light">
+                        <div className="flex gap-6 text-[10px] text-muted font-light">
                           <div>
                             <span className="font-bold text-foreground block">{currentT.client}</span>
-                            <span>{project.client || "Antor Studio"}</span>
+                            <span className="text-[9px]">{project.client || "Antor Studio"}</span>
                           </div>
                           <div>
                             <span className="font-bold text-foreground block">{currentT.role}</span>
-                            <span>{project.role || "Lead Designer"} ({project.duration})</span>
+                            <span className="text-[9px]">{project.role || "Lead Designer"} ({project.duration})</span>
                           </div>
                         </div>
 
@@ -285,7 +285,7 @@ export default function CaseStudiesPage() {
           </div>
         )}
 
-        {/* 3. Immersive CTA */}
+        {/* Immersive CTA */}
         <motion.section
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
