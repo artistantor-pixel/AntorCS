@@ -87,15 +87,11 @@ export default function Navigation() {
             </Link>
           </div>
 
-          {/* Mobile Center Workspace Link */}
-          <div className="md:hidden absolute left-1/2 transform -translate-x-1/2">
-            <Link href="/workspace" className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-brand-red/10 border border-brand-red/30 text-brand-red active:bg-brand-red/20 transition-all text-xs font-bold">
+          {/* Mobile Top Menu Button & Lang Switch */}
+          <div className="md:hidden flex items-center gap-3">
+            <Link href="/workspace" className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-brand-red/10 border border-brand-red/30 text-brand-red active:bg-brand-red/20 transition-all text-xs font-bold">
               <Zap size={11} className="animate-pulse" /> Workspace
             </Link>
-          </div>
-
-          {/* Mobile Top Menu Button & Lang Switch */}
-          <div className="md:hidden flex items-center gap-4">
             <button 
               onClick={() => setLang(lang === 'en' ? 'bn' : 'en')}
               className="text-xs font-bold uppercase bg-surface border border-border px-3 py-1.5 rounded-full"
