@@ -6,8 +6,9 @@ import {
   FolderKanban, Briefcase, Type, Plus, Edit2, Trash2, Copy,
   Save, X, Search, Filter, CheckSquare, Square, RefreshCw, 
   AlertCircle, CheckCircle, Video, Image as ImageIcon, ExternalLink, Calendar,
-  Bell, ChevronDown, Award, PieChart, Activity, Cpu, Database, Calculator, FileText, ShoppingCart, Mail, MessageCircle, Menu
+  Bell, ChevronDown, Award, PieChart, Activity, Cpu, Database, Calculator, FileText, ShoppingCart, Mail, MessageCircle, Menu, Users
 } from "lucide-react";
+
 
 // Types
 interface Project {
@@ -83,7 +84,9 @@ export default function AdminDashboard() {
   const [projectsData, setProjectsData] = useState<Project[]>([]);
   const [productsData, setProductsData] = useState<Product[]>([]);
   const [visitorCount, setVisitorCount] = useState<number>(1428);
+  const [workspaceUsers, setWorkspaceUsers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
 
   // Calendar States
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
@@ -240,12 +243,41 @@ export default function AdminDashboard() {
       if (Array.isArray(calData)) {
         setCalendarEvents(calData);
       }
+
+      // Fetch registered workspace users
+      try {
+        const usersRes = await fetch("/api/admin/users", { cache: "no-store" });
+        if (usersRes.ok) {
+          const usersData = await usersRes.json();
+          if (Array.isArray(usersData)) setWorkspaceUsers(usersData);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     } catch (e) {
       addToast("Failed to load dashboard parameters", "error");
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleDeleteWorkspaceUser = async (email: string) => {
+    if (!confirm(`Are you sure you want to permanently delete workspace user "${email}"?`)) return;
+    try {
+      const res = await fetch(`/api/admin/users?email=${encodeURIComponent(email)}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        setWorkspaceUsers(prev => prev.filter(u => u.email !== email));
+        addToast("Workspace user successfully removed.", "success");
+      } else {
+        addToast("Failed to delete workspace user.", "error");
+      }
+    } catch (e) {
+      addToast("Connection error.", "error");
+    }
+  };
+
 
   useEffect(() => {
     fetchData();
@@ -1145,8 +1177,20 @@ export default function AdminDashboard() {
               <Type size={16} />
               Global Content
             </button>
+            <button
+              onClick={() => { setActiveTab("users"); setSidebarOpen(false); }}
+              className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all border ${
+                activeTab === "users" 
+                  ? "bg-brand-red text-white border-brand-red shadow-[0_4px_20px_rgba(225,29,72,0.25)]" 
+                  : "text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] border-transparent"
+              }`}
+            >
+              <Users size={16} />
+              Workspace Users
+            </button>
           </nav>
         </div>
+
 
         {/* Pro Upgrader Widget */}
         <div className="p-4 mx-4 mb-6 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl relative overflow-hidden shadow-sm">
@@ -3001,6 +3045,83 @@ export default function AdminDashboard() {
 
             </div>
           )}
+
+          {/* TAB 9: WORKSPACE USERS MANAGEMENT */}
+          {activeTab === "users" && (
+            <div className="flex flex-col gap-6 flex-1 min-h-0 animate-fadeIn">
+              {/* Header */}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 shrink-0 border-b border-[#E2E8F0] pb-6">
+                <div>
+                  <h2 className="text-2xl font-bold tracking-tight text-[#111827] font-serif mb-2">Workspace Users</h2>
+                  <p className="text-[#6B7280] text-xs font-semibold">Monitor and manage all Gmail users registered on your custom workspace console.</p>
+                </div>
+                <button 
+                  onClick={fetchData} 
+                  className="bg-brand-red text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-blood-red transition-all text-xs shadow-[0_4px_12px_rgba(225,29,72,0.15)] cursor-pointer"
+                >
+                  <RefreshCw size={14} /> Refresh List
+                </button>
+              </div>
+
+              {/* Data Table */}
+              <div className="flex-1 bg-white border border-[#E2E8F0] rounded-3xl overflow-hidden flex flex-col min-h-0 relative shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+                <div className="flex-1 overflow-auto">
+                  <table className="w-full text-left border-collapse min-w-[700px] table-fixed">
+                    <thead>
+                      <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC] text-[9px] tracking-[0.2em] font-bold text-[#9CA3AF] uppercase">
+                        <th className="py-4 px-6 w-[220px]">User Name</th>
+                        <th className="py-4 px-4 w-[280px]">Gmail Address</th>
+                        <th className="py-4 px-4 w-[180px]">Password</th>
+                        <th className="py-4 px-4 w-[120px] text-right pr-8">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#E2E8F0] text-xs text-[#4B5563] font-semibold">
+                      {isLoading ? (
+                        Array.from({ length: 3 }).map((_, idx) => (
+                          <tr key={idx} className="animate-pulse">
+                            <td className="py-4 px-6"><div className="h-4 bg-[#E2E8F0] rounded w-32" /></td>
+                            <td className="py-4 px-4"><div className="h-4 bg-[#E2E8F0] rounded w-44" /></td>
+                            <td className="py-4 px-4"><div className="h-4 bg-[#E2E8F0] rounded w-20" /></td>
+                            <td className="py-4 px-4 text-right pr-8"><div className="h-8 bg-[#E2E8F0] rounded w-16 ml-auto" /></td>
+                          </tr>
+                        ))
+                      ) : workspaceUsers.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="py-16 text-center text-[#9CA3AF] font-medium font-mono">
+                            NO WORKSPACE USERS FOUND
+                          </td>
+                        </tr>
+                      ) : (
+                        workspaceUsers.map(u => (
+                          <tr key={u.email} className="hover:bg-[#F8FAFC] transition-colors group">
+                            <td className="py-4 px-6 font-bold text-[#111827]">
+                              {u.name}
+                            </td>
+                            <td className="py-4 px-4 font-mono text-[#6B7280]">
+                              {u.email}
+                            </td>
+                            <td className="py-4 px-4 font-mono text-[#9CA3AF]">
+                              {u.password}
+                            </td>
+                            <td className="py-4 px-4 text-right pr-8">
+                              <button 
+                                onClick={() => handleDeleteWorkspaceUser(u.email)}
+                                className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] text-red-500 rounded-xl hover:bg-red-500/10 hover:border-red-500/30 transition-all shadow-sm cursor-pointer"
+                                title="Delete User"
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
 
         </div>
       </main>
