@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function FooterSection() {
@@ -10,7 +11,13 @@ export default function FooterSection() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="block mb-6 hover:opacity-80 transition-opacity">
-              <img src="/logo.png" alt="Antor Logo" className="h-10 w-auto object-contain" />
+              <Image 
+                src="/logo.png" 
+                alt="Antor Logo" 
+                width={120} 
+                height={40} 
+                className="h-10 w-auto object-contain" 
+              />
             </Link>
             <p className="text-muted max-w-sm">{t("footer.desc")}</p>
           </div>

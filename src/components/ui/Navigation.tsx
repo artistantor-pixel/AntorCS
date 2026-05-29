@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { Home, Briefcase, User, Calculator, MessageSquare, ShoppingBag, Zap } from "lucide-react";
@@ -35,7 +36,14 @@ export default function Navigation() {
         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
           {/* Left Logo */}
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="/logo.png" alt="Antor Logo" className="h-8 md:h-10 w-auto object-contain" />
+            <Image 
+              src="/logo.png" 
+              alt="Antor Logo" 
+              width={120} 
+              height={40} 
+              priority
+              className="h-8 md:h-10 w-auto object-contain" 
+            />
           </Link>
           
           {/* Center Links */}

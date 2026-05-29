@@ -26,7 +26,18 @@ export default function Home() {
     { q: t("faq.q4"), a: t("faq.a4") },
   ];
 
-  const [sectionsConfig, setSectionsConfig] = useState<any[]>([]);
+  const [sectionsConfig, setSectionsConfig] = useState<any[]>([
+    { id: "hero",         enabled: true, order: 1 },
+    { id: "socialProof",  enabled: true, order: 2 },
+    { id: "features",     enabled: true, order: 3 },
+    { id: "services",     enabled: true, order: 4 },
+    { id: "experience",   enabled: true, order: 5 },
+    { id: "process",      enabled: true, order: 6 },
+    { id: "testimonials", enabled: true, order: 7 },
+    { id: "faqs",         enabled: true, order: 8 },
+    { id: "cta",          enabled: true, order: 9 },
+    { id: "footer",       enabled: true, order: 10 },
+  ]);
 
   useEffect(() => {
     // Increment visitor count on visit
