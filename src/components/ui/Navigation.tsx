@@ -1,15 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
-import { Home, Briefcase, User, Calculator, MessageSquare, ShoppingBag, Zap } from "lucide-react";
+import { Home, Briefcase, User, Calculator, MessageSquare, ShoppingBag, Zap, X } from "lucide-react";
+
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const pathname = usePathname();
   const { lang, setLang, t } = useLanguage();
 
@@ -21,7 +24,24 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleWorkspaceClick = (e: React.MouseEvent) => {
+    const stored = localStorage.getItem("workspace_user");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.email && parsed.email.endsWith("@gmail.com")) {
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    e.preventDefault();
+    setIsPopupOpen(true);
+  };
+
   if (pathname?.startsWith("/admin") || pathname?.startsWith("/workspace")) return null;
+
 
   return (
     <>
@@ -57,9 +77,10 @@ export default function Navigation() {
             <Link href="/journal" className="hover:text-muted transition-colors">{t('nav.journal')}</Link>
             <Link href="/shop" className="hover:text-muted transition-colors">{t('nav.shop')}</Link>
             <Link href="/contact" className="hover:text-muted transition-colors">Contact</Link>
-            <Link href="/workspace" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-red/10 border border-brand-red/30 text-brand-red hover:bg-brand-red/20 transition-all text-xs font-bold">
+            <Link href="/workspace" onClick={handleWorkspaceClick} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-red/10 border border-brand-red/30 text-brand-red hover:bg-brand-red/20 transition-all text-xs font-bold">
               <Zap size={11} /> Workspace
             </Link>
+
           </div>
 
           {/* Right CTA & Lang Switcher */}
@@ -89,9 +110,10 @@ export default function Navigation() {
 
           {/* Mobile Top Menu Button & Lang Switch */}
           <div className="md:hidden flex items-center gap-3">
-            <Link href="/workspace" className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-brand-red/10 border border-brand-red/30 text-brand-red active:bg-brand-red/20 transition-all text-xs font-bold">
+            <Link href="/workspace" onClick={handleWorkspaceClick} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-brand-red/10 border border-brand-red/30 text-brand-red active:bg-brand-red/20 transition-all text-xs font-bold">
               <Zap size={11} className="animate-pulse" /> Workspace
             </Link>
+
             <button 
               onClick={() => setLang(lang === 'en' ? 'bn' : 'en')}
               className="text-xs font-bold uppercase bg-surface border border-border px-3 py-1.5 rounded-full"
@@ -144,6 +166,56 @@ export default function Navigation() {
           </Link>
         </div>
       </div>
+
+      <AnimatePresence>
+        {isPopupOpen && (
+          <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-surface border border-border rounded-3xl w-full max-w-sm p-7 shadow-2xl space-y-6 relative overflow-hidden"
+            >
+              {/* Soft decorative glow */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red/5 rounded-full blur-3xl pointer-events-none" />
+
+              <button 
+                onClick={() => setIsPopupOpen(false)}
+                className="absolute top-4 right-4 p-1.5 rounded-xl bg-background border border-border text-muted hover:text-foreground transition-all cursor-pointer"
+              >
+                <X size={14} />
+              </button>
+
+              <div className="text-center space-y-3 pt-2">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto bg-brand-red/10 text-brand-red border border-brand-red/15">
+                  <Zap size={22} className="animate-pulse" />
+                </div>
+                <h3 className="font-serif font-black text-lg text-foreground">Workspace Access</h3>
+                <p className="text-sm text-muted leading-relaxed px-2">
+                  অন্তরের তৈরি workspace টি ব্যবহার করতে আপনার জিমেইল দিয়ে লগিন করুন।
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setIsPopupOpen(false)}
+                  className="flex-1 py-3 rounded-xl font-bold text-xs text-muted hover:text-foreground border border-border bg-background transition-all cursor-pointer"
+                >
+                  বন্ধ করুন
+                </button>
+                <Link 
+                  href="/workspace"
+                  onClick={() => setIsPopupOpen(false)}
+                  className="flex-1 py-3 rounded-xl font-bold text-xs text-white bg-brand-red hover:bg-blood-red flex items-center justify-center gap-1.5 shadow-md hover:scale-[1.02] active:scale-95 transition-all text-center cursor-pointer"
+                >
+                  লগিন করুন
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
+

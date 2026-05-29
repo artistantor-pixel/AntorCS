@@ -2,12 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+const motionImport = motion;
+const AnimatePresenceImport = AnimatePresence;
+
 import type { LucideIcon } from "lucide-react";
 import {
   Lock, Unlock, Plus, Trash2, CheckCircle2,
   Clock, Zap, Coffee, Moon, Sun, Sunset, ArrowRight,
   Flame, Target, Briefcase, ImageIcon, Film, Share2, X,
-  ShieldAlert, Home, RotateCcw, Edit3, ChevronRight
+  ShieldAlert, Home, RotateCcw, Edit3, ChevronRight, LogOut, Loader2
 } from "lucide-react";
 
 // ─── TYPES ──────────────────────────────────────────────────────────────────
@@ -25,6 +28,12 @@ interface Task {
   status: Status;
   deadline?: string;
   createdAt: string;
+}
+
+interface UserSession {
+  email: string;
+  name: string;
+  picture?: string;
 }
 
 // ─── TIME THEME ENGINE (light palette) ──────────────────────────────────────
@@ -100,6 +109,23 @@ function formatDeadline(d?: string) {
   return { text: `${diff} days left`, urgent: false };
 }
 
+// ─── DECODE JWT TOKEN SECURELY ────────────────────────────────────────────────
+function parseJwt(token: string) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      window.atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
+}
+
 // ─── LIVE CLOCK ───────────────────────────────────────────────────────────────
 function LiveClock() {
   const [time, setTime] = useState(new Date());
@@ -113,6 +139,7 @@ function LiveClock() {
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 export default function CommandCenter() {
+  const [user, setUser]           = useState<UserSession | null>(null);
   const [tasks, setTasks]         = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isBossMode, setIsBossMode] = useState(false);
@@ -139,20 +166,107 @@ export default function CommandCenter() {
     return () => clearInterval(t);
   }, []);
 
-  const fetchTasks = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch("/api/calendar", { cache: "no-store" });
-      if (res.ok) { const d = await res.json(); if (Array.isArray(d)) setTasks(d); }
-    } catch (e) { console.error(e); }
-    finally { setIsLoading(false); }
+  // Restore session from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem("workspace_user");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.email && parsed.email.endsWith("@gmail.com")) {
+          setUser(parsed);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }, []);
 
-  useEffect(() => { fetchTasks(); }, [fetchTasks]);
+  // Initialize Google Login Client SDK
+  useEffect(() => {
+    if (user) return; // No need if logged in
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      const g = (window as any).google;
+      if (g) {
+        g.accounts.id.initialize({
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "1058778732684-fallbackgoogleclientid.apps.googleusercontent.com",
+          callback: (response: any) => {
+            const payload = parseJwt(response.credential);
+            if (payload && payload.email) {
+              if (payload.email.endsWith("@gmail.com")) {
+                const loggedInUser: UserSession = {
+                  email: payload.email,
+                  name: payload.name || payload.email.split("@")[0],
+                  picture: payload.picture
+                };
+                setUser(loggedInUser);
+                localStorage.setItem("workspace_user", JSON.stringify(loggedInUser));
+                setAuthErr("");
+              } else {
+                setAuthErr("প্রবেশাধিকার বঞ্চিত: শুধুমাত্র @gmail.com অ্যাকাউন্ট অনুমোদিত!");
+              }
+            } else {
+              setAuthErr("গুগল সাইন-ইন ব্যর্থ হয়েছে!");
+            }
+          }
+        });
+
+        const btnElement = document.getElementById("google-signin-btn");
+        if (btnElement) {
+          g.accounts.id.renderButton(btnElement, {
+
+            theme: "outline",
+            size: "large",
+            width: btnElement.clientWidth || 320,
+            shape: "pill"
+          });
+        }
+      }
+    };
+
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, [user]);
+
+  const handleLogout = () => {
+    setUser(null);
+    setTasks([]);
+    localStorage.removeItem("workspace_user");
+  };
+
+  const fetchTasks = useCallback(async () => {
+    if (!user?.email) return;
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/calendar?email=${encodeURIComponent(user.email)}`, { cache: "no-store" });
+      if (res.ok) {
+        const d = await res.json();
+        if (Array.isArray(d)) setTasks(d);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.email]);
+
+  useEffect(() => {
+    if (user?.email) {
+      fetchTasks();
+    }
+  }, [user?.email, fetchTasks]);
 
   const saveTasks = async (updated: Task[]) => {
-    const res = await fetch("/api/calendar", {
-      method: "POST", headers: { "Content-Type": "application/json" },
+    if (!user?.email) return false;
+    const res = await fetch(`/api/calendar?email=${encodeURIComponent(user.email)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updated)
     });
     return res.ok;
@@ -160,8 +274,14 @@ export default function CommandCenter() {
 
   const handleAuth = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "boss123") { setIsBossMode(true); setShowAuth(false); setAuthErr(""); setPassword(""); }
-    else setAuthErr("ভুল পাসওয়ার্ড!");
+    if (password === "boss123") {
+      setIsBossMode(true);
+      setShowAuth(false);
+      setAuthErr("");
+      setPassword("");
+    } else {
+      setAuthErr("ভুল পাসওয়ার্ড!");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -176,7 +296,9 @@ export default function CommandCenter() {
       updated = [nt, ...tasks];
     }
     if (await saveTasks(updated)) {
-      setTasks(updated); setShowForm(false); setEditingTask(null);
+      setTasks(updated);
+      setShowForm(false);
+      setEditingTask(null);
       setForm({ title: "", client: "", description: "", priority: "HIGH", type: "BOSS_TASK", status: "TODO", deadline: "" });
     }
     setIsSaving(false);
@@ -195,7 +317,8 @@ export default function CommandCenter() {
 
   const openEdit = (task: Task) => {
     setForm({ title: task.title, client: task.client, description: task.description || "", priority: task.priority, type: task.type, status: task.status, deadline: task.deadline || "" });
-    setEditingTask(task); setShowForm(true);
+    setEditingTask(task);
+    setShowForm(true);
   };
 
   const sorted = [...tasks].sort((a, b) => {
@@ -216,7 +339,67 @@ export default function CommandCenter() {
     critical: tasks.filter(t => t.priority === "CRITICAL" && t.status !== "COMPLETED").length,
   };
 
-  // ─── RENDER ────────────────────────────────────────────────────────────────
+  // ─── UNAUTHENTICATED RENDER (GMAIL LOGIN REQUIRED) ─────────────────────────
+  if (!user) {
+    return (
+      <div className={`min-h-screen ${theme.pageBg} flex flex-col justify-center items-center p-6 antialiased text-gray-800`}>
+        <div className="absolute top-4 left-6">
+          <a href="/" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:border-gray-400 text-xs font-bold text-gray-600 hover:text-gray-900 transition-all shadow-sm">
+            <Home size={12} /> Home
+          </a>
+        </div>
+
+        <motionImport.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="w-full max-w-md bg-white border border-gray-100 rounded-[2.5rem] shadow-2xl p-8 md:p-10 space-y-8 relative overflow-hidden text-center"
+        >
+          {/* Decorative backdrop glow */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red/5 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="space-y-3">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto bg-brand-red/5 text-brand-red border border-brand-red/10">
+              <Lock size={26} className="animate-pulse" />
+            </div>
+            <h1 className="text-2xl md:text-3xl font-black font-serif tracking-tight text-gray-900 leading-tight">
+              Antor Workspace
+            </h1>
+            <p className="text-xs text-muted leading-relaxed max-w-xs mx-auto">
+              প্রাইভেসির স্বার্থে শুধুমাত্র ভেরিফাইড **Gmail** ব্যবহারকারীগণ এই ওয়ার্কস্পেস ব্যবহার করতে পারবেন।
+            </p>
+          </div>
+
+          <hr className="border-gray-100" />
+
+          {/* Error alerts */}
+          {authErr && (
+            <motionImport.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-xs font-bold text-left flex items-start gap-3"
+            >
+              <ShieldAlert size={16} className="shrink-0 mt-0.5" />
+              <span>{authErr}</span>
+            </motionImport.div>
+          )}
+
+          {/* Dynamic Google Login Button */}
+          <div className="space-y-4">
+            <div 
+              id="google-signin-btn" 
+              className="w-full flex justify-center hoverable min-h-[46px]"
+            />
+            <p className="text-[10px] text-gray-400 font-mono tracking-widest uppercase">
+              Secure Auth matrix
+            </p>
+          </div>
+        </motionImport.div>
+      </div>
+    );
+  }
+
+  // ─── AUTHENTICATED COMMAND CENTER RENDER ─────────────────────────────────────
   return (
     <div className={`min-h-screen ${theme.pageBg} text-gray-800 antialiased`}>
 
@@ -237,17 +420,30 @@ export default function CommandCenter() {
             </div>
           </div>
 
-          {/* Right */}
-          <div className="flex items-center gap-2 flex-wrap">
+          {/* Right (Google user & Logout) */}
+          <div className="flex items-center gap-3 flex-wrap">
             {stats.critical > 0 && (
-              <motion.div animate={{ scale: [1, 1.04, 1] }} transition={{ repeat: Infinity, duration: 2 }}
+              <motionImport.div animate={{ scale: [1, 1.04, 1] }} transition={{ repeat: Infinity, duration: 2 }}
                 className="px-3 py-1 rounded-full bg-red-100 border border-red-300 text-red-700 text-[10px] font-black tracking-wider">
                 🔴 {stats.critical} Critical
-              </motion.div>
+              </motionImport.div>
             )}
-            <span className="hidden sm:block px-3 py-1 rounded-full bg-white border border-gray-200 text-[10px] font-mono font-bold text-gray-400">
-              {stats.inProgress} active · {stats.done}/{stats.total} done
-            </span>
+
+            {/* Google Profile Badge */}
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-200 shadow-sm">
+              {user.picture ? (
+                <img 
+                  src={user.picture} 
+                  alt={user.name} 
+                  className="w-5 h-5 rounded-full object-cover border border-gray-100"
+                />
+              ) : (
+                <div className="w-5 h-5 rounded-full bg-brand-red/10 text-brand-red flex items-center justify-center text-[9px] font-black">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <span className="text-[10px] font-bold text-gray-700 truncate max-w-[120px]">{user.name}</span>
+            </div>
 
             {isBossMode ? (
               <div className="flex items-center gap-2">
@@ -255,16 +451,24 @@ export default function CommandCenter() {
                   ⚡ BOSS MODE
                 </span>
                 <button onClick={() => setIsBossMode(false)}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:border-red-300 text-xs font-bold text-gray-500 hover:text-red-600 transition-all shadow-sm">
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:border-red-300 text-xs font-bold text-gray-500 hover:text-red-600 transition-all shadow-sm cursor-pointer">
                   <Unlock size={11} /> Exit
                 </button>
               </div>
             ) : (
               <button onClick={() => setShowAuth(true)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-gray-200 hover:border-gray-400 text-xs font-bold text-gray-600 hover:text-gray-900 transition-all shadow-sm">
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-gray-200 hover:border-gray-400 text-xs font-bold text-gray-600 hover:text-gray-900 transition-all shadow-sm cursor-pointer">
                 <Lock size={11} /> Boss Access
               </button>
             )}
+
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-100 hover:border-red-200 text-xs font-bold text-red-600 transition-all shadow-sm cursor-pointer"
+              title="Sign Out"
+            >
+              <LogOut size={12} />
+            </button>
           </div>
         </div>
       </header>
@@ -281,14 +485,14 @@ export default function CommandCenter() {
         </div>
 
         {/* ── HERO MISSION CARD ── */}
-        <AnimatePresence mode="wait">
+        <AnimatePresenceImport mode="wait">
           {heroTask ? (() => {
             const hpm = PRIORITY_META[heroTask.priority];
             const htm = TYPE_META[heroTask.type];
             const hdl = formatDeadline(heroTask.deadline);
             const HTypeIcon = htm.icon;
             return (
-              <motion.div key={heroTask.id}
+              <motionImport.div key={heroTask.id}
                 initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
                 className="relative bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden"
                 style={{ boxShadow: `0 8px 40px ${theme.accent}18` }}
@@ -344,42 +548,42 @@ export default function CommandCenter() {
                   <div className="flex items-center gap-3 pt-2 flex-wrap">
                     {heroTask.status !== "IN_PROGRESS" && heroTask.status !== "COMPLETED" && (
                       <button onClick={() => handleStatus(heroTask, "IN_PROGRESS")}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border"
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer"
                         style={{ background: theme.accent + "12", borderColor: theme.accent + "30", color: theme.accent }}>
                         <Zap size={12} /> Start Working
                       </button>
                     )}
                     {heroTask.status !== "COMPLETED" && (
                       <button onClick={() => handleStatus(heroTask, "COMPLETED")}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-all">
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-all cursor-pointer">
                         <CheckCircle2 size={12} /> Mark Done
                       </button>
                     )}
                     {isBossMode && (
                       <>
                         <button onClick={() => openEdit(heroTask)}
-                          className="p-2 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 text-gray-400 hover:text-gray-700 transition-all">
+                          className="p-2 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 text-gray-400 hover:text-gray-700 transition-all cursor-pointer">
                           <Edit3 size={12} />
                         </button>
                         <button onClick={() => handleDelete(heroTask.id)}
-                          className="p-2 rounded-xl bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all">
+                          className="p-2 rounded-xl bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer">
                           <Trash2 size={12} />
                         </button>
                       </>
                     )}
                   </div>
                 </div>
-              </motion.div>
+              </motionImport.div>
             );
           })() : (
-            <motion.div key="empty-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            <motionImport.div key="empty-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="bg-white rounded-3xl border border-gray-100 shadow-sm p-10 text-center space-y-3">
               <CheckCircle2 size={40} className="mx-auto text-emerald-500" />
               <h2 className="text-xl font-black font-serif text-gray-800">সব কাজ শেষ! 🎉</h2>
               <p className="text-xs text-gray-400 font-mono">No pending missions. The studio is clear.</p>
-            </motion.div>
+            </motionImport.div>
           )}
-        </AnimatePresence>
+        </AnimatePresenceImport>
 
         {/* ── STATS ROW ── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -407,7 +611,7 @@ export default function CommandCenter() {
           <div className="flex items-center gap-1.5 flex-wrap">
             {(["ALL", "TODO", "IN_PROGRESS", "COMPLETED"] as const).map(f => (
               <button key={f} onClick={() => setFilter(f)}
-                className={`px-3 py-1.5 rounded-xl text-[10px] font-black tracking-wider uppercase border transition-all ${filter === f
+                className={`px-3 py-1.5 rounded-xl text-[10px] font-black tracking-wider uppercase border transition-all cursor-pointer ${filter === f
                   ? "text-white border-transparent shadow-md"
                   : "text-gray-500 bg-white border-gray-200 hover:border-gray-400"}`}
                 style={filter === f ? { background: theme.accent, borderColor: theme.accent } : {}}>
@@ -417,7 +621,7 @@ export default function CommandCenter() {
           </div>
 
           <button onClick={() => { setEditingTask(null); setForm({ title: "", client: "", description: "", priority: "HIGH", type: "BOSS_TASK", status: "TODO", deadline: "" }); setShowForm(true); }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-md transition-all hover:opacity-90"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-md transition-all hover:opacity-90 cursor-pointer"
             style={{ background: theme.accent }}>
             <Plus size={14} /> Add Task
           </button>
@@ -426,15 +630,16 @@ export default function CommandCenter() {
         {/* ── TASK GRID ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-16">
           {isLoading ? (
-            Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="rounded-2xl bg-white border border-gray-100 h-32 animate-pulse shadow-sm" />
-            ))
+            <div className="md:col-span-2 flex items-center justify-center py-20 text-gray-400 font-mono text-xs border border-gray-100 rounded-2xl bg-white shadow-sm">
+              <Loader2 className="animate-spin text-brand-red mr-2" size={16} />
+              লোডিং হচ্ছে...
+            </div>
           ) : filtered.length === 0 ? (
             <div className="md:col-span-2 text-center py-16 text-gray-400 font-mono text-xs border border-gray-100 rounded-2xl bg-white shadow-sm">
               কোনো টাস্ক নেই — নতুন টাস্ক যোগ করো!
             </div>
           ) : (
-            <AnimatePresence>
+            <AnimatePresenceImport>
               {filtered.map((task, idx) => {
                 const tm = TYPE_META[task.type];
                 const pm = PRIORITY_META[task.priority];
@@ -443,7 +648,7 @@ export default function CommandCenter() {
                 const dl = formatDeadline(task.deadline);
 
                 return (
-                  <motion.div key={task.id}
+                  <motionImport.div key={task.id}
                     initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96 }} transition={{ delay: idx * 0.04 }}
                     className={`group relative bg-white rounded-2xl border p-5 shadow-sm transition-all hover:shadow-md ${
@@ -503,53 +708,53 @@ export default function CommandCenter() {
                         </p>
                       )}
 
-                      {/* Action buttons — show on hover */}
+                      {/* Action buttons ─ visible on hover/tap */}
                       <div className="flex items-center gap-2 pt-1 flex-wrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         {task.status !== "IN_PROGRESS" && task.status !== "COMPLETED" && (
                           <button onClick={() => handleStatus(task, "IN_PROGRESS")}
-                            className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[9px] font-bold hover:bg-amber-100 transition-all">
+                            className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[9px] font-bold hover:bg-amber-100 transition-all cursor-pointer">
                             Start
                           </button>
                         )}
                         {task.status !== "COMPLETED" && (
                           <button onClick={() => handleStatus(task, "COMPLETED")}
-                            className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-bold hover:bg-emerald-100 transition-all">
+                            className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-bold hover:bg-emerald-100 transition-all cursor-pointer">
                             Done ✓
                           </button>
                         )}
                         {task.status === "COMPLETED" && (
                           <button onClick={() => handleStatus(task, "TODO")}
-                            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 text-[9px] font-bold hover:bg-gray-100 transition-all">
+                            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 text-[9px] font-bold hover:bg-gray-100 transition-all cursor-pointer font-bold">
                             <RotateCcw size={8} /> Reopen
                           </button>
                         )}
                         {isBossMode && (
                           <>
                             <button onClick={() => openEdit(task)}
-                              className="p-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-all">
+                              className="p-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-all cursor-pointer">
                               <Edit3 size={9} />
                             </button>
                             <button onClick={() => handleDelete(task.id)}
-                              className="p-1.5 rounded-lg bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all">
+                              className="p-1.5 rounded-lg bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer">
                               <Trash2 size={9} />
                             </button>
                           </>
                         )}
                       </div>
                     </div>
-                  </motion.div>
+                  </motionImport.div>
                 );
               })}
-            </AnimatePresence>
+            </AnimatePresenceImport>
           )}
         </div>
       </div>
 
       {/* ── BOSS AUTH MODAL ── */}
-      <AnimatePresence>
+      <AnimatePresenceImport>
         {showAuth && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <motion.div initial={{ scale: 0.93, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.93, opacity: 0 }}
+            <motionImport.div initial={{ scale: 0.93, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.93, opacity: 0 }}
               className="bg-white border border-gray-200 rounded-3xl w-full max-w-sm p-7 shadow-2xl space-y-6">
               <div className="text-center space-y-3">
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto" style={{ background: theme.accent + "15" }}>
@@ -565,26 +770,26 @@ export default function CommandCenter() {
                 {authErr && <p className="text-red-500 text-xs text-center font-bold">{authErr}</p>}
                 <div className="flex gap-2">
                   <button type="button" onClick={() => { setShowAuth(false); setAuthErr(""); setPassword(""); }}
-                    className="flex-1 py-3 rounded-xl font-bold text-xs text-gray-400 hover:text-gray-700 border border-gray-200 hover:border-gray-400 transition-all bg-white">
+                    className="flex-1 py-3 rounded-xl font-bold text-xs text-gray-400 hover:text-gray-700 border border-gray-200 hover:border-gray-400 transition-all bg-white cursor-pointer">
                     Cancel
                   </button>
                   <button type="submit"
-                    className="flex-1 py-3 rounded-xl font-bold text-xs text-white flex items-center justify-center gap-1.5 shadow-md transition-all hover:opacity-90"
+                    className="flex-1 py-3 rounded-xl font-bold text-xs text-white flex items-center justify-center gap-1.5 shadow-md transition-all hover:opacity-90 cursor-pointer"
                     style={{ background: theme.accent }}>
                     Authorize <ArrowRight size={12} />
                   </button>
                 </div>
               </form>
-            </motion.div>
+            </motionImport.div>
           </div>
         )}
-      </AnimatePresence>
+      </AnimatePresenceImport>
 
       {/* ── ADD / EDIT TASK MODAL ── */}
-      <AnimatePresence>
+      <AnimatePresenceImport>
         {showForm && (
           <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm">
-            <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}
+            <motionImport.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}
               className="bg-white border border-gray-200 rounded-t-3xl sm:rounded-3xl w-full sm:max-w-lg p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
 
               <div className="flex items-center justify-between">
@@ -593,7 +798,7 @@ export default function CommandCenter() {
                   {editingTask ? "টাস্ক এডিট করুন" : "নতুন টাস্ক যোগ করুন"}
                 </h3>
                 <button onClick={() => { setShowForm(false); setEditingTask(null); }}
-                  className="p-2 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 text-gray-400 hover:text-gray-700 transition-all">
+                  className="p-2 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 text-gray-400 hover:text-gray-700 transition-all cursor-pointer">
                   <X size={14} />
                 </button>
               </div>
@@ -640,19 +845,19 @@ export default function CommandCenter() {
                   <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">বিস্তারিত নোট</label>
                   <textarea rows={2} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
                     placeholder="নির্দেশনা, রেফারেন্স লিংক..."
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-800 placeholder:text-gray-300 focus:border-gray-400 outline-none resize-none" />
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-800 placeholder:text-gray-300 focus:border-gray-400 outline-none resize-none animate-none" />
                 </div>
 
                 <button type="submit" disabled={isSaving}
-                  className="w-full py-3 rounded-xl font-black text-sm text-white transition-all disabled:opacity-50 shadow-md hover:opacity-90"
+                  className="w-full py-3 rounded-xl font-black text-sm text-white transition-all disabled:opacity-50 shadow-md hover:opacity-90 cursor-pointer"
                   style={{ background: theme.accent }}>
                   {isSaving ? "সেভ হচ্ছে..." : editingTask ? "✓ আপডেট করুন" : "✓ টাস্ক যোগ করুন"}
                 </button>
               </form>
-            </motion.div>
+            </motionImport.div>
           </div>
         )}
-      </AnimatePresence>
+      </AnimatePresenceImport>
 
     </div>
   );

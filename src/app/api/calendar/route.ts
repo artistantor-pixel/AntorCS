@@ -4,11 +4,27 @@ import { PrismaClient } from "@prisma/client";
 export const dynamic = "force-dynamic";
 const prisma = new PrismaClient();
 
-// GET: Fetch all calendar events
-export async function GET() {
+function getEmailAndValidate(request: Request | { url: string }) {
+  const url = new URL(request.url);
+  const email = url.searchParams.get("email");
+
+  if (!email || !email.endsWith("@gmail.com")) {
+    return null;
+  }
+  return email;
+}
+
+// GET: Fetch all calendar events for a specific Gmail user
+export async function GET(request: Request) {
   try {
+    const email = getEmailAndValidate(request);
+    if (!email) {
+      return NextResponse.json({ error: "Unauthorized. Valid Gmail login required." }, { status: 401 });
+    }
+
+    const key = `calendar_user_${email}`;
     const record = await prisma.content.findUnique({
-      where: { id: "calendar" }
+      where: { id: key }
     });
 
     if (!record || !record.data) {
@@ -22,19 +38,25 @@ export async function GET() {
   }
 }
 
-// POST: Save/update calendar events list
+// POST: Save/update calendar events list for a specific Gmail user
 export async function POST(request: Request) {
   try {
+    const email = getEmailAndValidate(request);
+    if (!email) {
+      return NextResponse.json({ error: "Unauthorized. Valid Gmail login required." }, { status: 401 });
+    }
+
     const body = await request.json();
     
     if (!Array.isArray(body)) {
       return NextResponse.json({ error: "Invalid data format. Expected an array of events." }, { status: 400 });
     }
 
+    const key = `calendar_user_${email}`;
     const updatedRecord = await prisma.content.upsert({
-      where: { id: "calendar" },
+      where: { id: key },
       update: { data: body },
-      create: { id: "calendar", data: body }
+      create: { id: key, data: body }
     });
 
     return NextResponse.json({ success: true, events: updatedRecord.data });
