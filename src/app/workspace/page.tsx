@@ -2,15 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-const motionImport = motion;
-const AnimatePresenceImport = AnimatePresence;
-
 import type { LucideIcon } from "lucide-react";
 import {
   Lock, Unlock, Plus, Trash2, CheckCircle2,
   Clock, Zap, Coffee, Moon, Sun, Sunset, ArrowRight,
   Flame, Target, Briefcase, ImageIcon, Film, Share2, X,
-  ShieldAlert, Home, RotateCcw, Edit3, ChevronRight, LogOut, Loader2
+  ShieldAlert, Home, RotateCcw, Edit3, LogOut, Loader2, KeyRound, UserPlus
 } from "lucide-react";
 
 // ─── TYPES ──────────────────────────────────────────────────────────────────
@@ -33,7 +30,6 @@ interface Task {
 interface UserSession {
   email: string;
   name: string;
-  picture?: string;
 }
 
 // ─── TIME THEME ENGINE (light palette) ──────────────────────────────────────
@@ -109,23 +105,6 @@ function formatDeadline(d?: string) {
   return { text: `${diff} days left`, urgent: false };
 }
 
-// ─── DECODE JWT TOKEN SECURELY ────────────────────────────────────────────────
-function parseJwt(token: string) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      window.atob(base64)
-        .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (e) {
-    return null;
-  }
-}
-
 // ─── LIVE CLOCK ───────────────────────────────────────────────────────────────
 function LiveClock() {
   const [time, setTime] = useState(new Date());
@@ -139,18 +118,26 @@ function LiveClock() {
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 export default function CommandCenter() {
-  const [user, setUser]           = useState<UserSession | null>(null);
-  const [tasks, setTasks]         = useState<Task[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser]             = useState<UserSession | null>(null);
+  const [tasks, setTasks]           = useState<Task[]>([]);
+  const [isLoading, setIsLoading]   = useState(true);
   const [isBossMode, setIsBossMode] = useState(false);
-  const [showAuth, setShowAuth]   = useState(false);
-  const [password, setPassword]   = useState("");
-  const [authErr, setAuthErr]     = useState("");
-  const [showForm, setShowForm]   = useState(false);
-  const [filter, setFilter]       = useState<Status | "ALL">("ALL");
-  const [isSaving, setIsSaving]   = useState(false);
-  const [hour, setHour]           = useState(new Date().getHours());
+  const [showAuth, setShowAuth]     = useState(false);
+  const [password, setPassword]     = useState("");
+  const [authErr, setAuthErr]       = useState("");
+  const [showForm, setShowForm]     = useState(false);
+  const [filter, setFilter]         = useState<Status | "ALL">("ALL");
+  const [isSaving, setIsSaving]     = useState(false);
+  const [hour, setHour]             = useState(new Date().getHours());
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+
+  // Custom Authentication Forms State
+  const [authTab, setAuthTab]       = useState<"login" | "signup">("login");
+  const [authEmail, setAuthEmail]   = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authName, setAuthName]     = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authMsg, setAuthMsg]       = useState("");
 
   const [form, setForm] = useState({
     title: "", client: "", description: "",
@@ -180,59 +167,6 @@ export default function CommandCenter() {
       }
     }
   }, []);
-
-  // Initialize Google Login Client SDK
-  useEffect(() => {
-    if (user) return; // No need if logged in
-
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      const g = (window as any).google;
-      if (g) {
-        g.accounts.id.initialize({
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "1058778732684-fallbackgoogleclientid.apps.googleusercontent.com",
-          callback: (response: any) => {
-            const payload = parseJwt(response.credential);
-            if (payload && payload.email) {
-              if (payload.email.endsWith("@gmail.com")) {
-                const loggedInUser: UserSession = {
-                  email: payload.email,
-                  name: payload.name || payload.email.split("@")[0],
-                  picture: payload.picture
-                };
-                setUser(loggedInUser);
-                localStorage.setItem("workspace_user", JSON.stringify(loggedInUser));
-                setAuthErr("");
-              } else {
-                setAuthErr("প্রবেশাধিকার বঞ্চিত: শুধুমাত্র @gmail.com অ্যাকাউন্ট অনুমোদিত!");
-              }
-            } else {
-              setAuthErr("গুগল সাইন-ইন ব্যর্থ হয়েছে!");
-            }
-          }
-        });
-
-        const btnElement = document.getElementById("google-signin-btn");
-        if (btnElement) {
-          g.accounts.id.renderButton(btnElement, {
-
-            theme: "outline",
-            size: "large",
-            width: btnElement.clientWidth || 320,
-            shape: "pill"
-          });
-        }
-      }
-    };
-
-    document.head.appendChild(script);
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, [user]);
 
   const handleLogout = () => {
     setUser(null);
@@ -281,6 +215,61 @@ export default function CommandCenter() {
       setPassword("");
     } else {
       setAuthErr("ভুল পাসওয়ার্ড!");
+    }
+  };
+
+  // Custom Sign Up / Login Submit Handler
+  const handleCustomAuthSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthMsg("");
+
+    if (!authEmail.trim() || !authPassword.trim()) {
+      setAuthMsg("সবগুলো তথ্য সঠিকভাবে পূরণ করুন।");
+      return;
+    }
+
+    if (!authEmail.trim().toLowerCase().endsWith("@gmail.com")) {
+      setAuthMsg("শুধুমাত্র @gmail.com ইমেইল অ্যাড্রেস অনুমোদিত!");
+      return;
+    }
+
+    if (authTab === "signup" && (!authName || !authName.trim())) {
+      setAuthMsg("দয়া করে আপনার নাম লিখুন।");
+      return;
+    }
+
+    setAuthLoading(true);
+    try {
+      const res = await fetch("/api/auth/custom", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: authTab,
+          name: authName,
+          email: authEmail,
+          password: authPassword
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        if (authTab === "signup") {
+          setAuthMsg("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! এখন লগইন করুন।");
+          setAuthTab("login");
+          setAuthPassword("");
+        } else {
+          setUser(data.user);
+          localStorage.setItem("workspace_user", JSON.stringify(data.user));
+          setAuthMsg("");
+        }
+      } else {
+        setAuthMsg(data.error || "অথেন্টিকেশন ব্যর্থ হয়েছে।");
+      }
+    } catch (err) {
+      console.error(err);
+      setAuthMsg("সার্ভারে সংযোগ করা যাচ্ছে না।");
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -339,7 +328,7 @@ export default function CommandCenter() {
     critical: tasks.filter(t => t.priority === "CRITICAL" && t.status !== "COMPLETED").length,
   };
 
-  // ─── UNAUTHENTICATED RENDER (GMAIL LOGIN REQUIRED) ─────────────────────────
+  // ─── UNAUTHENTICATED RENDER (GMAIL LOG IN / REGISTER COMPONENT) ───────────────
   if (!user) {
     return (
       <div className={`min-h-screen ${theme.pageBg} flex flex-col justify-center items-center p-6 antialiased text-gray-800`}>
@@ -349,52 +338,129 @@ export default function CommandCenter() {
           </a>
         </div>
 
-        <motionImport.div 
+        <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="w-full max-w-md bg-white border border-gray-100 rounded-[2.5rem] shadow-2xl p-8 md:p-10 space-y-8 relative overflow-hidden text-center"
+          className="w-full max-w-md bg-white border border-gray-100 rounded-[2rem] shadow-2xl p-8 relative overflow-hidden"
         >
           {/* Decorative backdrop glow */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="space-y-3">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto bg-brand-red/5 text-brand-red border border-brand-red/10">
-              <Lock size={26} className="animate-pulse" />
+          <div className="space-y-3 text-center mb-6">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto bg-brand-red/5 text-brand-red border border-brand-red/10">
+              <Lock size={22} className="animate-pulse" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-black font-serif tracking-tight text-gray-900 leading-tight">
+            <h1 className="text-xl md:text-2xl font-black font-serif tracking-tight text-gray-900 leading-tight">
               Antor Workspace
             </h1>
-            <p className="text-xs text-muted leading-relaxed max-w-xs mx-auto">
-              প্রাইভেসির স্বার্থে শুধুমাত্র ভেরিফাইড **Gmail** ব্যবহারকারীগণ এই ওয়ার্কস্পেস ব্যবহার করতে পারবেন।
+            <p className="text-[10px] text-muted leading-relaxed max-w-xs mx-auto">
+              অন্তরের তৈরি workspace টি ব্যবহার করতে আপনার জিমেইল দিয়ে লগিন করুন।
             </p>
           </div>
 
-          <hr className="border-gray-100" />
+          {/* Form Tabs */}
+          <div className="flex bg-gray-50 border border-gray-100 p-1 rounded-2xl mb-6">
+            <button
+              onClick={() => { setAuthTab("login"); setAuthMsg(""); }}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                authTab === "login" 
+                  ? "bg-white text-brand-red shadow-sm border border-gray-100" 
+                  : "text-gray-400 hover:text-gray-700"
+              }`}
+            >
+              <KeyRound size={12} /> লগইন করুন
+            </button>
+            <button
+              onClick={() => { setAuthTab("signup"); setAuthMsg(""); }}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                authTab === "signup" 
+                  ? "bg-white text-brand-red shadow-sm border border-gray-100" 
+                  : "text-gray-400 hover:text-gray-700"
+              }`}
+            >
+              <UserPlus size={12} /> অ্যাকাউন্ট খুলুন
+            </button>
+          </div>
 
-          {/* Error alerts */}
-          {authErr && (
-            <motionImport.div 
+          {/* Error & Success Messages */}
+          {authMsg && (
+            <motion.div 
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-xs font-bold text-left flex items-start gap-3"
+              className={`p-4 rounded-2xl text-xs font-bold mb-5 flex items-start gap-2.5 ${
+                authMsg.includes("সফলভাবে") || authMsg.includes("তৈরি হয়েছে")
+                  ? "bg-emerald-50 border border-emerald-100 text-emerald-600"
+                  : "bg-red-50 border border-red-100 text-red-600"
+              }`}
             >
-              <ShieldAlert size={16} className="shrink-0 mt-0.5" />
-              <span>{authErr}</span>
-            </motionImport.div>
+              <ShieldAlert size={15} className="shrink-0 mt-0.5" />
+              <span>{authMsg}</span>
+            </motion.div>
           )}
 
-          {/* Dynamic Google Login Button */}
-          <div className="space-y-4">
-            <div 
-              id="google-signin-btn" 
-              className="w-full flex justify-center hoverable min-h-[46px]"
-            />
-            <p className="text-[10px] text-gray-400 font-mono tracking-widest uppercase">
-              Secure Auth matrix
-            </p>
-          </div>
-        </motionImport.div>
+          {/* Form inputs */}
+          <form onSubmit={handleCustomAuthSubmit} className="space-y-4">
+            {authTab === "signup" && (
+              <div>
+                <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">আপনার নাম *</label>
+                <input 
+                  type="text" 
+                  required 
+                  value={authName} 
+                  onChange={e => setAuthName(e.target.value)}
+                  placeholder="যেমন: অন্তর কুমার বিশ্বাস"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-800 placeholder:text-gray-300 focus:border-gray-400 outline-none" 
+                />
+              </div>
+            )}
+
+            <div>
+              <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">জিমেইল অ্যাড্রেস *</label>
+              <input 
+                type="email" 
+                required 
+                value={authEmail} 
+                onChange={e => setAuthEmail(e.target.value)}
+                placeholder="যেমন: user@gmail.com"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-800 placeholder:text-gray-300 focus:border-gray-400 outline-none font-mono" 
+              />
+            </div>
+
+            <div>
+              <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">পাসওয়ার্ড *</label>
+              <input 
+                type="password" 
+                required 
+                value={authPassword} 
+                onChange={e => setAuthPassword(e.target.value)}
+                placeholder="আপনার গোপন পাসওয়ার্ড দিন"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-800 placeholder:text-gray-300 focus:border-gray-400 outline-none" 
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={authLoading}
+              className="w-full py-3.5 bg-brand-red hover:bg-blood-red text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 text-xs tracking-wider uppercase disabled:opacity-50 cursor-pointer"
+            >
+              {authLoading ? (
+                <>
+                  <Loader2 className="animate-spin" size={14} />
+                  প্রসেসিং হচ্ছে...
+                </>
+              ) : authTab === "login" ? (
+                <>
+                  লগইন করুন <ArrowRight size={13} />
+                </>
+              ) : (
+                <>
+                  অ্যাকাউন্ট তৈরি করুন <ArrowRight size={13} />
+                </>
+              )}
+            </button>
+          </form>
+        </motion.div>
       </div>
     );
   }
@@ -423,25 +489,17 @@ export default function CommandCenter() {
           {/* Right (Google user & Logout) */}
           <div className="flex items-center gap-3 flex-wrap">
             {stats.critical > 0 && (
-              <motionImport.div animate={{ scale: [1, 1.04, 1] }} transition={{ repeat: Infinity, duration: 2 }}
+              <motion.div animate={{ scale: [1, 1.04, 1] }} transition={{ repeat: Infinity, duration: 2 }}
                 className="px-3 py-1 rounded-full bg-red-100 border border-red-300 text-red-700 text-[10px] font-black tracking-wider">
                 🔴 {stats.critical} Critical
-              </motionImport.div>
+              </motion.div>
             )}
 
-            {/* Google Profile Badge */}
+            {/* Profile Badge */}
             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-200 shadow-sm">
-              {user.picture ? (
-                <img 
-                  src={user.picture} 
-                  alt={user.name} 
-                  className="w-5 h-5 rounded-full object-cover border border-gray-100"
-                />
-              ) : (
-                <div className="w-5 h-5 rounded-full bg-brand-red/10 text-brand-red flex items-center justify-center text-[9px] font-black">
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
-              )}
+              <div className="w-5 h-5 rounded-full bg-brand-red/10 text-brand-red flex items-center justify-center text-[9px] font-black border border-brand-red/5">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
               <span className="text-[10px] font-bold text-gray-700 truncate max-w-[120px]">{user.name}</span>
             </div>
 
@@ -485,14 +543,14 @@ export default function CommandCenter() {
         </div>
 
         {/* ── HERO MISSION CARD ── */}
-        <AnimatePresenceImport mode="wait">
+        <AnimatePresence mode="wait">
           {heroTask ? (() => {
             const hpm = PRIORITY_META[heroTask.priority];
             const htm = TYPE_META[heroTask.type];
             const hdl = formatDeadline(heroTask.deadline);
             const HTypeIcon = htm.icon;
             return (
-              <motionImport.div key={heroTask.id}
+              <motion.div key={heroTask.id}
                 initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
                 className="relative bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden"
                 style={{ boxShadow: `0 8px 40px ${theme.accent}18` }}
@@ -573,17 +631,17 @@ export default function CommandCenter() {
                     )}
                   </div>
                 </div>
-              </motionImport.div>
+              </motion.div>
             );
           })() : (
-            <motionImport.div key="empty-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            <motion.div key="empty-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="bg-white rounded-3xl border border-gray-100 shadow-sm p-10 text-center space-y-3">
               <CheckCircle2 size={40} className="mx-auto text-emerald-500" />
               <h2 className="text-xl font-black font-serif text-gray-800">সব কাজ শেষ! 🎉</h2>
               <p className="text-xs text-gray-400 font-mono">No pending missions. The studio is clear.</p>
-            </motionImport.div>
+            </motion.div>
           )}
-        </AnimatePresenceImport>
+        </AnimatePresence>
 
         {/* ── STATS ROW ── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -639,7 +697,7 @@ export default function CommandCenter() {
               কোনো টাস্ক নেই — নতুন টাস্ক যোগ করো!
             </div>
           ) : (
-            <AnimatePresenceImport>
+            <AnimatePresence>
               {filtered.map((task, idx) => {
                 const tm = TYPE_META[task.type];
                 const pm = PRIORITY_META[task.priority];
@@ -648,7 +706,7 @@ export default function CommandCenter() {
                 const dl = formatDeadline(task.deadline);
 
                 return (
-                  <motionImport.div key={task.id}
+                  <motion.div key={task.id}
                     initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96 }} transition={{ delay: idx * 0.04 }}
                     className={`group relative bg-white rounded-2xl border p-5 shadow-sm transition-all hover:shadow-md ${
@@ -742,19 +800,19 @@ export default function CommandCenter() {
                         )}
                       </div>
                     </div>
-                  </motionImport.div>
+                  </motion.div>
                 );
               })}
-            </AnimatePresenceImport>
+            </AnimatePresence>
           )}
         </div>
       </div>
 
       {/* ── BOSS AUTH MODAL ── */}
-      <AnimatePresenceImport>
+      <AnimatePresence>
         {showAuth && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <motionImport.div initial={{ scale: 0.93, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.93, opacity: 0 }}
+            <motion.div initial={{ scale: 0.93, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.93, opacity: 0 }}
               className="bg-white border border-gray-200 rounded-3xl w-full max-w-sm p-7 shadow-2xl space-y-6">
               <div className="text-center space-y-3">
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto" style={{ background: theme.accent + "15" }}>
@@ -780,16 +838,16 @@ export default function CommandCenter() {
                   </button>
                 </div>
               </form>
-            </motionImport.div>
+            </motion.div>
           </div>
         )}
-      </AnimatePresenceImport>
+      </AnimatePresence>
 
       {/* ── ADD / EDIT TASK MODAL ── */}
-      <AnimatePresenceImport>
+      <AnimatePresence>
         {showForm && (
           <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm">
-            <motionImport.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}
+            <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}
               className="bg-white border border-gray-200 rounded-t-3xl sm:rounded-3xl w-full sm:max-w-lg p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
 
               <div className="flex items-center justify-between">
@@ -854,10 +912,10 @@ export default function CommandCenter() {
                   {isSaving ? "সেভ হচ্ছে..." : editingTask ? "✓ আপডেট করুন" : "✓ টাস্ক যোগ করুন"}
                 </button>
               </form>
-            </motionImport.div>
+            </motion.div>
           </div>
         )}
-      </AnimatePresenceImport>
+      </AnimatePresence>
 
     </div>
   );
