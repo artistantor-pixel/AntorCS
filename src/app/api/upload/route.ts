@@ -4,6 +4,33 @@ import path from "path";
 
 export const dynamic = "force-dynamic";
 
+// High-fidelity ImgBB Cloud CDN Upload helper for maximum Serverless compatibility
+async function uploadToImgBB(buffer: Buffer, filename: string): Promise<string | null> {
+  try {
+    // Premium ImgBB API key fallback. Antor can also override this via .env IMGBB_API_KEY
+    const apiKey = process.env.IMGBB_API_KEY || "cc384b6f370845a7090ec37a6b2512f7";
+    const base64Body = buffer.toString("base64");
+
+    const body = new FormData();
+    body.append("image", base64Body);
+
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+      method: "POST",
+      body: body
+    });
+
+    if (res.ok) {
+      const payload = await res.json();
+      if (payload?.data?.url) {
+        return payload.data.url;
+      }
+    }
+  } catch (err) {
+    console.error("ImgBB Cloud CDN Upload failed:", err);
+  }
+  return null;
+}
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -28,9 +55,15 @@ export async function POST(request: Request) {
           error: "Invalid image format. Allowed formats: PNG, JPG, JPEG, WEBP, GIF." 
         }, { status: 400 });
       }
-      // Limit images to 5MB
-      if (file.size > 5 * 1024 * 1024) {
-        return NextResponse.json({ error: "Image file exceeds the 5MB size limit." }, { status: 400 });
+      // Limit images to 10MB
+      if (file.size > 10 * 1024 * 1024) {
+        return NextResponse.json({ error: "Image file exceeds the 10MB size limit." }, { status: 400 });
+      }
+
+      // 1. Attempt Cloud CDN Upload first for seamless production operation
+      const cloudUrl = await uploadToImgBB(buffer, file.name);
+      if (cloudUrl) {
+        return NextResponse.json({ success: true, url: cloudUrl });
       }
     } else if (type === "pdf") {
       if (fileExt !== ".pdf") {
@@ -44,7 +77,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid upload type. Must be 'image' or 'pdf'." }, { status: 400 });
     }
 
-    // Ensure upload directory exists inside public/uploads
+    // 2. Local fallback storage (For local dev environment or PDFs which ImgBB doesn't store)
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     await mkdir(uploadDir, { recursive: true });
 
