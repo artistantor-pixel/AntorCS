@@ -57,7 +57,11 @@ export async function POST(request: Request) {
           challenge: p.challenge,
           solution: p.solution,
           results: p.results,
-          gallery: p.gallery
+          gallery: p.gallery,
+          blocks: p.blocks,
+          themeBackground: p.themeBackground || "black",
+          tools: p.tools,
+          keywords: p.keywords
         },
         create: {
           titleKey: p.titleKey,
@@ -79,7 +83,11 @@ export async function POST(request: Request) {
           challenge: p.challenge,
           solution: p.solution,
           results: p.results,
-          gallery: p.gallery
+          gallery: p.gallery,
+          blocks: p.blocks,
+          themeBackground: p.themeBackground || "black",
+          tools: p.tools,
+          keywords: p.keywords
         }
       });
     }

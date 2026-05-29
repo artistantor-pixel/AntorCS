@@ -6,7 +6,8 @@ import {
   FolderKanban, Briefcase, Type, Plus, Edit2, Trash2, Copy,
   Save, X, Search, Filter, CheckSquare, Square, RefreshCw, 
   AlertCircle, CheckCircle, Video, Image as ImageIcon, ExternalLink, Calendar,
-  Bell, ChevronDown, Award, PieChart, Activity, Cpu, Database, Calculator, FileText, ShoppingCart, Mail, MessageCircle, Menu, Users
+  Bell, ChevronDown, Award, PieChart, Activity, Cpu, Database, Calculator, FileText, ShoppingCart, Mail, MessageCircle, Menu, Users,
+  ArrowUp, ArrowDown, GripVertical, Code, Volume2, Link as LinkIcon
 } from "lucide-react";
 
 
@@ -33,6 +34,10 @@ interface Project {
   solution?: string;
   results: any;
   gallery: any;
+  blocks?: any;
+  themeBackground?: string;
+  tools?: any;
+  keywords?: any;
   updatedAt?: string;
 }
 
@@ -972,7 +977,11 @@ export default function AdminDashboard() {
       challenge: "",
       solution: "",
       results: [],
-      gallery: []
+      gallery: [],
+      blocks: [],
+      themeBackground: "black",
+      tools: [],
+      keywords: []
     });
     setFormErrors({});
   };
@@ -3280,91 +3289,450 @@ export default function AdminDashboard() {
         )}
 
         {/* MODAL 1: PROJECT FORM */}
-        {editingProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white border border-[#E2E8F0] rounded-3xl w-full max-w-3xl flex flex-col max-h-[90vh] shadow-2xl relative"
-            >
-              <div className="p-6 border-b border-[#E2E8F0] flex justify-between items-center shrink-0 bg-white rounded-t-3xl">
-                <div>
-                  <h3 className="text-lg font-bold text-[#111827] flex items-center gap-2 font-serif">
-                    <FolderKanban size={18} className="text-brand-red" />
-                    {projectsData.find(p => p.id === editingProject.id) ? "Modify Dynamic Feature" : "Construct New Feature"}
-                  </h3>
-                  <p className="text-[10px] text-[#9CA3AF] uppercase tracking-wider mt-1.5 font-bold">Secure Input Portal</p>
-                </div>
-                <button onClick={() => setEditingProject(null)} className="p-2 text-[#9CA3AF] hover:text-[#111827] rounded-lg hover:bg-[#F3F4F6] transition-colors"><X size={16} /></button>
-              </div>
+        {editingProject && (() => {
+          // Inner helper hook or states inside a dynamic sub-component context using immediate invocation
+          const projectBlocks = Array.isArray(editingProject.blocks) ? editingProject.blocks : [];
+          
+          const handleAddTextBlock = () => {
+            const newBlock = {
+              id: Date.now().toString(),
+              type: "text",
+              content: "### Heading\nWrite your rich narrative case description here..."
+            };
+            setEditingProject({
+              ...editingProject,
+              blocks: [...projectBlocks, newBlock]
+            });
+          };
 
-              <div className="p-6 md:p-8 overflow-y-auto space-y-6 flex-1 text-xs font-semibold text-[#4B5563]">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          const handleAddImageBlock = () => {
+            const newBlock = {
+              id: Date.now().toString(),
+              type: "image",
+              urls: ["/uploads/placeholder.jpg"],
+              gridColumns: 1,
+              marginZero: false
+            };
+            setEditingProject({
+              ...editingProject,
+              blocks: [...projectBlocks, newBlock]
+            });
+          };
+
+          const handleAddVideoBlock = () => {
+            const newBlock = {
+              id: Date.now().toString(),
+              type: "video",
+              content: ""
+            };
+            setEditingProject({
+              ...editingProject,
+              blocks: [...projectBlocks, newBlock]
+            });
+          };
+
+          const handleAddEmbedBlock = () => {
+            const newBlock = {
+              id: Date.now().toString(),
+              type: "embed",
+              content: ""
+            };
+            setEditingProject({
+              ...editingProject,
+              blocks: [...projectBlocks, newBlock]
+            });
+          };
+
+          const handleRemoveBlock = (blockId: string) => {
+            setEditingProject({
+              ...editingProject,
+              blocks: projectBlocks.filter((b: any) => b.id !== blockId)
+            });
+          };
+
+          const handleMoveBlock = (index: number, direction: "up" | "down") => {
+            const targetIndex = direction === "up" ? index - 1 : index + 1;
+            if (targetIndex < 0 || targetIndex >= projectBlocks.length) return;
+            const updated = [...projectBlocks];
+            const temp = updated[index];
+            updated[index] = updated[targetIndex];
+            updated[targetIndex] = temp;
+            setEditingProject({
+              ...editingProject,
+              blocks: updated
+            });
+          };
+
+          const handleUpdateBlockContent = (blockId: string, val: string) => {
+            setEditingProject({
+              ...editingProject,
+              blocks: projectBlocks.map((b: any) => b.id === blockId ? { ...b, content: val } : b)
+            });
+          };
+
+          const handleUpdateBlockImageGrid = (blockId: string, gridCols: number) => {
+            setEditingProject({
+              ...editingProject,
+              blocks: projectBlocks.map((b: any) => b.id === blockId ? { ...b, gridColumns: gridCols } : b)
+            });
+          };
+
+          const handleUpdateBlockMargin = (blockId: string, zeroMargin: boolean) => {
+            setEditingProject({
+              ...editingProject,
+              blocks: projectBlocks.map((b: any) => b.id === blockId ? { ...b, marginZero: zeroMargin } : b)
+            });
+          };
+
+          const handleAddImageToBlock = async (blockId: string, fileInputEvent: React.ChangeEvent<HTMLInputElement>) => {
+            const file = fileInputEvent.target.files?.[0];
+            if (!file) return;
+            addToast(`Uploading block image...`, "info");
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("type", "image");
+            try {
+              const res = await fetch("/api/upload", { method: "POST", body: formData });
+              const data = await res.json();
+              if (res.ok && data.url) {
+                addToast("Block image uploaded!", "success");
+                setEditingProject({
+                  ...editingProject,
+                  blocks: projectBlocks.map((b: any) => {
+                    if (b.id === blockId) {
+                      const currentUrls = Array.isArray(b.urls) ? b.urls : [];
+                      // If it's a placeholder, replace it. Otherwise append.
+                      const nextUrls = currentUrls.filter((u: string) => !u.includes("placeholder.jpg"));
+                      return { ...b, urls: [...nextUrls, data.url] };
+                    }
+                    return b;
+                  })
+                });
+              } else {
+                addToast("Image block upload failed.", "error");
+              }
+            } catch (err) {
+              addToast("Upload error.", "error");
+            }
+          };
+
+          const handleRemoveImageFromBlock = (blockId: string, imageUrl: string) => {
+            setEditingProject({
+              ...editingProject,
+              blocks: projectBlocks.map((b: any) => {
+                if (b.id === blockId) {
+                  const currentUrls = Array.isArray(b.urls) ? b.urls : [];
+                  const remaining = currentUrls.filter((u: string) => u !== imageUrl);
+                  return { ...b, urls: remaining.length > 0 ? remaining : ["/uploads/placeholder.jpg"] };
+                }
+                return b;
+              })
+            });
+          };
+
+          return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
+              <motion.div 
+                initial={{ scale: 0.97, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.97, opacity: 0 }}
+                className="bg-white border border-[#E2E8F0] rounded-[2.5rem] w-full max-w-6xl flex flex-col h-[90vh] shadow-2xl overflow-hidden"
+              >
+                {/* Header */}
+                <div className="p-6 border-b border-[#E2E8F0] flex justify-between items-center shrink-0 bg-white">
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Feature Title *</label>
-                    <input type="text" value={editingProject.title} onChange={e => setEditingProject({ ...editingProject, title: e.target.value })} placeholder="e.g. Lumina Collective Series" className={`w-full bg-[#F8FAFC] border rounded-xl px-4 py-3 text-xs text-[#111827] focus:ring-1 outline-none transition-colors ${formErrors.title ? "border-red-500/50 focus:ring-red-500/10" : "border-[#E2E8F0] focus:border-brand-red focus:ring-brand-red/10"}`} />
-                    {formErrors.title && <p className="text-red-500 mt-1 font-semibold">{formErrors.title}</p>}
+                    <h3 className="text-xl font-bold text-[#111827] flex items-center gap-2.5 font-serif">
+                      <FolderKanban size={20} className="text-brand-red" />
+                      Behance Creative Block Builder & Customizer
+                    </h3>
+                    <p className="text-[10px] text-[#9CA3AF] uppercase tracking-[0.2em] mt-1.5 font-bold">Construct stunning seamless artwork case studies</p>
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Unique ID Slug *</label>
-                    <input type="text" value={editingProject.slug} onChange={e => setEditingProject({ ...editingProject, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })} placeholder="e.g. lumina-collective" className={`w-full bg-[#F8FAFC] border rounded-xl px-4 py-3 text-xs text-[#111827] focus:ring-1 outline-none transition-colors font-mono ${formErrors.slug ? "border-red-500/50 focus:ring-red-500/10" : "border-[#E2E8F0] focus:border-brand-red focus:ring-brand-red/10"}`} />
-                    {formErrors.slug && <p className="text-red-500 mt-1 font-semibold">{formErrors.slug}</p>}
+                  <button onClick={() => setEditingProject(null)} className="p-2 text-[#9CA3AF] hover:text-[#111827] rounded-xl hover:bg-[#F3F4F6] transition-colors"><X size={18} /></button>
+                </div>
+
+                {/* Workspace Split Body */}
+                <div className="flex-1 flex min-h-0 text-xs font-semibold text-[#4B5563]">
+                  
+                  {/* Left Column: Metadata settings */}
+                  <div className="w-1/3 border-r border-[#E2E8F0] p-6 overflow-y-auto space-y-5 bg-[#F8FAFC]/50 shrink-0">
+                    <div>
+                      <h4 className="text-xs uppercase tracking-[0.15em] text-[#9CA3AF] font-bold mb-4">Discoverability & Sidebar Settings</h4>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Project Title *</label>
+                      <input type="text" value={editingProject.title} onChange={e => setEditingProject({ ...editingProject, title: e.target.value })} placeholder="e.g. Behance Clone Series" className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none" />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">ID Slug URL *</label>
+                      <input type="text" value={editingProject.slug} onChange={e => setEditingProject({ ...editingProject, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })} placeholder="e.g. behance-series" className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none font-mono" />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Category *</label>
+                        <select value={editingProject.catId} onChange={e => setEditingProject({ ...editingProject, catId: e.target.value })} className="w-full bg-white border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none">
+                          <option value="Branding">Branding</option>
+                          <option value="Motion Design">Motion Design</option>
+                          <option value="3D Animation">3D Animation</option>
+                          <option value="Creative Direction">Creative Direction</option>
+                          <option value="UI/UX">UI/UX</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Layout Size</label>
+                        <select value={editingProject.size} onChange={e => setEditingProject({ ...editingProject, size: e.target.value })} className="w-full bg-white border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none">
+                          <option value="medium">Medium Card</option>
+                          <option value="large">Large Card (Full Bleed)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Year *</label>
+                        <input type="text" value={editingProject.year} onChange={e => setEditingProject({ ...editingProject, year: e.target.value })} className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none font-mono" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Client</label>
+                        <input type="text" value={editingProject.client || ""} onChange={e => setEditingProject({ ...editingProject, client: e.target.value })} placeholder="e.g. Adobe" className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Primary Cover Thumbnail Image *</label>
+                      <div className="flex gap-2">
+                        <input type="text" value={editingProject.image} onChange={e => setEditingProject({ ...editingProject, image: e.target.value })} placeholder="/uploads/cover.jpg" className="flex-1 bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none font-mono" />
+                        <label className="bg-[#F1F5F9] hover:bg-brand-red hover:text-white px-3.5 py-2.5 rounded-xl border border-border cursor-pointer transition-all flex items-center justify-center shrink-0 text-xs">
+                          Upload
+                          <input type="file" accept="image/*" onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            const formData = new FormData();
+                            formData.append("file", file);
+                            formData.append("type", "image");
+                            try {
+                              const res = await fetch("/api/upload", { method: "POST", body: formData });
+                              const data = await res.json();
+                              if (res.ok && data.url) {
+                                setEditingProject({ ...editingProject, image: data.url });
+                                addToast("Cover thumbnail uploaded!", "success");
+                              }
+                            } catch (e) { addToast("Upload error", "error"); }
+                          }} className="hidden" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Role</label>
+                        <input type="text" value={editingProject.role || ""} onChange={e => setEditingProject({ ...editingProject, role: e.target.value })} placeholder="e.g. Lead designer" className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Theme Background</label>
+                        <select value={editingProject.themeBackground || "black"} onChange={e => setEditingProject({ ...editingProject, themeBackground: e.target.value })} className="w-full bg-white border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none">
+                          <option value="black">Deep Dark (Black)</option>
+                          <option value="gray">Sleek Metal (Gray)</option>
+                          <option value="white">Minimalist (White)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Live Production Web URL</label>
+                      <input type="text" value={editingProject.liveLink || ""} onChange={e => setEditingProject({ ...editingProject, liveLink: e.target.value })} placeholder="https://behance.net/..." className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none font-mono" />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Brief Case Overview Description *</label>
+                      <textarea rows={3} value={editingProject.overview || ""} onChange={e => setEditingProject({ ...editingProject, overview: e.target.value })} placeholder="Describe the core case study and aesthetic direction in a few sentences..." className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none resize-none" />
+                    </div>
+                  </div>
+
+                  {/* Right Column: Interactive Block canvas */}
+                  <div className="flex-1 flex flex-col min-h-0 bg-[#F1F5F9]/30">
+                    
+                    {/* Add block elements menu toolbar */}
+                    <div className="p-4 bg-white border-b border-[#E2E8F0] shrink-0 flex items-center justify-between">
+                      <div className="text-[10px] font-bold tracking-widest text-[#9CA3AF] uppercase">Build Modules</div>
+                      <div className="flex gap-2">
+                        <button type="button" onClick={handleAddTextBlock} className="px-3 py-2 bg-[#F1F5F9] hover:bg-brand-red hover:text-white rounded-xl transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer border border-[#E2E8F0]">
+                          <Type size={12} /> Text Description
+                        </button>
+                        <button type="button" onClick={handleAddImageBlock} className="px-3 py-2 bg-[#F1F5F9] hover:bg-brand-red hover:text-white rounded-xl transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer border border-[#E2E8F0]">
+                          <ImageIcon size={12} /> Images / Grid
+                        </button>
+                        <button type="button" onClick={handleAddVideoBlock} className="px-3 py-2 bg-[#F1F5F9] hover:bg-brand-red hover:text-white rounded-xl transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer border border-[#E2E8F0]">
+                          <Video size={12} /> Video Mp4
+                        </button>
+                        <button type="button" onClick={handleAddEmbedBlock} className="px-3 py-2 bg-[#F1F5F9] hover:bg-brand-red hover:text-white rounded-xl transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer border border-[#E2E8F0]">
+                          <Code size={12} /> Figma Embed
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Infinite Canvas Blocks list */}
+                    <div className="flex-1 overflow-y-auto p-8 space-y-8 min-h-0">
+                      {projectBlocks.length === 0 ? (
+                        <div className="py-24 text-center border-2 border-dashed border-[#E2E8F0] rounded-[2.5rem] bg-white p-12 max-w-lg mx-auto flex flex-col items-center justify-center space-y-4 shadow-sm mt-8">
+                          <FolderKanban size={40} className="text-brand-red/35 animate-bounce" />
+                          <h5 className="text-sm font-bold text-[#111827]">Canvas Block Space is Empty</h5>
+                          <p className="text-[11px] text-[#6B7280] leading-relaxed">
+                            Click any of the layout module modules in the toolbar above to stack rich text blocks, nested grid images, Vimeo/MP4 players, or interactive frame embeds.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-6 max-w-3xl mx-auto">
+                          {projectBlocks.map((block: any, idx: number) => (
+                            <div key={block.id} className="bg-white border border-[#E2E8F0] rounded-3xl p-5 shadow-sm hover:shadow-md transition-all relative group flex flex-col gap-4">
+                              
+                              {/* Reorder and management toolbar */}
+                              <div className="flex justify-between items-center border-b border-[#F1F5F9] pb-3 shrink-0">
+                                <div className="flex items-center gap-2">
+                                  <GripVertical size={13} className="text-[#9CA3AF]" />
+                                  <span className="text-[10px] font-black uppercase tracking-wider font-mono bg-brand-red/10 text-brand-red px-2 py-0.5 rounded">
+                                    Module {idx + 1}: {block.type}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <button type="button" disabled={idx === 0} onClick={() => handleMoveBlock(idx, "up")} className="p-1.5 hover:bg-[#F3F4F6] rounded text-[#4B5563] disabled:opacity-30"><ArrowUp size={12} /></button>
+                                  <button type="button" disabled={idx === projectBlocks.length - 1} onClick={() => handleMoveBlock(idx, "down")} className="p-1.5 hover:bg-[#F3F4F6] rounded text-[#4B5563] disabled:opacity-30"><ArrowDown size={12} /></button>
+                                  <button type="button" onClick={() => handleRemoveBlock(block.id)} className="p-1.5 hover:bg-red-500/10 rounded text-red-500 ml-1.5"><Trash2 size={12} /></button>
+                                </div>
+                              </div>
+
+                              {/* BLOCK TYPE RENDERS */}
+
+                              {/* 1. TEXT TYPE BLOCK */}
+                              {block.type === "text" && (
+                                <div className="space-y-2.5">
+                                  <label className="block text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF]">Markdown / Heading Rich Text Content</label>
+                                  <textarea 
+                                    rows={4} 
+                                    value={block.content || ""} 
+                                    onChange={e => handleUpdateBlockContent(block.id, e.target.value)} 
+                                    className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl px-4 py-3 text-xs text-[#111827] focus:border-brand-red outline-none font-mono leading-relaxed" 
+                                    placeholder="### Concept Description..."
+                                  />
+                                </div>
+                              )}
+
+                              {/* 2. IMAGE TYPE BLOCK */}
+                              {block.type === "image" && (
+                                <div className="space-y-4">
+                                  <div className="flex flex-wrap gap-4 items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <label className="text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF]">Grid Columns Layout:</label>
+                                      <select value={block.gridColumns || 1} onChange={e => handleUpdateBlockImageGrid(block.id, parseInt(e.target.value))} className="bg-[#F1F5F9] border border-[#E2E8F0] px-2.5 py-1 rounded-xl text-xs font-bold outline-none cursor-pointer">
+                                        <option value={1}>1 Column (Full Width)</option>
+                                        <option value={2}>2 Columns Grid</option>
+                                        <option value={3}>3 Columns Grid</option>
+                                      </select>
+                                    </div>
+                                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-[#6B7280]">
+                                      <input type="checkbox" checked={!!block.marginZero} onChange={e => handleUpdateBlockMargin(block.id, e.target.checked)} className="accent-brand-red w-3.5 h-3.5 rounded cursor-pointer" />
+                                      Full Bleed / Zero Margin
+                                    </label>
+                                  </div>
+
+                                  {/* Grid Images Gallery list */}
+                                  <div className="grid grid-cols-3 gap-3 bg-[#F8FAFC] p-4 border border-[#E2E8F0] rounded-2xl">
+                                    {(Array.isArray(block.urls) ? block.urls : ["/uploads/placeholder.jpg"]).map((imgUrl: string, imgIdx: number) => (
+                                      <div key={imgIdx} className="relative aspect-video rounded-xl overflow-hidden border border-border group/img bg-surface">
+                                        <img src={imgUrl} className="w-full h-full object-cover" alt="Block image preview" />
+                                        <button type="button" onClick={() => handleRemoveImageFromBlock(block.id, imgUrl)} className="absolute top-1 right-1 p-1 bg-black/70 text-white rounded-full hover:bg-red-500 transition-colors opacity-0 group-hover/img:opacity-100"><X size={10} /></button>
+                                      </div>
+                                    ))}
+
+                                    {/* Upload trigger slot */}
+                                    <label className="border-2 border-dashed border-[#E2E8F0] bg-white rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-brand-red transition-all p-3 hover:bg-brand-red/5 aspect-video shrink-0">
+                                      <Plus size={14} className="text-brand-red" />
+                                      <span className="text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF] mt-1">Add Image</span>
+                                      <input type="file" accept="image/*" onChange={e => handleAddImageToBlock(block.id, e)} className="hidden" />
+                                    </label>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* 3. VIDEO TYPE BLOCK */}
+                              {block.type === "video" && (
+                                <div className="space-y-3">
+                                  <label className="block text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF]">Direct MP4 Video Path / Vimeo Link / YouTube Embed</label>
+                                  <div className="flex gap-2">
+                                    <input 
+                                      type="text" 
+                                      value={block.content || ""} 
+                                      onChange={e => handleUpdateBlockContent(block.id, e.target.value)} 
+                                      placeholder="https://player.vimeo.com/video/123456789 or /uploads/cine.mp4" 
+                                      className="flex-1 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none font-mono" 
+                                    />
+                                    
+                                    <label className="bg-[#F1F5F9] hover:bg-brand-red hover:text-white px-3 py-2 rounded-xl border border-border cursor-pointer transition-all flex items-center justify-center shrink-0 text-xs">
+                                      Upload MP4
+                                      <input type="file" accept="video/mp4" onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        addToast(`Uploading MP4 movie...`, "info");
+                                        const formData = new FormData();
+                                        formData.append("file", file);
+                                        formData.append("type", "pdf"); // Handled as bypass pdf document route or general uploads
+                                        try {
+                                          const res = await fetch("/api/upload", { method: "POST", body: formData });
+                                          const data = await res.json();
+                                          if (res.ok && data.url) {
+                                            handleUpdateBlockContent(block.id, data.url);
+                                            addToast("Cinematic MP4 block uploaded!", "success");
+                                          }
+                                        } catch (err) { addToast("Video upload failed.", "error"); }
+                                      }} className="hidden" />
+                                    </label>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* 4. EMBED FIGMA PROTOTYPE BLOCK */}
+                              {block.type === "embed" && (
+                                <div className="space-y-2.5">
+                                  <label className="block text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF]">Raw Iframe / Figma Prototype / SoundCloud Embed HTML</label>
+                                  <textarea 
+                                    rows={3} 
+                                    value={block.content || ""} 
+                                    onChange={e => handleUpdateBlockContent(block.id, e.target.value)} 
+                                    className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl px-4 py-3 text-xs text-[#111827] focus:border-brand-red outline-none font-mono leading-relaxed" 
+                                    placeholder='<iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://www.figma.com/embed?embed_host=share&url=..." allowfullscreen></iframe>'
+                                  />
+                                </div>
+                              )}
+
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Footer Controls */}
+                <div className="p-6 border-t border-[#E2E8F0] flex justify-between items-center bg-white shrink-0">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={editingProject.isActive} onChange={e => setEditingProject({ ...editingProject, isActive: e.target.checked })} className="accent-brand-red w-4 h-4 cursor-pointer" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF]">PUBLISH LIVE ON ARCHIVE</span>
+                  </label>
+                  <div className="flex gap-3">
+                    <button onClick={() => setEditingProject(null)} className="px-5 py-2.5 rounded-xl font-bold text-[#9CA3AF] hover:bg-[#F3F4F6] transition-colors cursor-pointer text-xs">Cancel</button>
+                    <button onClick={handleSaveModal} disabled={isSaving} className="bg-brand-red hover:bg-blood-red text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-[0_4px_12px_rgba(225,29,72,0.15)] cursor-pointer text-xs">
+                      {isSaving ? "Saving Dynamic Blocks..." : <><Save size={14} /> Publish Showcase</>}
+                    </button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Category Display *</label>
-                    <input type="text" value={editingProject.catId} onChange={e => setEditingProject({ ...editingProject, catId: e.target.value })} placeholder="e.g. Motion Design" className={`w-full bg-[#F8FAFC] border rounded-xl px-4 py-3 text-xs text-[#111827] focus:ring-1 outline-none transition-colors ${formErrors.catId ? "border-red-500/50 focus:ring-red-500/10" : "border-[#E2E8F0] focus:border-brand-red focus:ring-brand-red/10"}`} />
-                    {formErrors.catId && <p className="text-red-500 mt-1 font-semibold">{formErrors.catId}</p>}
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Timeline duration</label>
-                    <input type="text" value={editingProject.duration || ""} onChange={e => setEditingProject({ ...editingProject, duration: e.target.value })} placeholder="e.g. 2 Months" className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-xs text-[#111827] focus:border-brand-red outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Assigned Role</label>
-                    <input type="text" value={editingProject.role || ""} onChange={e => setEditingProject({ ...editingProject, role: e.target.value })} placeholder="e.g. Art Director" className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-xs text-[#111827] focus:border-brand-red outline-none" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Image Asset URL (Fallback)</label>
-                    <input type="text" value={editingProject.image} onChange={e => setEditingProject({ ...editingProject, image: e.target.value })} placeholder="https://images.unsplash.com/..." className={`w-full bg-[#F8FAFC] border rounded-xl px-4 py-3 text-xs text-[#111827] focus:ring-1 outline-none transition-colors font-mono ${formErrors.image ? "border-red-500/50 focus:ring-red-500/10" : "border-[#E2E8F0] focus:border-brand-red focus:ring-brand-red/10"}`} />
-                    {formErrors.image && <p className="text-red-500 mt-1 font-semibold">{formErrors.image}</p>}
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2"><Video size={13}/> Cinematic Video Asset URL</label>
-                    <input type="text" value={editingProject.videoUrl || ""} onChange={e => setEditingProject({ ...editingProject, videoUrl: e.target.value })} placeholder="https://player.vimeo.com/video/..." className={`w-full bg-[#F8FAFC] border rounded-xl px-4 py-3 text-xs text-[#111827] focus:ring-1 outline-none transition-colors font-mono ${formErrors.videoUrl ? "border-red-500/50 focus:ring-red-500/10" : "border-[#E2E8F0] focus:border-brand-red focus:ring-brand-red/10"}`} />
-                    {formErrors.videoUrl && <p className="text-red-500 mt-1 font-semibold">{formErrors.videoUrl}</p>}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div><label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Client Label</label><input type="text" value={editingProject.client || ""} onChange={e => setEditingProject({ ...editingProject, client: e.target.value })} className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-xs text-[#111827] focus:border-brand-red outline-none" /></div>
-                  <div><label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Year Indicator</label><input type="text" value={editingProject.year} onChange={e => setEditingProject({ ...editingProject, year: e.target.value })} className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-xs text-[#111827] focus:border-brand-red outline-none" /></div>
-                  <div><label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Live Production Link</label><input type="text" value={editingProject.liveLink || ""} onChange={e => setEditingProject({ ...editingProject, liveLink: e.target.value })} className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-xs text-[#111827] focus:border-brand-red outline-none" /></div>
-                </div>
-
-                <div className="space-y-4">
-                  <div><label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Overview Narrative</label><textarea rows={3} value={editingProject.overview || ""} onChange={e => setEditingProject({ ...editingProject, overview: e.target.value })} className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-xs text-[#111827] focus:border-brand-red outline-none resize-none" /></div>
-                  <div><label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">The Challenge Matrix</label><textarea rows={2} value={editingProject.challenge || ""} onChange={e => setEditingProject({ ...editingProject, challenge: e.target.value })} className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-xs text-[#111827] focus:border-brand-red outline-none resize-none" /></div>
-                  <div><label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">The Solution Execution</label><textarea rows={2} value={editingProject.solution || ""} onChange={e => setEditingProject({ ...editingProject, solution: e.target.value })} className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-xs text-[#111827] focus:border-brand-red outline-none resize-none" /></div>
-                </div>
-              </div>
-
-              <div className="p-6 border-t border-[#E2E8F0] flex justify-between items-center bg-white rounded-b-3xl shrink-0">
-                <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={editingProject.isActive} onChange={e => setEditingProject({ ...editingProject, isActive: e.target.checked })} className="accent-brand-red w-4 h-4 cursor-pointer" /><span className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF]">DEPLOY LIVE STATE</span></label>
-                <div className="flex gap-3">
-                  <button onClick={() => setEditingProject(null)} className="px-5 py-2.5 rounded-lg font-bold text-[#9CA3AF] hover:bg-[#F3F4F6] transition-colors">Cancel</button>
-                  <button onClick={handleSaveModal} disabled={isSaving} className="bg-brand-red hover:bg-blood-red text-white px-6 py-2.5 rounded-lg font-bold flex items-center gap-2 shadow-[0_2px_10px_rgba(255,0,0,0.15)]">{isSaving ? "Saving..." : <><Save size={14} /> Commit Changes</>}</button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
+              </motion.div>
+            </div>
+          );
+        })()}
 
         {/* MODAL 2: SHOP PRODUCT FORM */}
         {editingProduct && (

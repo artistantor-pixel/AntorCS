@@ -14,7 +14,6 @@ const isVideoUrl = (url: string) => {
 // Helper to format video URL for embed if needed
 const getEmbedUrl = (url: string) => {
   if (url.includes('vimeo.com') && !url.includes('player.vimeo.com')) {
-    // Basic extraction for vimeo, assuming normal vimeo id or full embed is passed
     const vimeoMatch = url.match(/vimeo\.com\/(?:manage\/videos\/)?(\d+)/);
     if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}?background=1&autoplay=1&loop=1&byline=0&title=0`;
   }
@@ -31,8 +30,7 @@ const MediaRenderer = ({ url, className, style }: { url: string, className?: str
   if (isVideo) {
     const embedUrl = getEmbedUrl(url);
     return (
-      <motion.div className={`relative overflow-hidden ${className}`} style={style}>
-        {/* We use an iframe for external videos or video tag for direct mp4 */}
+      <div className={`relative overflow-hidden ${className}`} style={style}>
         {url.match(/\.(mp4|webm)$/i) ? (
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover pointer-events-none">
             <source src={url} />
@@ -46,18 +44,103 @@ const MediaRenderer = ({ url, className, style }: { url: string, className?: str
             allowFullScreen
           />
         )}
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.img 
+    <img 
       style={style}
       src={url} 
       alt="Project Media" 
       className={`object-cover object-center ${className}`} 
     />
   );
+};
+
+// Render block structures in simple but sleek ways
+const BlockRenderer = ({ block }: { block: any }) => {
+  if (!block) return null;
+
+  switch (block.type) {
+    case "text":
+      // A raw rich-text paragraph helper with subtle styling
+      const lines = (block.content || "").split("\n");
+      return (
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          <div className="space-y-4 text-foreground/80 leading-relaxed font-light text-base md:text-lg">
+            {lines.map((line: string, i: number) => {
+              if (line.startsWith("### ")) {
+                return <h3 key={i} className="text-xl md:text-3xl font-serif text-foreground font-bold pt-4">{line.replace("### ", "")}</h3>;
+              }
+              if (line.startsWith("## ")) {
+                return <h2 key={i} className="text-2xl md:text-4xl font-serif text-foreground font-bold pt-4">{line.replace("## ", "")}</h2>;
+              }
+              if (line.startsWith("# ")) {
+                return <h1 key={i} className="text-3.5xl md:text-5xl font-serif text-foreground font-bold pt-4">{line.replace("# ", "")}</h1>;
+              }
+              return <p key={i} className="whitespace-pre-line">{line}</p>;
+            })}
+          </div>
+        </div>
+      );
+
+    case "image":
+      const urls = Array.isArray(block.urls) ? block.urls : ["/uploads/placeholder.jpg"];
+      const gridCols = block.gridColumns || 1;
+      const marginZero = !!block.marginZero;
+
+      let gridClass = "grid grid-cols-1 gap-6";
+      if (gridCols === 2) gridClass = "grid grid-cols-1 md:grid-cols-2 gap-6";
+      if (gridCols === 3) gridClass = "grid grid-cols-1 md:grid-cols-3 gap-6";
+
+      return (
+        <div className={`w-full ${marginZero ? "px-0 py-2" : "px-6 md:px-12 max-w-[100rem] mx-auto py-6"}`}>
+          <div className={gridClass}>
+            {urls.map((url: string, i: number) => (
+              <div key={i} className={`overflow-hidden relative bg-surface/40 ${marginZero ? "rounded-none" : "rounded-3xl"}`}>
+                <img src={url} alt="Behance artwork element" className="w-full h-auto object-contain block" />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case "video":
+      if (!block.content) return null;
+      return (
+        <div className="px-6 md:px-12 max-w-[100rem] mx-auto py-6">
+          <div className="rounded-3xl overflow-hidden relative aspect-video bg-black/20">
+            {block.content.match(/\.(mp4|webm)$/i) ? (
+              <video autoPlay loop muted playsInline controls className="w-full h-full object-cover block">
+                <source src={block.content} />
+              </video>
+            ) : (
+              <iframe 
+                src={getEmbedUrl(block.content)} 
+                className="w-full h-full block" 
+                frameBorder="0" 
+                allow="autoplay; fullscreen; picture-in-picture" 
+                allowFullScreen
+              />
+            )}
+          </div>
+        </div>
+      );
+
+    case "embed":
+      if (!block.content) return null;
+      return (
+        <div className="px-6 md:px-12 max-w-[100rem] mx-auto py-8">
+          <div className="rounded-3xl overflow-hidden border border-border bg-surface/20 p-2 flex justify-center">
+            <div className="w-full overflow-x-auto flex justify-center" dangerouslySetInnerHTML={{ __html: block.content }} />
+          </div>
+        </div>
+      );
+
+    default:
+      return null;
+  }
 };
 
 export default function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -88,7 +171,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"] // For progress bar
+    offset: ["start start", "end end"]
   });
   
   const scaleX = useSpring(scrollYProgress, {
@@ -103,6 +186,15 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
   const scaleHero = useTransform(heroScroll, [0, 1000], [1, 1.1]);
   const opacityHero = useTransform(heroScroll, [0, 800], [1, 0]);
 
+  // Map custom theme backgrounds
+  const themeBgMap: Record<string, string> = {
+    white: "bg-white text-black selection:bg-brand-red selection:text-white",
+    gray: "bg-[#1F2937] text-gray-100 selection:bg-brand-red selection:text-white",
+    black: "bg-background text-foreground selection:bg-brand-red selection:text-white"
+  };
+
+  const bgStyle = themeBgMap[project?.themeBackground || "black"] || themeBgMap.black;
+
   return (
     <div ref={containerRef} className="w-full h-full relative">
       {isLoading ? (
@@ -110,7 +202,7 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
       ) : !project ? (
         <div className="min-h-screen bg-background flex items-center justify-center text-xl font-bold">Asset Not Found</div>
       ) : (
-        <main className="bg-background min-h-screen text-foreground selection:bg-brand-red selection:text-white">
+        <main className={`min-h-screen transition-colors duration-750 ${bgStyle}`}>
           
           {/* Progress Bar */}
           <motion.div 
@@ -176,15 +268,15 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
               <div className="grid grid-cols-2 gap-x-8 gap-y-6">
                 <div>
                   <p className="text-muted uppercase tracking-widest text-[10px] font-bold mb-1">Client</p>
-                  <p className="font-bold text-sm text-foreground">{project.client}</p>
+                  <p className="font-bold text-sm text-foreground">{project.client || "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-muted uppercase tracking-widest text-[10px] font-bold mb-1">Role</p>
-                  <p className="font-bold text-sm text-foreground">{project.role}</p>
+                  <p className="font-bold text-sm text-foreground">{project.role || "Lead Artist"}</p>
                 </div>
                 <div>
                   <p className="text-muted uppercase tracking-widest text-[10px] font-bold mb-1">Timeline</p>
-                  <p className="font-bold text-sm text-foreground">{project.duration}</p>
+                  <p className="font-bold text-sm text-foreground">{project.duration || "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-muted uppercase tracking-widest text-[10px] font-bold mb-1">Live Project</p>
@@ -200,129 +292,56 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
             </motion.div>
           </section>
 
-          {/* Mobile Metadata */}
-          <section className="px-6 py-12 md:hidden">
-            <div className="grid grid-cols-2 gap-8 bg-surface p-6 rounded-3xl border border-border">
-              <div>
-                <p className="text-muted uppercase tracking-widest text-xs font-bold mb-2">Client</p>
-                <p className="font-bold">{project.client}</p>
-              </div>
-              <div>
-                <p className="text-muted uppercase tracking-widest text-xs font-bold mb-2">Timeline</p>
-                <p className="font-bold">{project.duration}</p>
-              </div>
-            </div>
-          </section>
-
-          {/* 3. Sticky Challenge & Solution */}
-          <section className="py-24 md:py-48 px-6 md:px-12 max-w-[100rem] mx-auto relative">
-            <div className="flex flex-col lg:flex-row gap-16 lg:gap-32">
-              {/* Sticky Left Side */}
-              <div className="lg:w-1/3 lg:sticky lg:top-40 h-fit">
-                <h2 className="text-4xl md:text-6xl font-serif tracking-tight mb-8">Process & <span className="text-brand-red italic">Execution</span></h2>
-                <p className="text-lg text-muted leading-relaxed">
-                  Every pixel, every frame, and every interaction is designed with intention. Here is how we tackled the core challenges of this project.
-                </p>
-              </div>
-              
-              {/* Scrolling Right Side */}
-              <div className="lg:w-2/3 flex flex-col gap-24">
-                <motion.div
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8 }}
-                  className="bg-surface border border-border p-10 md:p-16 rounded-[2.5rem] relative overflow-hidden group hover:border-brand-red/30 transition-colors"
-                >
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-brand-red/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 group-hover:bg-brand-red/10 transition-colors" />
-                  <div className="w-16 h-16 rounded-full bg-background flex items-center justify-center text-2xl font-serif italic mb-10 border border-border text-brand-red shadow-sm">01</div>
-                  <h3 className="text-3xl font-bold mb-6">The Challenge</h3>
-                  <p className="text-xl md:text-2xl leading-relaxed font-light text-foreground/80">{project.challenge}</p>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className="bg-brand-red text-white p-10 md:p-16 rounded-[2.5rem] shadow-2xl shadow-brand-red/20 relative overflow-hidden group"
-                >
-                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/3 group-hover:bg-white/20 transition-colors" />
-                  <div className="w-16 h-16 rounded-full bg-white text-brand-red flex items-center justify-center text-2xl font-serif italic mb-10 shadow-lg">02</div>
-                  <h3 className="text-3xl font-bold mb-6">The Solution</h3>
-                  <p className="text-xl md:text-2xl leading-relaxed font-light text-white/90">{project.solution}</p>
-                </motion.div>
-              </div>
-            </div>
-          </section>
-
-          {/* 4. Results & Impact */}
-          {project.results && project.results.length > 0 && (
-            <section className="py-24 md:py-40 bg-surface">
-              <div className="px-6 md:px-12 max-w-[100rem] mx-auto">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-                  <div>
-                    <p className="text-brand-red uppercase tracking-[0.2em] text-xs font-bold mb-4 flex items-center gap-2"><PlayCircle size={14}/> Impact</p>
-                    <h2 className="text-5xl md:text-7xl font-serif tracking-tight">Measurable Results</h2>
+          {/* DYNAMIC BEHANCE BLOCKS RENDERING CANVAS */}
+          <section className="py-20 flex flex-col gap-4">
+            {Array.isArray(project.blocks) && project.blocks.length > 0 ? (
+              project.blocks.map((block: any, idx: number) => (
+                <BlockRenderer key={block.id || idx} block={block} />
+              ))
+            ) : (
+              // Fallback to legacy challenge/solution/gallery layout if no dynamic blocks exist
+              <>
+                <div className="py-24 md:py-48 px-6 md:px-12 max-w-[100rem] mx-auto relative">
+                  <div className="flex flex-col lg:flex-row gap-16 lg:gap-32">
+                    <div className="lg:w-1/3 lg:sticky lg:top-40 h-fit">
+                      <h2 className="text-4xl md:text-6xl font-serif tracking-tight mb-8">Process & <span className="text-brand-red italic">Execution</span></h2>
+                      <p className="text-lg text-muted leading-relaxed">
+                        Every pixel, every frame, and every interaction is designed with intention.
+                      </p>
+                    </div>
+                    <div className="lg:w-2/3 flex flex-col gap-24">
+                      <div className="bg-surface border border-border p-10 md:p-16 rounded-[2.5rem] relative overflow-hidden">
+                        <h3 className="text-3xl font-bold mb-6">The Challenge</h3>
+                        <p className="text-xl md:text-2xl leading-relaxed font-light text-foreground/80">{project.challenge}</p>
+                      </div>
+                      <div className="bg-brand-red text-white p-10 md:p-16 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+                        <h3 className="text-3xl font-bold mb-6">The Solution</h3>
+                        <p className="text-xl md:text-2xl leading-relaxed font-light text-white/90">{project.solution}</p>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-muted max-w-sm text-lg">The new digital experience yielded immediate and significant improvements across all key metrics.</p>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {Array.isArray(project.results) && project.results.map((res: any, i: number) => (
-                    <motion.div 
-                      key={i}
-                      initial={{ opacity: 0, scale: 0.95, y: 30 }}
-                      whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6, delay: i * 0.15, ease: "easeOut" }}
-                      className="bg-background border border-border rounded-[2rem] p-12 text-center flex flex-col justify-center items-center group hover:border-brand-red/40 hover:shadow-2xl hover:shadow-brand-red/5 transition-all duration-500 relative overflow-hidden"
-                    >
-                      <div className="absolute inset-0 bg-brand-red/0 group-hover:bg-brand-red/5 transition-colors duration-500" />
-                      <h3 className="text-6xl md:text-[5.5rem] font-black text-brand-red tracking-tighter mb-6 group-hover:scale-110 transition-transform duration-500 will-change-transform z-10">{res.value}</h3>
-                      <p className="text-sm font-bold uppercase tracking-widest text-foreground z-10">{res.label}</p>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </section>
-          )}
 
-          {/* 5. Asymmetrical Visual Gallery with Video Support */}
-          {project.gallery && project.gallery.length > 0 && (
-            <section className="py-32 px-6 md:px-12 max-w-[100rem] mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-                {Array.isArray(project.gallery) && project.gallery.map((mediaUrl: any, i: number) => {
-                  // Asymmetrical classes for visual interest
-                  let spanClass = "col-span-1 lg:col-span-12";
-                  if (i % 3 === 1) spanClass = "col-span-1 lg:col-span-7";
-                  if (i % 3 === 2) spanClass = "col-span-1 lg:col-span-5";
+                {project.gallery && project.gallery.length > 0 && (
+                  <div className="py-32 px-6 md:px-12 max-w-[100rem] mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+                      {Array.isArray(project.gallery) && project.gallery.map((mediaUrl: any, i: number) => {
+                        let spanClass = "col-span-1 lg:col-span-12";
+                        if (i % 3 === 1) spanClass = "col-span-1 lg:col-span-7";
+                        if (i % 3 === 2) spanClass = "col-span-1 lg:col-span-5";
 
-                  return (
-                    <motion.div 
-                      key={i}
-                      initial={{ opacity: 0, y: 50 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-100px" }}
-                      transition={{ duration: 1, ease: "easeOut" }}
-                      className={`${spanClass} rounded-[2rem] overflow-hidden relative group bg-surface/50`}
-                    >
-                      <div className="absolute inset-0 bg-brand-red/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 mix-blend-overlay pointer-events-none" />
-                      <MediaRenderer 
-                        url={mediaUrl} 
-                        className="w-full h-full min-h-[40vh] md:min-h-[60vh] group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out will-change-transform" 
-                      />
-                      {isVideoUrl(mediaUrl) && (
-                        <div className="absolute top-6 right-6 z-20 bg-black/50 backdrop-blur-md p-3 rounded-full text-white shadow-lg pointer-events-none">
-                          <PlayCircle size={24} />
-                        </div>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </section>
-          )}
+                        return (
+                          <div key={i} className={`${spanClass} rounded-[2rem] overflow-hidden relative group bg-surface/50`}>
+                            <MediaRenderer url={mediaUrl} className="w-full h-full min-h-[40vh] md:min-h-[60vh]" />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </section>
           
           {/* 6. Next Project Footer */}
           {nextProject && (

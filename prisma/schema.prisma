@@ -9,29 +9,33 @@ datasource db {
 }
 
 model Project {
-  id          Int      @id @default(autoincrement())
-  titleKey    String?
-  categoryKey String?
-  title       String
-  slug        String   @unique
-  image       String
-  size        String   @default("medium")
-  year        String
-  catId       String
-  client      String?
-  duration    String?
-  role        String?
-  liveLink    String?
-  videoUrl    String?
-  isFeatured  Boolean  @default(false)
-  isActive    Boolean  @default(true)
-  overview    String?
-  challenge   String?
-  solution    String?
-  results     Json?
-  gallery     Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              Int      @id @default(autoincrement())
+  titleKey        String?
+  categoryKey     String?
+  title           String
+  slug            String   @unique
+  image           String
+  size            String   @default("medium")
+  year            String
+  catId           String
+  client          String?
+  duration        String?
+  role            String?
+  liveLink        String?
+  videoUrl        String?
+  isFeatured      Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  overview        String?
+  challenge       String?
+  solution        String?
+  results         Json?
+  gallery         Json?
+  blocks          Json?
+  themeBackground String   @default("black")
+  tools           Json?
+  keywords        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Content {
