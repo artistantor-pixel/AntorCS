@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, use, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, PlayCircle } from "lucide-react";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 // Helper to check if URL is a video
 const isVideoUrl = (url: string) => {
@@ -49,12 +50,14 @@ const MediaRenderer = ({ url, className, style }: { url: string, className?: str
   }
 
   return (
-    <img 
-      style={style}
-      src={url} 
-      alt="Project Media" 
-      className={`object-cover object-center ${className}`} 
-    />
+    <div style={style} className={`relative overflow-hidden ${className}`}>
+      <ImageWithFallback
+        src={url}
+        alt="Project Media"
+        fill
+        objectFit="cover"
+      />
+    </div>
   );
 };
 
@@ -99,7 +102,12 @@ const BlockRenderer = ({ block }: { block: any }) => {
           <div className={gridClass}>
             {urls.map((url: string, i: number) => (
               <div key={i} className={`overflow-hidden relative bg-surface/40 ${marginZero ? "rounded-none" : "rounded-3xl"}`}>
-                <img src={url} alt="Behance artwork element" className="w-full h-auto object-contain block" />
+                <ImageWithFallback 
+                  src={url} 
+                  alt="Behance artwork element" 
+                  className="w-full h-auto block" 
+                  objectFit="contain"
+                />
               </div>
             ))}
           </div>
@@ -143,15 +151,29 @@ const BlockRenderer = ({ block }: { block: any }) => {
   }
 };
 
-export default function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
+export default function CaseStudyPage({ params }: { params: any }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const resolvedParams = use(params);
-  const slug = resolvedParams.slug;
+  const [slug, setSlug] = useState<string>("");
   const [project, setProject] = useState<any>(null);
   const [nextProject, setNextProject] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Robust parameter resolver supporting both Next.js 14 and 15 dynamic routing conventions
   useEffect(() => {
+    if (params) {
+      if (typeof params.then === "function") {
+        params.then((resolved: any) => {
+          setSlug(resolved.slug);
+        });
+      } else {
+        setSlug(params.slug);
+      }
+    }
+  }, [params]);
+
+  useEffect(() => {
+    if (!slug) return;
+    setIsLoading(true);
     fetch("/api/projects", { cache: "no-store" })
       .then(res => res.json())
       .then(data => {
@@ -166,7 +188,8 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
           }
         }
         setIsLoading(false);
-      });
+      })
+      .catch(() => setIsLoading(false));
   }, [slug]);
 
   const { scrollYProgress } = useScroll({
@@ -198,9 +221,34 @@ export default function CaseStudyPage({ params }: { params: Promise<{ slug: stri
   return (
     <div ref={containerRef} className="w-full h-full relative">
       {isLoading ? (
-        <div className="min-h-screen bg-background flex items-center justify-center text-brand-red animate-pulse">Loading Asset...</div>
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center relative overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-brand-red/5 rounded-full blur-[100px] pointer-events-none animate-pulse" />
+          <div className="w-16 h-16 border-4 border-brand-red/10 border-t-brand-red rounded-full animate-spin mb-6" />
+          <p className="text-muted tracking-[0.25em] text-xs uppercase animate-pulse font-bold">Project Loading...</p>
+        </div>
       ) : !project ? (
-        <div className="min-h-screen bg-background flex items-center justify-center text-xl font-bold">Asset Not Found</div>
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative overflow-hidden">
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-brand-red/5 rounded-full blur-[120px] pointer-events-none" />
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center relative z-10 max-w-md p-10 rounded-[2.5rem] bg-surface/50 border border-border backdrop-blur-md shadow-2xl"
+          >
+            <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-brand-red/10 text-brand-red mb-6 border border-brand-red/20">
+              <ArrowLeft size={24} className="rotate-45" />
+            </span>
+            <h1 className="text-3xl font-serif font-bold mb-4 tracking-tight">Case Study Not Found</h1>
+            <p className="text-muted text-sm font-light mb-8 leading-relaxed">
+              The project study you are trying to view does not exist or has been relocated to another workspace.
+            </p>
+            <Link 
+              href="/portfolio" 
+              className="inline-flex bg-brand-red text-white px-8 py-3.5 rounded-full font-bold hover:scale-105 transition-all text-xs tracking-wider uppercase shadow-lg shadow-brand-red/20"
+            >
+              Return to Portfolio Home
+            </Link>
+          </motion.div>
+        </div>
       ) : (
         <main className={`min-h-screen transition-colors duration-750 ${bgStyle}`}>
           

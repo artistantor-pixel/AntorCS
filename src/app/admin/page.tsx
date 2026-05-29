@@ -3461,12 +3461,51 @@ export default function AdminDashboard() {
 
                     <div>
                       <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">Project Title *</label>
-                      <input type="text" value={editingProject.title} onChange={e => setEditingProject({ ...editingProject, title: e.target.value })} placeholder="e.g. Behance Clone Series" className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none" />
+                      <input 
+                        type="text" 
+                        value={editingProject.title} 
+                        onChange={e => {
+                          const newTitle = e.target.value;
+                          const generatedSlug = newTitle.toLowerCase()
+                            .trim()
+                            .replace(/[^\w\s-]/g, '')
+                            .replace(/\s+/g, '-');
+                          setEditingProject({ 
+                            ...editingProject, 
+                            title: newTitle,
+                            slug: !editingProject.slug || editingProject.slug === editingProject.title.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')
+                              ? generatedSlug 
+                              : editingProject.slug
+                          });
+                        }} 
+                        placeholder="e.g. Behance Clone Series" 
+                        className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none" 
+                      />
                     </div>
 
                     <div>
                       <label className="block text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-2">ID Slug URL *</label>
-                      <input type="text" value={editingProject.slug} onChange={e => setEditingProject({ ...editingProject, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })} placeholder="e.g. behance-series" className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none font-mono" />
+                      <input 
+                        type="text" 
+                        value={editingProject.slug} 
+                        onChange={e => setEditingProject({ ...editingProject, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })} 
+                        placeholder="e.g. behance-series" 
+                        className="w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs text-[#111827] focus:border-brand-red outline-none font-mono" 
+                      />
+                      {editingProject.slug && (
+                        <div className="mt-2 flex items-center justify-between bg-brand-red/5 border border-brand-red/20 px-3.5 py-2 rounded-xl">
+                          <span className="text-[9px] text-brand-red font-bold uppercase tracking-wider">Live Link chip</span>
+                          <a 
+                            href={`/portfolio/${editingProject.slug}`} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="inline-flex items-center gap-1 text-[10px] text-brand-red hover:underline font-bold"
+                          >
+                            /portfolio/{editingProject.slug}
+                            <ExternalLink size={10} />
+                          </a>
+                        </div>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

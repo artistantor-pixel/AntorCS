@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -30,15 +30,16 @@ function ProjectCard({ project, index, t }: { project: any, index: number, t: (k
       <Link href={`/portfolio/${project.slug}`} className="block w-full h-full p-2.5">
         <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative bg-surface-heavy">
           
-          {/* Next.js Optimized Image */}
+          {/* Next.js Optimized Image with Premium Fallback & Shimmer */}
           <div className="absolute inset-0 z-0 h-full w-full">
-            <Image 
+            <ImageWithFallback 
               src={project.image} 
               alt={project.title}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               priority={isPriority}
-              className="object-cover transition-transform duration-1000 group-hover:scale-105 group-hover:blur-[1px]"
+              className="transition-transform duration-1000 group-hover:scale-105 group-hover:blur-[1px]"
+              objectFit="cover"
             />
           </div>
           
