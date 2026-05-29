@@ -5,7 +5,7 @@
     "categoryKey": "branding",
     "title": "Chitropot (চিত্রপট)",
     "slug": "chitropot-workshop",
-    "image": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=2000",
+    "image": "/projects/image_001.jpg",
     "size": "large",
     "year": "2025",
     "catId": "Branding",
@@ -21,8 +21,10 @@
       { "label": "Identity Recall", "value": "95%" }
     ],
     "gallery": [
-      "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=2000",
-      "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?q=80&w=2000"
+      "/projects/image_002.jpg",
+      "/projects/image_003.jpg",
+      "/projects/image_004.jpg",
+      "/projects/image_005.jpg"
     ]
   },
   {
@@ -31,7 +33,7 @@
     "categoryKey": "branding",
     "title": "Gallery Hamiduzzaman",
     "slug": "gallery-hamiduzzaman",
-    "image": "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?q=80&w=2000",
+    "image": "/projects/image_012.jpg",
     "size": "medium",
     "year": "2026",
     "catId": "Creative Management",
@@ -47,8 +49,9 @@
       { "label": "Media Impression", "value": "100k+" }
     ],
     "gallery": [
-      "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?q=80&w=2000",
-      "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=2000"
+      "/projects/image_013.jpg",
+      "/projects/image_014.jpg",
+      "/projects/image_015.jpg"
     ]
   },
   {
@@ -57,7 +60,7 @@
     "categoryKey": "motion",
     "title": "Charukola Animation Festival",
     "slug": "charukola-animation-festival",
-    "image": "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070",
+    "image": "/projects/image_022.jpg",
     "size": "large",
     "year": "2025",
     "catId": "Motion Design",
@@ -73,8 +76,9 @@
       { "label": "Engagement Increase", "value": "+180%" }
     ],
     "gallery": [
-      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000",
-      "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2000"
+      "/projects/image_023.jpg",
+      "/projects/image_024.jpg",
+      "/projects/image_025.jpg"
     ]
   },
   {
@@ -83,7 +87,7 @@
     "categoryKey": "branding",
     "title": "Woven Heritage",
     "slug": "woven-heritage-shital-pati",
-    "image": "https://images.unsplash.com/photo-1518818419601-129668d4076e?q=80&w=2070",
+    "image": "/projects/image_039.jpg",
     "size": "medium",
     "year": "2025",
     "catId": "Textile & Grid Design",
@@ -99,7 +103,9 @@
       { "label": "UNESCO Heritage Tribute", "value": "100%" }
     ],
     "gallery": [
-      "https://images.unsplash.com/photo-1518818419601-129668d4076e?q=80&w=2000"
+      "/projects/image_040.jpg",
+      "/projects/image_041.jpg",
+      "/projects/image_042.jpg"
     ]
   },
   {
@@ -108,7 +114,7 @@
     "categoryKey": "animation3d",
     "title": "Jhumur & Biva",
     "slug": "jhumur-biva-animation",
-    "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964",
+    "image": "/projects/image_047.jpg",
     "size": "large",
     "year": "2024",
     "catId": "Animation",
@@ -124,7 +130,8 @@
       { "label": "Awareness Index", "value": "High" }
     ],
     "gallery": [
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000"
+      "/projects/image_048.jpg",
+      "/projects/image_049.jpg"
     ]
   },
   {
@@ -133,7 +140,7 @@
     "categoryKey": "motion",
     "title": "DIKKHA E-Learning",
     "slug": "dikkha-e-learning",
-    "image": "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2070",
+    "image": "/projects/image_052.jpg",
     "size": "medium",
     "year": "2024",
     "catId": "Motion Graphics",
@@ -149,7 +156,8 @@
       { "label": "Concept Retention", "value": "+45%" }
     ],
     "gallery": [
-      "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2000"
+      "/projects/image_053.jpg",
+      "/projects/image_054.jpg"
     ]
   },
   {
@@ -158,7 +166,7 @@
     "categoryKey": "branding",
     "title": "Zainul Mela 2024",
     "slug": "zainul-mela-poster",
-    "image": "https://images.unsplash.com/photo-1536699059885-cecc0e4787f7?q=80&w=2070",
+    "image": "/projects/image_037.jpg",
     "size": "medium",
     "year": "2024",
     "catId": "Poster Design",
@@ -174,7 +182,7 @@
       { "label": "Design Rating", "value": "Outstanding" }
     ],
     "gallery": [
-      "https://images.unsplash.com/photo-1536699059885-cecc0e4787f7?q=80&w=2000"
+      "/projects/image_038.jpg"
     ]
   }
 ]
