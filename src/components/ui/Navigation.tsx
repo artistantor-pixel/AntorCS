@@ -183,7 +183,7 @@ export default function Navigation() {
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
               className="absolute -top-[13px] left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
             >
-              <div className="w-12 h-12 bg-zinc-950 rounded-full flex items-center justify-center text-white shadow-lg shadow-zinc-950/20 border border-white/5">
+              <div className="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-white/10">
                 {(() => {
                   const Icon = (() => {
                     if (pathname === "/portfolio") return Briefcase;
