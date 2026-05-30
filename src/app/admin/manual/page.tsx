@@ -93,12 +93,12 @@ export default function AdminManualPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#f5f5f5] font-sans selection:bg-[#ea3f40] selection:text-white pb-24">
+    <div className="min-h-screen bg-[#f6f3ee] text-[#1c1b18] font-sans selection:bg-[#ea3f40] selection:text-white pb-24">
       {/* Header Banner */}
-      <header className="border-b border-zinc-800 bg-zinc-950/40 backdrop-blur-md sticky top-0 z-50">
+      <header className="border-b border-[#1c1b18]/10 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-[0_2px_15px_rgba(0,0,0,0.02)]">
         <div className="container mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-3">
-            <Link href="/admin" className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 transition-colors text-zinc-400 hover:text-white">
+            <Link href="/admin" className="p-2 rounded-xl bg-[#f6f3ee] border border-[#1c1b18]/10 hover:bg-white transition-colors text-[#6b6a65] hover:text-[#1c1b18]">
               <ArrowLeft size={16} />
             </Link>
             <div>
@@ -106,7 +106,7 @@ export default function AdminManualPage() {
                 <Terminal size={14} className="text-[#ea3f40]" />
                 <span className="text-[10px] font-bold tracking-widest uppercase text-[#ea3f40]">AntorOS Developer System</span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white mt-0.5">Motion Video Production Manual</h1>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1c1b18] mt-0.5">Motion Video Production Manual</h1>
             </div>
           </div>
           
@@ -120,7 +120,7 @@ export default function AdminManualPage() {
       <main className="container mx-auto px-6 mt-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Left column: Overview & Core specs */}
         <section className="lg:col-span-4 space-y-8">
-          <div className="p-8 rounded-3xl bg-zinc-950 border border-zinc-800/80 space-y-6 relative overflow-hidden">
+          <div className="p-8 rounded-3xl bg-white border border-[#1c1b18]/10 space-y-6 relative overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#ea3f40]/5 rounded-full blur-3xl" />
             
             <div className="w-12 h-12 rounded-2xl bg-[#ea3f40]/10 border border-[#ea3f40]/20 flex items-center justify-center text-[#ea3f40]">
@@ -128,66 +128,66 @@ export default function AdminManualPage() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-bold tracking-tight text-white">Video Scope & Manual</h2>
-              <p className="text-sm text-zinc-400 leading-relaxed">
+              <h2 className="text-xl font-bold tracking-tight text-[#1c1b18]">Video Scope & Manual</h2>
+              <p className="text-sm text-[#6b6a65] leading-relaxed">
                 This manual acts as a production script and system documentation outlining all the unique, custom-coded features built into the <strong>Antor Creative Studio</strong> ecosystem. Use these scenes, cues, and copy text directly inside your motion graphics composition (After Effects / Premiere) to build an eye-catching visual showreel.
               </p>
             </div>
 
-            <div className="pt-6 border-t border-zinc-800 space-y-4">
+            <div className="pt-6 border-t border-[#1c1b18]/10 space-y-4">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-zinc-500 font-semibold uppercase">Platform Tech</span>
-                <span className="text-zinc-300 font-mono">Next.js 16 (Turbopack)</span>
+                <span className="text-zinc-400 font-semibold uppercase">Platform Tech</span>
+                <span className="text-[#1c1b18] font-mono font-semibold">Next.js 16 (Turbopack)</span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-zinc-500 font-semibold uppercase">Design System</span>
-                <span className="text-zinc-300 font-mono">Tailwind CSS + Custom UI</span>
+                <span className="text-zinc-400 font-semibold uppercase">Design System</span>
+                <span className="text-[#1c1b18] font-mono font-semibold">Tailwind CSS + Custom UI</span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-zinc-500 font-semibold uppercase">Primary Typography</span>
-                <span className="text-zinc-300 font-mono">Hind Siliguri</span>
+                <span className="text-zinc-400 font-semibold uppercase">Primary Typography</span>
+                <span className="text-[#1c1b18] font-mono font-semibold">Hind Siliguri</span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-zinc-500 font-semibold uppercase">Client Security</span>
-                <span className="text-zinc-300 font-mono">Gmail Access Protection</span>
+                <span className="text-zinc-400 font-semibold uppercase">Client Security</span>
+                <span className="text-[#1c1b18] font-mono font-semibold">Gmail Access Protection</span>
               </div>
             </div>
           </div>
 
           {/* Quick Technical Specs Block */}
-          <div className="p-8 rounded-3xl bg-zinc-950 border border-zinc-800/80 space-y-6">
+          <div className="p-8 rounded-3xl bg-white border border-[#1c1b18]/10 space-y-6 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
             <div className="flex items-center gap-2 text-[#ea3f40]">
               <Cpu size={18} />
               <h3 className="text-sm font-bold tracking-widest uppercase">Feature Engine Specs</h3>
             </div>
             
             <div className="space-y-4 text-sm">
-              <div className="p-4 bg-zinc-900/50 rounded-2xl border border-zinc-800 space-y-2">
-                <div className="flex items-center gap-2 text-white font-semibold">
+              <div className="p-4 bg-[#f6f3ee]/60 rounded-2xl border border-[#1c1b18]/5 space-y-2">
+                <div className="flex items-center gap-2 text-[#1c1b18] font-semibold">
                   <Calculator size={14} className="text-[#ea3f40]" />
                   <span>Cost Calculators</span>
                 </div>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[#6b6a65]">
                   Dynamic slider system using server-configurable rates, producing structured PDF estimations automatically.
                 </p>
               </div>
 
-              <div className="p-4 bg-zinc-900/50 rounded-2xl border border-zinc-800 space-y-2">
-                <div className="flex items-center gap-2 text-white font-semibold">
+              <div className="p-4 bg-[#f6f3ee]/60 rounded-2xl border border-[#1c1b18]/5 space-y-2">
+                <div className="flex items-center gap-2 text-[#1c1b18] font-semibold">
                   <ShieldAlert size={14} className="text-[#ea3f40]" />
                   <span>Secure Workspace</span>
                 </div>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[#6b6a65]">
                   Prisma ORM linked system filtering active gmail domain users, supplying active project task statuses.
                 </p>
               </div>
 
-              <div className="p-4 bg-zinc-900/50 rounded-2xl border border-zinc-800 space-y-2">
-                <div className="flex items-center gap-2 text-white font-semibold">
+              <div className="p-4 bg-[#f6f3ee]/60 rounded-2xl border border-[#1c1b18]/5 space-y-2">
+                <div className="flex items-center gap-2 text-[#1c1b18] font-semibold">
                   <Layers size={14} className="text-[#ea3f40]" />
                   <span>Behance Blocks</span>
                 </div>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[#6b6a65]">
                   Modular JSON database columns rendering markdown text blocks, high-def design images, and structured metrics.
                 </p>
               </div>
@@ -200,9 +200,9 @@ export default function AdminManualPage() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <BookOpen size={18} className="text-[#ea3f40]" />
-              <h2 className="text-lg font-bold tracking-tight text-white">Motion Video Scenes & Copy Script</h2>
+              <h2 className="text-lg font-bold tracking-tight text-[#1c1b18]">Motion Video Scenes & Copy Script</h2>
             </div>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-[#6b6a65]">
               Interactive timeline structured specifically for drafting video scene elements. Copy premium headlines instantly using the copy buttons.
             </p>
           </div>
@@ -211,10 +211,10 @@ export default function AdminManualPage() {
             {videoScenes.map((scene) => (
               <div 
                 key={scene.scene}
-                className="group p-8 rounded-3xl bg-zinc-950 border border-zinc-800 hover:border-zinc-700/80 transition-all duration-300 space-y-6 relative overflow-hidden"
+                className="group p-8 rounded-3xl bg-white border border-[#1c1b18]/10 hover:border-[#ea3f40]/30 transition-all duration-300 space-y-6 relative overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.02)]"
               >
                 {/* Visual side accent */}
-                <div className="absolute top-0 left-0 w-[4px] h-full bg-zinc-800 group-hover:bg-[#ea3f40] transition-colors" />
+                <div className="absolute top-0 left-0 w-[4px] h-full bg-[#1c1b18]/5 group-hover:bg-[#ea3f40] transition-colors" />
 
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                   <div className="space-y-1">
@@ -222,31 +222,31 @@ export default function AdminManualPage() {
                       <span className="font-mono text-xs font-bold text-[#ea3f40] px-2 py-0.5 rounded bg-[#ea3f40]/10">
                         SCENE {scene.scene}
                       </span>
-                      <span className="text-xs font-medium text-zinc-500">
+                      <span className="text-xs font-medium text-[#6b6a65]">
                         Duration: {scene.duration}
                       </span>
                     </div>
-                    <h3 className="text-xl font-bold tracking-tight text-white mt-1 group-hover:text-[#ea3f40] transition-colors">
+                    <h3 className="text-xl font-bold tracking-tight text-[#1c1b18] mt-1 group-hover:text-[#ea3f40] transition-colors">
                       {scene.title}
                     </h3>
                   </div>
 
-                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono">
+                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#f6f3ee] border border-[#1c1b18]/5 text-[#1c1b18] font-mono">
                     {scene.focus}
                   </span>
                 </div>
 
-                <p className="text-sm text-zinc-300 leading-relaxed font-sans">
+                <p className="text-sm text-zinc-600 leading-relaxed font-sans">
                   {scene.description}
                 </p>
 
                 {/* Features List */}
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">Core Features Showcased:</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#6b6a65]">Core Features Showcased:</h4>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {scene.features.map((feat, index) => (
-                      <li key={index} className="text-xs text-zinc-400 flex items-center gap-2">
-                        <span className="w-1 h-1 rounded-full bg-[#ea3f40]" />
+                      <li key={index} className="text-xs text-[#6b6a65] flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#ea3f40]" />
                         <span>{feat}</span>
                       </li>
                     ))}
@@ -254,31 +254,31 @@ export default function AdminManualPage() {
                 </div>
 
                 {/* Motion Cue Box */}
-                <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 space-y-2">
-                  <div className="flex items-center gap-1.5 text-zinc-400 text-xs font-bold uppercase">
+                <div className="p-4 rounded-2xl bg-[#f6f3ee]/60 border border-[#1c1b18]/5 space-y-2">
+                  <div className="flex items-center gap-1.5 text-[#1c1b18] text-xs font-bold uppercase">
                     <Play size={12} className="text-[#ea3f40]" />
                     <span>Visual Motion Director Cue</span>
                   </div>
-                  <p className="text-xs text-zinc-400 italic font-sans leading-relaxed">
+                  <p className="text-xs text-[#6b6a65] italic font-sans leading-relaxed">
                     &ldquo;{scene.videoCue}&rdquo;
                   </p>
                 </div>
 
                 {/* Video Copy / Text to Copy */}
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">Text Copy for Composition:</h4>
-                  <div className="p-4 rounded-2xl bg-[#0d0d0d] border border-zinc-800 flex justify-between items-center gap-4">
-                    <p className="text-xs sm:text-sm text-white font-medium leading-relaxed font-sans flex-1">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#6b6a65]">Text Copy for Composition:</h4>
+                  <div className="p-4 rounded-2xl bg-[#f6f3ee] border border-[#1c1b18]/5 flex justify-between items-center gap-4">
+                    <p className="text-xs sm:text-sm text-[#1c1b18] font-medium leading-relaxed font-sans flex-1">
                       {scene.copyText}
                     </p>
                     <button
                       onClick={() => handleCopy(scene.copyText, scene.scene)}
-                      className="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white flex items-center gap-1.5 text-xs font-bold transition-all shrink-0 active:scale-95 cursor-pointer"
+                      className="px-3.5 py-2 rounded-xl bg-white hover:bg-[#f6f3ee] border border-[#1c1b18]/10 text-[#6b6a65] hover:text-[#1c1b18] flex items-center gap-1.5 text-xs font-bold transition-all shrink-0 active:scale-95 cursor-pointer shadow-sm"
                     >
                       {copiedText === scene.scene ? (
                         <>
-                          <Check size={12} className="text-emerald-500" />
-                          <span className="text-emerald-500">Copied</span>
+                          <Check size={12} className="text-emerald-600" />
+                          <span className="text-emerald-600">Copied</span>
                         </>
                       ) : (
                         <>
