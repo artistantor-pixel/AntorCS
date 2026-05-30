@@ -126,52 +126,12 @@ export default function Navigation() {
 
       {/* ── MOBILE FLUID TAB BAR ── */}
       <div className="md:hidden fixed bottom-0 left-0 w-full z-[100] bg-transparent pb-6 pt-2 px-4 pointer-events-none">
-        <div className="max-w-md mx-auto relative pointer-events-auto h-[70px]">
+        <div className="max-w-md mx-auto relative pointer-events-auto">
           
-          {/* 1. Dynamic morphing SVG backplate with perfect corner wings */}
-          <svg 
-            viewBox="0 0 1000 96" 
-            className="absolute inset-0 w-full h-full drop-shadow-[0_-8px_20px_rgba(0,0,0,0.03)] pointer-events-none z-10"
-            preserveAspectRatio="none"
-          >
-            <motion.path
-              animate={{ d: (() => {
-                const activeIndex = (() => {
-                  if (pathname === "/portfolio") return 0;
-                  if (pathname === "/shop") return 1;
-                  if (pathname === "/calculator") return 2;
-                  if (pathname === "/about") return 3;
-                  if (pathname === "/contact") return 4;
-                  return 2;
-                })();
-                const x = activeIndex * 200 + 100;
-                return `
-                  M 0,46
-                  A 16,16 0 0 1 16,30
-                  L ${x - 63},30
-                  A 16,16 0 0 1 ${x - 47},45.5
-                  A 47,47 0 0 0 ${x + 47},45.5
-                  A 16,16 0 0 1 ${x + 63},30
-                  L 984,30
-                  A 16,16 0 0 1 1000,46
-                  L 1000,90
-                  A 4,4 0 0 1 996,94
-                  L 4,94
-                  A 4,4 0 0 1 0,90
-                  Z
-                `;
-              })() }}
-              transition={{ type: "spring", stiffness: 350, damping: 28 }}
-              fill="white"
-              stroke="rgba(28, 27, 24, 0.04)"
-              strokeWidth="1.2"
-            />
-          </svg>
-
-          {/* Main Tab Bar Actions (Overlay) */}
-          <div className="w-full h-16 rounded-3xl flex justify-between items-center relative z-30 mt-[26px]">
+          {/* Main Tab Bar Container */}
+          <div className="w-full h-16 bg-white rounded-3xl flex justify-between items-center relative shadow-[0_-5px_30px_rgba(0,0,0,0.06),0_10px_20px_rgba(0,0,0,0.03)] border border-[#1c1b18]/5">
             
-            {/* 2. Fluid sliding floating active circle with perfect nested spacing */}
+            {/* 1. Fluid sliding crescent notch scoop (Illusion mask) */}
             <motion.div
               animate={{ x: `${(() => {
                 if (pathname === "/portfolio") return 0;
@@ -182,9 +142,27 @@ export default function Navigation() {
                 return 2;
               })() * 100}%` }}
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
-              className="absolute -top-[20px] left-0 h-16 w-1/5 flex justify-center pointer-events-none z-25"
+              className="absolute top-0 left-0 h-16 w-1/5 flex justify-center pointer-events-none z-10"
             >
-              <div className="w-[52px] h-[52px] bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-transparent">
+              <svg width="92" height="48" viewBox="0 0 92 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute -top-[1px]">
+                <path d="M 0 0 L 92 0 A 14 14 0 0 1 78 14 L 78 16 A 32 32 0 0 1 14 16 L 14 14 A 14 14 0 0 1 0 0 Z" fill="var(--background)" />
+              </svg>
+            </motion.div>
+
+            {/* 2. Fluid sliding floating active circle */}
+            <motion.div
+              animate={{ x: `${(() => {
+                if (pathname === "/portfolio") return 0;
+                if (pathname === "/shop") return 1;
+                if (pathname === "/calculator") return 2;
+                if (pathname === "/about") return 3;
+                if (pathname === "/contact") return 4;
+                return 2;
+              })() * 100}%` }}
+              transition={{ type: "spring", stiffness: 350, damping: 28 }}
+              className="absolute -top-6 left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
+            >
+              <div className="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-white/10">
                 {(() => {
                   const Icon = (() => {
                     if (pathname === "/portfolio") return Briefcase;
