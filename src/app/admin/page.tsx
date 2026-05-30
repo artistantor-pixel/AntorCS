@@ -1197,6 +1197,13 @@ export default function AdminDashboard() {
               <Users size={16} />
               Workspace Users
             </button>
+            <a
+              href="/admin/manual"
+              className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all border text-[#4B5563] hover:text-brand-red hover:bg-[#F3F4F6] border-transparent"
+            >
+              <Video size={16} className="text-[#ea3f40]" />
+              Video Manual 🎬
+            </a>
           </nav>
         </div>
 
