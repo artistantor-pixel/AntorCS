@@ -23,7 +23,7 @@ export default function ServicesSection() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service, i) => (
-          <div key={i} className="bg-surface border border-border p-8 rounded-3xl flex flex-col group hover:border-brand-red/50 hover:shadow-2xl hover:shadow-brand-red/5 transition-all duration-300 cursor-pointer">
+          <div key={i} className="bg-surface border border-border colorful-card p-8 rounded-3xl flex flex-col group transition-all duration-300 cursor-pointer shadow-[0_8px_30px_rgba(0,0,0,0.01)]">
             <div className="w-14 h-14 bg-background border border-border rounded-2xl flex items-center justify-center mb-8 text-foreground group-hover:bg-brand-red group-hover:text-white group-hover:border-brand-red transition-colors duration-300">
               <service.icon size={24} />
             </div>

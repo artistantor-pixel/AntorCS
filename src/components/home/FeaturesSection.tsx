@@ -17,7 +17,7 @@ export default function FeaturesSection() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {features.map((feat, i) => (
-          <div key={i} className="bg-surface border border-border p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300">
+          <div key={i} className="bg-surface border border-border colorful-card p-8 rounded-3xl transition-all duration-300 shadow-[0_8px_30px_rgba(0,0,0,0.01)]">
             <div className="w-12 h-12 bg-brand-red/10 rounded-2xl flex items-center justify-center mb-6 text-brand-red">
               <CheckCircle2 size={24} />
             </div>
