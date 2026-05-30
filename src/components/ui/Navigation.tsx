@@ -148,9 +148,9 @@ export default function Navigation() {
                 return `
                   M 0,46
                   A 16,16 0 0 1 16,30
-                  L ${x - 85},30
-                  C ${x - 48},30 ${x - 42},76 ${x},76
-                  C ${x + 42},76 ${x + 48},30 ${x + 85},30
+                  L ${x - 75},30
+                  C ${x - 25},30 ${x - 40},86 ${x},86
+                  C ${x + 40},86 ${x + 25},30 ${x + 75},30
                   L 984,30
                   A 16,16 0 0 1 1000,46
                   L 1000,90
@@ -181,9 +181,9 @@ export default function Navigation() {
                 return 2;
               })() * 100}%` }}
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
-              className="absolute -top-[13px] left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
+              className="absolute -top-[24px] left-0 h-16 w-1/5 flex justify-center pointer-events-none z-25"
             >
-              <div className="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-white/10">
+              <div className="w-[52px] h-[52px] bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-transparent">
                 {(() => {
                   const Icon = (() => {
                     if (pathname === "/portfolio") return Briefcase;
