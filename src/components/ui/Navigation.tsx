@@ -144,8 +144,8 @@ export default function Navigation() {
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
               className="absolute top-0 left-0 h-16 w-1/5 flex justify-center pointer-events-none z-10"
             >
-              <svg width="92" height="48" viewBox="0 0 92 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute -top-[1px]">
-                <path d="M 0 0 L 92 0 A 14 14 0 0 1 78 14 L 78 16 A 32 32 0 0 1 14 16 L 14 14 A 14 14 0 0 1 0 0 Z" fill="var(--background)" />
+              <svg width="120" height="48" viewBox="0 0 120 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute -top-[1px]">
+                <path d="M 0 0 C 45 0 15 48 60 48 C 105 48 75 0 120 0 L 0 0 Z" fill="var(--background)" />
               </svg>
             </motion.div>
 
