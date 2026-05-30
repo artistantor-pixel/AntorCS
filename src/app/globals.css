@@ -10,8 +10,8 @@
   --color-brand-red: var(--brand-red);
   --color-brand-tan: var(--brand-tan);
   
-  --font-sans: var(--font-inter), sans-serif;
-  --font-serif: var(--font-playfair), serif;
+  --font-sans: var(--font-hind-siliguri), sans-serif;
+  --font-serif: var(--font-hind-siliguri), sans-serif;
 }
 
 :root {
@@ -28,18 +28,18 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: var(--font-hind-siliguri), sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* Base text styling */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--foreground);
+h1, h2, h3, h4, h5, h6, p, span, a, button, input, select, textarea, div {
+  font-family: var(--font-hind-siliguri), sans-serif !important;
 }
 
 .font-serif {
-  font-family: var(--font-serif);
+  font-family: var(--font-hind-siliguri), sans-serif !important;
 }
 
 @layer utilities {
