@@ -124,46 +124,104 @@ export default function Navigation() {
         </div>
       </motion.header>
 
-      <div className="md:hidden fixed bottom-0 left-0 w-full z-[100] bg-background/80 backdrop-blur-lg border-t border-white/5 pb-5 pt-3 px-3 shadow-[0_-10px_30px_rgba(0,0,0,0.3)]">
-        <div className="flex justify-between items-center max-w-md mx-auto gap-1">
-          <Link href="/portfolio" className={`flex flex-col items-center gap-1.5 transition-all duration-300 relative group ${pathname === '/portfolio' ? 'text-brand-red scale-105' : 'text-muted hover:text-foreground'}`}>
-            <Briefcase size={20} className="transition-transform group-active:scale-90" />
-            <span className="text-[10px] font-semibold tracking-wide">{t('nav.works')}</span>
-            {pathname === '/portfolio' && (
-              <motion.span layoutId="activeDot" className="absolute -bottom-2 w-1 h-1 bg-brand-red rounded-full shadow-[0_0_8px_#E11D48]" />
-            )}
-          </Link>
+      {/* ── MOBILE FLUID TAB BAR ── */}
+      <div className="md:hidden fixed bottom-0 left-0 w-full z-[100] bg-transparent pb-6 pt-2 px-4 pointer-events-none">
+        <div className="max-w-md mx-auto relative pointer-events-auto">
+          
+          {/* Main Tab Bar Container */}
+          <div className="w-full h-16 bg-white rounded-3xl flex justify-between items-center relative shadow-[0_-5px_30px_rgba(0,0,0,0.06),0_10px_20px_rgba(0,0,0,0.03)] border border-[#1c1b18]/5">
+            
+            {/* 1. Fluid sliding crescent notch scoop (Illusion mask) */}
+            <motion.div
+              animate={{ x: `${(() => {
+                if (pathname === "/portfolio") return 0;
+                if (pathname === "/shop") return 1;
+                if (pathname === "/calculator") return 2;
+                if (pathname === "/about") return 3;
+                if (pathname === "/contact") return 4;
+                return 2;
+              })() * 100}%` }}
+              transition={{ type: "spring", stiffness: 350, damping: 28 }}
+              className="absolute top-[-1px] left-0 h-16 w-1/5 flex justify-center pointer-events-none z-10"
+            >
+              <div className="w-16 h-12 bg-[#f6f3ee] rounded-b-full border-t-[5px] border-[#f6f3ee] relative">
+                {/* Perfect smoothing left helper wing */}
+                <div className="absolute -left-[14px] top-0 w-3.5 h-3.5 bg-white rounded-tr-full shadow-[2px_-2px_0_0_#f6f3ee]" />
+                {/* Perfect smoothing right helper wing */}
+                <div className="absolute -right-[14px] top-0 w-3.5 h-3.5 bg-white rounded-tl-full shadow-[-2px_-2px_0_0_#f6f3ee]" />
+              </div>
+            </motion.div>
 
-          <Link href="/shop" className={`flex flex-col items-center gap-1.5 transition-all duration-300 relative group ${pathname === '/shop' ? 'text-brand-red scale-105' : 'text-muted hover:text-foreground'}`}>
-            <ShoppingBag size={20} className="transition-transform group-active:scale-90" />
-            <span className="text-[10px] font-semibold tracking-wide">{t('nav.shop')}</span>
-            {pathname === '/shop' && (
-              <motion.span layoutId="activeDot" className="absolute -bottom-2 w-1 h-1 bg-brand-red rounded-full shadow-[0_0_8px_#E11D48]" />
-            )}
-          </Link>
+            {/* 2. Fluid sliding floating active circle */}
+            <motion.div
+              animate={{ x: `${(() => {
+                if (pathname === "/portfolio") return 0;
+                if (pathname === "/shop") return 1;
+                if (pathname === "/calculator") return 2;
+                if (pathname === "/about") return 3;
+                if (pathname === "/contact") return 4;
+                return 2;
+              })() * 100}%` }}
+              transition={{ type: "spring", stiffness: 350, damping: 28 }}
+              className="absolute -top-6 left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
+            >
+              <div className="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-white/10">
+                {(() => {
+                  const Icon = (() => {
+                    if (pathname === "/portfolio") return Briefcase;
+                    if (pathname === "/shop") return ShoppingBag;
+                    if (pathname === "/calculator") return Calculator;
+                    if (pathname === "/about") return User;
+                    if (pathname === "/contact") return MessageSquare;
+                    return Calculator;
+                  })();
+                  return <Icon size={18} className="animate-pulse" />;
+                })()}
+              </div>
+            </motion.div>
 
-          <Link href="/calculator" className="flex flex-col items-center gap-1 -mt-8 relative group">
-            <div className="bg-gradient-to-tr from-brand-red to-rose-500 p-3.5 rounded-full shadow-[0_4px_20px_rgba(225,29,72,0.4)] text-white hover:scale-110 active:scale-95 transition-transform duration-300 border border-white/10">
-              <Calculator size={22} />
-            </div>
-            <span className="text-[10px] font-bold text-brand-red mt-1">Estimate</span>
-          </Link>
+            {/* 3. Non-active and active links layout */}
+            {[
+              { href: "/portfolio", label: t('nav.works'), icon: Briefcase },
+              { href: "/shop", label: t('nav.shop'), icon: ShoppingBag },
+              { href: "/calculator", label: "Estimate", icon: Calculator },
+              { href: "/about", label: t('nav.about'), icon: User },
+              { href: "/contact", label: "Contact", icon: MessageSquare },
+            ].map((item, idx) => {
+              const activeIndex = (() => {
+                if (pathname === "/portfolio") return 0;
+                if (pathname === "/shop") return 1;
+                if (pathname === "/calculator") return 2;
+                if (pathname === "/about") return 3;
+                if (pathname === "/contact") return 4;
+                return 2;
+              })();
+              const isActive = activeIndex === idx;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex-1 h-full flex flex-col items-center justify-center relative z-30"
+                >
+                  <motion.div
+                    animate={{ 
+                      y: isActive ? -30 : 0,
+                      opacity: isActive ? 0 : 1,
+                      scale: isActive ? 0.6 : 1
+                    }}
+                    transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                    className="flex flex-col items-center gap-1 text-[#6b6a65] hover:text-[#1c1b18]"
+                  >
+                    <Icon size={18} />
+                    <span className="text-[9px] font-bold tracking-wide">{item.label}</span>
+                  </motion.div>
+                </Link>
+              );
+            })}
 
-          <Link href="/about" className={`flex flex-col items-center gap-1.5 transition-all duration-300 relative group ${pathname === '/about' ? 'text-brand-red scale-105' : 'text-muted hover:text-foreground'}`}>
-            <User size={20} className="transition-transform group-active:scale-90" />
-            <span className="text-[10px] font-semibold tracking-wide">{t('nav.about')}</span>
-            {pathname === '/about' && (
-              <motion.span layoutId="activeDot" className="absolute -bottom-2 w-1 h-1 bg-brand-red rounded-full shadow-[0_0_8px_#E11D48]" />
-            )}
-          </Link>
+          </div>
 
-          <Link href="/contact" className={`flex flex-col items-center gap-1.5 transition-all duration-300 relative group ${pathname === '/contact' ? 'text-brand-red scale-105' : 'text-muted hover:text-foreground'}`}>
-            <MessageSquare size={20} className="transition-transform group-active:scale-90" />
-            <span className="text-[10px] font-semibold tracking-wide">Contact</span>
-            {pathname === '/contact' && (
-              <motion.span layoutId="activeDot" className="absolute -bottom-2 w-1 h-1 bg-brand-red rounded-full shadow-[0_0_8px_#E11D48]" />
-            )}
-          </Link>
         </div>
       </div>
 
