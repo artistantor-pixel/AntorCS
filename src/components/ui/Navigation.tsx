@@ -131,7 +131,7 @@ export default function Navigation() {
           {/* 1. Dynamic morphing SVG backplate with perfect corner wings */}
           <svg 
             viewBox="0 0 1000 96" 
-            className="absolute inset-0 w-full h-full drop-shadow-[0_-6px_15px_rgba(0,0,0,0.03)] pointer-events-none z-10"
+            className="absolute inset-0 w-full h-full drop-shadow-[0_-8px_20px_rgba(0,0,0,0.03)] pointer-events-none z-10"
             preserveAspectRatio="none"
           >
             <motion.path
@@ -148,9 +148,9 @@ export default function Navigation() {
                 return `
                   M 0,46
                   A 16,16 0 0 1 16,30
-                  L ${x - 66},30
-                  C ${x - 42},30 ${x - 34},78 ${x},78
-                  C ${x + 34},78 ${x + 42},30 ${x + 66},30
+                  L ${x - 85},30
+                  C ${x - 48},30 ${x - 42},76 ${x},76
+                  C ${x + 42},76 ${x + 48},30 ${x + 85},30
                   L 984,30
                   A 16,16 0 0 1 1000,46
                   L 1000,90
@@ -162,8 +162,8 @@ export default function Navigation() {
               })() }}
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
               fill="white"
-              stroke="rgba(28, 27, 24, 0.05)"
-              strokeWidth="1.5"
+              stroke="rgba(28, 27, 24, 0.04)"
+              strokeWidth="1.2"
             />
           </svg>
 
@@ -181,9 +181,9 @@ export default function Navigation() {
                 return 2;
               })() * 100}%` }}
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
-              className="absolute -top-[23px] left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
+              className="absolute -top-[13px] left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
             >
-              <div className="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-white/10">
+              <div className="w-12 h-12 bg-zinc-950 rounded-full flex items-center justify-center text-white shadow-lg shadow-zinc-950/20 border border-white/5">
                 {(() => {
                   const Icon = (() => {
                     if (pathname === "/portfolio") return Briefcase;
@@ -193,7 +193,7 @@ export default function Navigation() {
                     if (pathname === "/contact") return MessageSquare;
                     return Calculator;
                   })();
-                  return <Icon size={18} className="animate-pulse" />;
+                  return <Icon size={18} className="animate-pulse text-white" />;
                 })()}
               </div>
             </motion.div>
