@@ -160,7 +160,7 @@ export default function Navigation() {
                 return 2;
               })() * 100}%` }}
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
-              className="absolute -top-6 left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
+              className="absolute -top-[14px] left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
             >
               <div className="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-white/10">
                 {(() => {
