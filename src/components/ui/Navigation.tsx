@@ -131,7 +131,7 @@ export default function Navigation() {
           {/* 1. Dynamic morphing SVG backplate with perfect corner wings */}
           <svg 
             viewBox="0 0 1000 70" 
-            className="absolute inset-0 w-full h-full drop-shadow-[0_-5px_15px_rgba(0,0,0,0.04)] pointer-events-none z-10"
+            className="absolute inset-0 w-full h-full drop-shadow-[0_-6px_15px_rgba(0,0,0,0.03)] pointer-events-none z-10"
             preserveAspectRatio="none"
           >
             <motion.path
@@ -148,9 +148,9 @@ export default function Navigation() {
                 return `
                   M 0,26
                   A 16,16 0 0 1 16,10
-                  L ${x - 52},10
-                  C ${x - 32},10 ${x - 28},42 ${x},42
-                  C ${x + 28},42 ${x + 32},10 ${x + 52},10
+                  L ${x - 78},10
+                  C ${x - 48},10 ${x - 40},54 ${x},54
+                  C ${x + 40},54 ${x + 48},10 ${x + 78},10
                   L 984,10
                   A 16,16 0 0 1 1000,26
                   L 1000,66
@@ -181,7 +181,7 @@ export default function Navigation() {
                 return 2;
               })() * 100}%` }}
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
-              className="absolute -top-[15px] left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
+              className="absolute -top-[19px] left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
             >
               <div className="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-white/10">
                 {(() => {
