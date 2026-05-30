@@ -148,9 +148,10 @@ export default function Navigation() {
                 return `
                   M 0,46
                   A 16,16 0 0 1 16,30
-                  L ${x - 90},30
-                  C ${x - 50},30 ${x - 50},86 ${x},86
-                  C ${x + 50},86 ${x + 50},30 ${x + 90},30
+                  L ${x - 63},30
+                  A 16,16 0 0 1 ${x - 47},45.5
+                  A 47,47 0 0 0 ${x + 47},45.5
+                  A 16,16 0 0 1 ${x + 63},30
                   L 984,30
                   A 16,16 0 0 1 1000,46
                   L 1000,90
@@ -181,7 +182,7 @@ export default function Navigation() {
                 return 2;
               })() * 100}%` }}
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
-              className="absolute -top-[24px] left-0 h-16 w-1/5 flex justify-center pointer-events-none z-25"
+              className="absolute -top-[20px] left-0 h-16 w-1/5 flex justify-center pointer-events-none z-25"
             >
               <div className="w-[52px] h-[52px] bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-transparent">
                 {(() => {
