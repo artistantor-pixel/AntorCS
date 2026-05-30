@@ -126,33 +126,51 @@ export default function Navigation() {
 
       {/* ── MOBILE FLUID TAB BAR ── */}
       <div className="md:hidden fixed bottom-0 left-0 w-full z-[100] bg-transparent pb-6 pt-2 px-4 pointer-events-none">
-        <div className="max-w-md mx-auto relative pointer-events-auto">
+        <div className="max-w-md mx-auto relative pointer-events-auto h-[70px]">
           
-          {/* Main Tab Bar Container */}
-          <div className="w-full h-16 bg-white rounded-3xl flex justify-between items-center relative shadow-[0_-5px_30px_rgba(0,0,0,0.06),0_10px_20px_rgba(0,0,0,0.03)] border border-[#1c1b18]/5">
-            
-            {/* 1. Fluid sliding crescent notch scoop (Illusion mask) */}
-            <motion.div
-              animate={{ x: `${(() => {
-                if (pathname === "/portfolio") return 0;
-                if (pathname === "/shop") return 1;
-                if (pathname === "/calculator") return 2;
-                if (pathname === "/about") return 3;
-                if (pathname === "/contact") return 4;
-                return 2;
-              })() * 100}%` }}
+          {/* 1. Dynamic morphing SVG backplate with perfect corner wings */}
+          <svg 
+            viewBox="0 0 1000 70" 
+            className="absolute inset-0 w-full h-full drop-shadow-[0_-5px_15px_rgba(0,0,0,0.04)] pointer-events-none z-10"
+            preserveAspectRatio="none"
+          >
+            <motion.path
+              animate={{ d: (() => {
+                const activeIndex = (() => {
+                  if (pathname === "/portfolio") return 0;
+                  if (pathname === "/shop") return 1;
+                  if (pathname === "/calculator") return 2;
+                  if (pathname === "/about") return 3;
+                  if (pathname === "/contact") return 4;
+                  return 2;
+                })();
+                const x = activeIndex * 200 + 100;
+                return `
+                  M 0,26
+                  A 16,16 0 0 1 16,10
+                  L ${x - 52},10
+                  C ${x - 32},10 ${x - 28},42 ${x},42
+                  C ${x + 28},42 ${x + 32},10 ${x + 52},10
+                  L 984,10
+                  A 16,16 0 0 1 1000,26
+                  L 1000,66
+                  A 4,4 0 0 1 996,70
+                  L 4,70
+                  A 4,4 0 0 1 0,66
+                  Z
+                `;
+              })() }}
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
-              className="absolute top-[-1px] left-0 h-16 w-1/5 flex justify-center pointer-events-none z-10"
-            >
-              <div className="w-16 h-12 bg-[#f6f3ee] rounded-b-full border-t-[5px] border-[#f6f3ee] relative">
-                {/* Perfect smoothing left helper wing */}
-                <div className="absolute -left-[14px] top-0 w-3.5 h-3.5 bg-white rounded-tr-full shadow-[2px_-2px_0_0_#f6f3ee]" />
-                {/* Perfect smoothing right helper wing */}
-                <div className="absolute -right-[14px] top-0 w-3.5 h-3.5 bg-white rounded-tl-full shadow-[-2px_-2px_0_0_#f6f3ee]" />
-              </div>
-            </motion.div>
+              fill="white"
+              stroke="rgba(28, 27, 24, 0.05)"
+              strokeWidth="1.5"
+            />
+          </svg>
 
-            {/* 2. Fluid sliding floating active circle */}
+          {/* Main Tab Bar Actions (Overlay) */}
+          <div className="w-full h-16 rounded-3xl flex justify-between items-center relative z-30 mt-2.5">
+            
+            {/* 2. Fluid sliding floating active circle with perfect nested spacing */}
             <motion.div
               animate={{ x: `${(() => {
                 if (pathname === "/portfolio") return 0;
@@ -163,7 +181,7 @@ export default function Navigation() {
                 return 2;
               })() * 100}%` }}
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
-              className="absolute -top-6 left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
+              className="absolute -top-[15px] left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
             >
               <div className="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-white/10">
                 {(() => {
@@ -202,7 +220,7 @@ export default function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex-1 h-full flex flex-col items-center justify-center relative z-30"
+                  className="flex-1 h-full flex flex-col items-center justify-center relative z-40"
                 >
                   <motion.div
                     animate={{ 
@@ -211,7 +229,7 @@ export default function Navigation() {
                       scale: isActive ? 0.6 : 1
                     }}
                     transition={{ type: "spring", stiffness: 350, damping: 28 }}
-                    className="flex flex-col items-center gap-1 text-[#6b6a65] hover:text-[#1c1b18]"
+                    className="flex flex-col items-center gap-1 text-[#6b6a65] hover:text-[#1c1b18] pt-2"
                   >
                     <Icon size={18} />
                     <span className="text-[9px] font-bold tracking-wide">{item.label}</span>
