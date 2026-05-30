@@ -130,7 +130,7 @@ export default function Navigation() {
           
           {/* 1. Dynamic morphing SVG backplate with perfect corner wings */}
           <svg 
-            viewBox="0 0 1000 70" 
+            viewBox="0 0 1000 96" 
             className="absolute inset-0 w-full h-full drop-shadow-[0_-6px_15px_rgba(0,0,0,0.03)] pointer-events-none z-10"
             preserveAspectRatio="none"
           >
@@ -146,17 +146,17 @@ export default function Navigation() {
                 })();
                 const x = activeIndex * 200 + 100;
                 return `
-                  M 0,26
-                  A 16,16 0 0 1 16,10
-                  L ${x - 78},10
-                  C ${x - 48},10 ${x - 40},54 ${x},54
-                  C ${x + 40},54 ${x + 48},10 ${x + 78},10
-                  L 984,10
-                  A 16,16 0 0 1 1000,26
-                  L 1000,66
-                  A 4,4 0 0 1 996,70
-                  L 4,70
-                  A 4,4 0 0 1 0,66
+                  M 0,46
+                  A 16,16 0 0 1 16,30
+                  L ${x - 66},30
+                  C ${x - 42},30 ${x - 34},78 ${x},78
+                  C ${x + 34},78 ${x + 42},30 ${x + 66},30
+                  L 984,30
+                  A 16,16 0 0 1 1000,46
+                  L 1000,90
+                  A 4,4 0 0 1 996,94
+                  L 4,94
+                  A 4,4 0 0 1 0,90
                   Z
                 `;
               })() }}
@@ -168,7 +168,7 @@ export default function Navigation() {
           </svg>
 
           {/* Main Tab Bar Actions (Overlay) */}
-          <div className="w-full h-16 rounded-3xl flex justify-between items-center relative z-30 mt-2.5">
+          <div className="w-full h-16 rounded-3xl flex justify-between items-center relative z-30 mt-[26px]">
             
             {/* 2. Fluid sliding floating active circle with perfect nested spacing */}
             <motion.div
@@ -181,7 +181,7 @@ export default function Navigation() {
                 return 2;
               })() * 100}%` }}
               transition={{ type: "spring", stiffness: 350, damping: 28 }}
-              className="absolute -top-[19px] left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
+              className="absolute -top-[23px] left-0 h-14 w-1/5 flex justify-center pointer-events-none z-25"
             >
               <div className="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center text-white shadow-lg shadow-brand-red/40 border border-white/10">
                 {(() => {
