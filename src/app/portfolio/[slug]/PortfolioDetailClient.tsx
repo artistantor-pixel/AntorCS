@@ -25,7 +25,7 @@ const getEmbedUrl = (url: string) => {
   return url;
 };
 
-const MediaRenderer = ({ url, className, style }: { url: string, className?: string, style?: any }) => {
+const MediaRenderer = ({ url, className, style, intrinsic = false }: { url: string, className?: string, style?: any, intrinsic?: boolean }) => {
   const isVideo = isVideoUrl(url);
   
   if (isVideo) {
@@ -45,6 +45,20 @@ const MediaRenderer = ({ url, className, style }: { url: string, className?: str
             allowFullScreen
           />
         )}
+      </div>
+    );
+  }
+
+  if (intrinsic) {
+    return (
+      <div style={style} className={`${className}`}>
+        <ImageWithFallback
+          src={url}
+          alt="Project Media"
+          fill={false}
+          className="w-full h-auto block"
+          objectFit="contain"
+        />
       </div>
     );
   }
@@ -173,32 +187,32 @@ export default function PortfolioDetailClient({ project, nextProject }: { projec
 
   // Map custom theme backgrounds
   const themeBgMap: Record<string, string> = {
-    white: "bg-[#FAFAFA] text-[#1A1A1A] selection:bg-black/10 selection:text-black",
-    gray: "bg-[#18181b] text-zinc-300 selection:bg-white/20 selection:text-white",
-    black: "bg-[#09090b] text-[#FAFAFA] selection:bg-white/20 selection:text-white"
+    white: "bg-[#FAFAFA] text-[#1A1A1A] selection:bg-brand-red/20 selection:text-brand-red",
+    gray: "bg-[#F3F4F6] text-[#1F2937] selection:bg-brand-red/20 selection:text-brand-red",
+    black: "bg-[#FAFAFA] text-[#1A1A1A] selection:bg-brand-red/20 selection:text-brand-red" // Forced light mode as per user request
   };
 
-  const bgStyle = themeBgMap[project?.themeBackground || "black"] || themeBgMap.black;
+  const bgStyle = themeBgMap[project?.themeBackground || "white"] || themeBgMap.white;
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 relative overflow-hidden">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 relative overflow-hidden">
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-brand-red/5 rounded-full blur-[120px] pointer-events-none" />
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center relative z-10 max-w-md p-10 rounded-[2.5rem] bg-surface/50 border border-border/50 backdrop-blur-md shadow-xl"
+          className="text-center relative z-10 max-w-md p-10 rounded-[2.5rem] bg-white/80 border border-black/5 backdrop-blur-md shadow-2xl"
         >
-          <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-surface-heavy text-muted mb-6 border border-border/50">
+          <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-black/5 text-black/50 mb-6 border border-black/10">
             <ArrowLeft size={24} className="rotate-45" />
           </span>
-          <h1 className="text-3xl font-serif font-medium mb-4 tracking-tight">Project Not Found</h1>
-          <p className="text-muted text-sm font-light mb-8 leading-relaxed">
+          <h1 className="text-3xl font-serif font-bold mb-4 tracking-tight text-black">Project Not Found</h1>
+          <p className="text-black/60 text-sm font-light mb-8 leading-relaxed">
             The project you are trying to view does not exist or has been relocated to another workspace.
           </p>
           <Link 
             href="/portfolio" 
-            className="inline-flex bg-foreground text-background px-8 py-3.5 rounded-full font-medium hover:scale-105 transition-all text-xs tracking-wider uppercase shadow-md"
+            className="inline-flex bg-brand-red text-white px-8 py-3.5 rounded-full font-bold hover:scale-105 transition-all text-xs tracking-wider uppercase shadow-xl shadow-brand-red/20"
           >
             Return to Portfolio
           </Link>
@@ -213,15 +227,15 @@ export default function PortfolioDetailClient({ project, nextProject }: { projec
         
         {/* Soft Progress Bar */}
         <motion.div 
-          className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-foreground/10 via-foreground/30 to-foreground/60 origin-left z-[100]" 
+          className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-red/80 to-brand-red origin-left z-[100]" 
           style={{ scaleX }} 
         />
 
-        {/* Glassmorphic Navigation Top Bar */}
+        {/* Glassmorphic Navigation Top Bar (Light Mode) */}
         <div className="fixed top-6 left-6 md:top-10 md:left-10 z-50">
-          <Link href="/portfolio" className="flex items-center gap-2.5 px-5 py-3 rounded-full bg-white/5 dark:bg-black/10 backdrop-blur-xl border border-white/10 dark:border-white/5 text-foreground hover:bg-white/10 hover:scale-105 transition-all shadow-2xl shadow-black/5 group">
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform opacity-70" /> 
-            <span className="text-[10px] uppercase tracking-[0.2em] font-semibold mt-0.5 opacity-90">Archive</span>
+          <Link href="/portfolio" className="flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-white/80 backdrop-blur-xl border border-black/5 text-black hover:bg-white hover:scale-105 transition-all shadow-xl shadow-black/5 group">
+            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform text-brand-red" /> 
+            <span className="text-[11px] uppercase tracking-[0.2em] font-bold mt-0.5 text-black">Archive</span>
           </Link>
         </div>
 
@@ -238,23 +252,24 @@ export default function PortfolioDetailClient({ project, nextProject }: { projec
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3, duration: 1 }}
-                className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full border border-foreground/10 text-foreground/60 uppercase tracking-[0.25em] text-[10px] font-semibold mb-10 bg-foreground/5 backdrop-blur-sm"
+                className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-brand-red/20 text-brand-red uppercase tracking-[0.25em] text-[10px] font-bold mb-10 bg-brand-red/5 backdrop-blur-sm shadow-sm"
               >
+                <span className="w-2 h-2 rounded-full bg-brand-red animate-pulse" />
                 {project.catId}
               </motion.div>
-              <h1 className="text-5xl md:text-[7vw] font-serif leading-[0.95] tracking-tighter capitalize opacity-90">
+              <h1 className="text-5xl md:text-[7vw] font-serif leading-[0.95] tracking-tighter capitalize text-black">
                 {project.title}
               </h1>
             </div>
             
-            <div className="lg:w-1/3 text-base md:text-lg font-light text-foreground/70 leading-relaxed border-l border-foreground/10 pl-8 py-2">
+            <div className="lg:w-1/3 text-base md:text-xl font-light text-black/70 leading-relaxed border-l-2 border-brand-red/20 pl-8 py-2">
               {project.overview}
             </div>
           </motion.div>
         </section>
 
         {/* 2. Massive Hero Parallax Media with Cinematic Reveal */}
-        <section className="px-6 md:px-12 max-w-[100rem] mx-auto relative h-[70vh] md:h-[85vh] overflow-hidden rounded-[2.5rem] md:rounded-[3rem] group cursor-default shadow-sm border border-border/20">
+        <section className="px-6 md:px-12 max-w-[100rem] mx-auto relative h-[70vh] md:h-[85vh] overflow-hidden rounded-[2.5rem] md:rounded-[3rem] group cursor-default shadow-2xl border border-black/5">
           <motion.div 
             initial={{ clipPath: "inset(10% 10% 10% 10% round 3rem)", scale: 1.1 }}
             animate={{ clipPath: "inset(0% 0% 0% 0% round 0rem)", scale: 1 }}
@@ -270,36 +285,36 @@ export default function PortfolioDetailClient({ project, nextProject }: { projec
             </motion.div>
           </motion.div>
           
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/40 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 pointer-events-none" />
           
-          {/* Subtle Floating Metadata Card */}
+          {/* Subtle Floating Metadata Card (Light Mode adapted) */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 1 }}
-            className="absolute bottom-8 right-8 md:bottom-12 md:right-12 bg-background/60 backdrop-blur-2xl p-8 rounded-[2rem] shadow-2xl max-w-sm hidden md:block border border-white/5"
+            className="absolute bottom-8 right-8 md:bottom-12 md:right-12 bg-white/95 backdrop-blur-2xl p-8 rounded-[2rem] shadow-2xl max-w-sm hidden md:block border border-black/5"
           >
             <div className="grid grid-cols-2 gap-x-12 gap-y-8">
               <div>
-                <p className="text-foreground/40 uppercase tracking-[0.2em] text-[9px] font-bold mb-2">Client</p>
-                <p className="font-medium text-sm text-foreground/90">{project.client || "N/A"}</p>
+                <p className="text-black/40 uppercase tracking-[0.2em] text-[10px] font-bold mb-2">Client</p>
+                <p className="font-bold text-sm text-black">{project.client || "N/A"}</p>
               </div>
               <div>
-                <p className="text-foreground/40 uppercase tracking-[0.2em] text-[9px] font-bold mb-2">Role</p>
-                <p className="font-medium text-sm text-foreground/90">{project.role || "Lead Artist"}</p>
+                <p className="text-black/40 uppercase tracking-[0.2em] text-[10px] font-bold mb-2">Role</p>
+                <p className="font-bold text-sm text-black">{project.role || "Lead Artist"}</p>
               </div>
               <div>
-                <p className="text-foreground/40 uppercase tracking-[0.2em] text-[9px] font-bold mb-2">Timeline</p>
-                <p className="font-medium text-sm text-foreground/90">{project.duration || "N/A"}</p>
+                <p className="text-black/40 uppercase tracking-[0.2em] text-[10px] font-bold mb-2">Timeline</p>
+                <p className="font-bold text-sm text-black">{project.duration || "N/A"}</p>
               </div>
               <div>
-                <p className="text-foreground/40 uppercase tracking-[0.2em] text-[9px] font-bold mb-2">Live Link</p>
+                <p className="text-black/40 uppercase tracking-[0.2em] text-[10px] font-bold mb-2">Live Link</p>
                 {project.liveLink ? (
-                  <a href={project.liveLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-medium text-sm text-foreground/90 hover:text-foreground transition-colors group/link border-b border-foreground/20 hover:border-foreground/60 pb-0.5">
-                    View Project <ArrowUpRight size={12} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                  <a href={project.liveLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-bold text-sm text-brand-red hover:text-blood-red transition-colors group/link">
+                    View Project <ArrowUpRight size={14} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
                   </a>
                 ) : (
-                  <span className="font-medium text-sm text-foreground/40">N/A</span>
+                  <span className="font-bold text-sm text-black/40">N/A</span>
                 )}
               </div>
             </div>
@@ -307,46 +322,43 @@ export default function PortfolioDetailClient({ project, nextProject }: { projec
         </section>
 
         {/* DYNAMIC BEHANCE BLOCKS RENDERING CANVAS */}
-        <section className="py-24 md:py-32 flex flex-col gap-8 md:gap-12">
+        <section className="py-24 md:py-32 flex flex-col gap-0">
           {Array.isArray(project.blocks) && project.blocks.length > 0 ? (
             project.blocks.map((block: any, idx: number) => (
               <BlockRenderer key={block.id || idx} block={block} />
             ))
           ) : (
-            // Softened Legacy Fallback Layout
+            // Softened Legacy Fallback Layout (Light Mode)
             <>
-              <div className="py-20 md:py-32 px-6 md:px-12 max-w-[100rem] mx-auto relative">
+              <div className="py-12 md:py-24 px-6 md:px-12 max-w-[100rem] mx-auto relative">
                 <div className="flex flex-col lg:flex-row gap-16 lg:gap-32">
                   <div className="lg:w-1/3 lg:sticky lg:top-40 h-fit">
-                    <h2 className="text-4xl md:text-5xl font-serif tracking-tight mb-8 font-medium">Process & <span className="italic text-foreground/60">Execution</span></h2>
-                    <p className="text-base md:text-lg text-foreground/60 leading-relaxed font-light">
+                    <h2 className="text-4xl md:text-5xl font-serif tracking-tight mb-8 font-bold text-black">Process & <span className="italic text-brand-red">Execution</span></h2>
+                    <p className="text-lg md:text-xl text-black/60 leading-relaxed font-light">
                       Every pixel, every frame, and every interaction is designed with pure intention to create a peaceful and premium experience.
                     </p>
                   </div>
                   <div className="lg:w-2/3 flex flex-col gap-12 md:gap-16">
-                    <div className="bg-surface/30 backdrop-blur-md border border-border/40 p-10 md:p-16 rounded-[2.5rem] relative overflow-hidden shadow-sm">
-                      <h3 className="text-xl md:text-2xl font-serif text-foreground/50 mb-6 tracking-wide">The Challenge</h3>
-                      <p className="text-xl md:text-2xl leading-relaxed font-light text-foreground/90">{project.challenge}</p>
+                    <div className="bg-white border border-black/5 p-10 md:p-16 rounded-[2.5rem] relative overflow-hidden shadow-xl shadow-black/5">
+                      <h3 className="text-xl md:text-2xl font-serif text-black/50 mb-6 tracking-wide font-bold">The Challenge</h3>
+                      <p className="text-xl md:text-2xl leading-relaxed font-light text-black/90">{project.challenge}</p>
                     </div>
-                    <div className="bg-surface/60 backdrop-blur-xl border border-border/60 p-10 md:p-16 rounded-[2.5rem] shadow-xl relative overflow-hidden">
-                      <h3 className="text-xl md:text-2xl font-serif text-foreground/50 mb-6 tracking-wide">The Solution</h3>
-                      <p className="text-xl md:text-2xl leading-relaxed font-light text-foreground/90">{project.solution}</p>
+                    <div className="bg-white border border-black/5 p-10 md:p-16 rounded-[2.5rem] shadow-xl shadow-black/5 relative overflow-hidden">
+                      <h3 className="text-xl md:text-2xl font-serif text-black/50 mb-6 tracking-wide font-bold">The Solution</h3>
+                      <p className="text-xl md:text-2xl leading-relaxed font-light text-black/90">{project.solution}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
+              {/* Behance-Style Continuous Case Study Gallery */}
               {project.gallery && project.gallery.length > 0 && (
-                <div className="py-20 px-6 md:px-12 max-w-[100rem] mx-auto">
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+                <div className="w-full max-w-[100rem] mx-auto mt-16 px-0 md:px-12">
+                  <div className="flex flex-col w-full shadow-2xl shadow-black/10 md:rounded-[3rem] overflow-hidden bg-white">
                     {Array.isArray(project.gallery) && project.gallery.map((mediaUrl: any, i: number) => {
-                      let spanClass = "col-span-1 lg:col-span-12";
-                      if (i % 3 === 1) spanClass = "col-span-1 lg:col-span-7";
-                      if (i % 3 === 2) spanClass = "col-span-1 lg:col-span-5";
-
                       return (
-                        <div key={i} className={`${spanClass} rounded-[2.5rem] overflow-hidden relative group bg-surface/20 border border-border/20`}>
-                          <MediaRenderer url={mediaUrl} className="w-full h-full min-h-[40vh] md:min-h-[60vh] mix-blend-normal" />
+                        <div key={i} className="w-full relative bg-white flex flex-col">
+                          <MediaRenderer intrinsic={true} url={mediaUrl} className="w-full h-auto flex items-center justify-center object-contain" />
                         </div>
                       );
                     })}
@@ -357,10 +369,10 @@ export default function PortfolioDetailClient({ project, nextProject }: { projec
           )}
         </section>
         
-        {/* 6. Refined Next Project Footer */}
+        {/* 6. Refined Next Project Footer (Light Mode) */}
         {nextProject && (
-          <section className="h-[70vh] w-full flex flex-col items-center justify-center relative bg-surface border-t border-border/30 overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vh] bg-foreground/5 rounded-full blur-[120px] pointer-events-none" />
+          <section className="h-[70vh] w-full flex flex-col items-center justify-center relative bg-white border-t border-black/5 overflow-hidden mt-20">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vh] bg-brand-red/5 rounded-full blur-[120px] pointer-events-none" />
             
             <Link href={`/portfolio/${nextProject.slug}`} className="group flex flex-col items-center relative z-10 hoverable p-12">
               <motion.div
@@ -370,10 +382,10 @@ export default function PortfolioDetailClient({ project, nextProject }: { projec
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                 className="flex flex-col items-center"
               >
-                <p className="text-foreground/40 text-[10px] md:text-xs tracking-[0.4em] uppercase mb-10 font-bold group-hover:text-foreground/80 transition-colors flex items-center gap-3">
+                <p className="text-brand-red text-[10px] md:text-xs tracking-[0.4em] uppercase mb-10 font-bold transition-colors flex items-center gap-3">
                   Up Next <ArrowUpRight size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </p>
-                <h2 className="text-5xl md:text-[8vw] font-serif tracking-tighter capitalize text-foreground/80 group-hover:text-foreground transition-colors duration-700 leading-none text-center">
+                <h2 className="text-5xl md:text-[8vw] font-serif tracking-tighter capitalize text-black/50 group-hover:text-black transition-colors duration-700 leading-none text-center">
                   {nextProject.title}
                 </h2>
               </motion.div>
