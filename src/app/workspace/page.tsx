@@ -725,18 +725,14 @@ export default function CommandCenter() {
                         <CheckCircle2 size={12} /> Mark Done
                       </button>
                     )}
-                    {isBossMode && (
-                      <>
-                        <button onClick={() => openEdit(heroTask)}
-                          className="p-2 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 text-gray-400 hover:text-gray-700 transition-all cursor-pointer">
-                          <Edit3 size={12} />
-                        </button>
-                        <button onClick={() => handleDelete(heroTask.id)}
-                          className="p-2 rounded-xl bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer">
-                          <Trash2 size={12} />
-                        </button>
-                      </>
-                    )}
+                    <button onClick={() => openEdit(heroTask)}
+                      className="p-2 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 text-gray-400 hover:text-gray-700 transition-all cursor-pointer">
+                      <Edit3 size={12} />
+                    </button>
+                    <button onClick={() => handleDelete(heroTask.id)}
+                      className="p-2 rounded-xl bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer">
+                      <Trash2 size={12} />
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -936,18 +932,14 @@ export default function CommandCenter() {
                             <RotateCcw size={8} /> Reopen
                           </button>
                         )}
-                        {isBossMode && (
-                          <>
-                            <button onClick={() => openEdit(task)}
-                              className="p-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-all cursor-pointer">
-                              <Edit3 size={9} />
-                            </button>
-                            <button onClick={() => handleDelete(task.id)}
-                              className="p-1.5 rounded-lg bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer">
-                              <Trash2 size={9} />
-                            </button>
-                          </>
-                        )}
+                        <button onClick={() => openEdit(task)}
+                          className="p-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-all cursor-pointer">
+                          <Edit3 size={9} />
+                        </button>
+                        <button onClick={() => handleDelete(task.id)}
+                          className="p-1.5 rounded-lg bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer">
+                          <Trash2 size={9} />
+                        </button>
                       </div>
                     </div>
                   </motion.div>
