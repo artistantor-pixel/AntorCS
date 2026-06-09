@@ -8,7 +8,7 @@ import {
   Clock, Zap, Coffee, Moon, Sun, Sunset, ArrowRight,
   Flame, Target, Briefcase, ImageIcon, Film, Share2, X,
   ShieldAlert, Home, RotateCcw, Edit3, LogOut, Loader2, KeyRound, UserPlus,
-  ImagePlus, FileText, ChevronDown, ChevronUp, Download, AlertCircle
+  ImagePlus, FileText, ChevronDown, ChevronUp, Download, AlertCircle, Play, Square, Repeat, Tag, GripVertical, Link, LayoutList, LayoutGrid
 } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -36,6 +36,12 @@ interface Task {
   createdAt: string;
   steps?: Step[];
   images?: string[];
+  timeSpent?: number;
+  isTimerRunning?: boolean;
+  timerStartedAt?: string;
+  recurrence?: "NONE" | "WEEKLY" | "MONTHLY";
+  tags?: string[];
+  completedAt?: string;
 }
 
 interface UserSession {
@@ -145,6 +151,14 @@ export default function CommandCenter() {
   const [showDueModal, setShowDueModal] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>({});
+  const [viewMode, setViewMode] = useState<"LIST" | "KANBAN">("LIST");
+  const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => setTick(n => n + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   // Custom Authentication Forms State
   const [authTab, setAuthTab]       = useState<"login" | "signup">("login");
@@ -157,8 +171,9 @@ export default function CommandCenter() {
   const [form, setForm] = useState<{
     title: string; client: string; description: string; priority: Priority; type: TaskType; status: Status; deadline: string;
     steps: Step[]; images: string[];
+    recurrence: "NONE" | "WEEKLY" | "MONTHLY"; tags: string[];
   }>({
-    title: "", client: "", description: "", priority: "HIGH", type: "BOSS_TASK", status: "TODO", deadline: "", steps: [], images: []
+    title: "", client: "", description: "", priority: "HIGH", type: "BOSS_TASK", status: "TODO", deadline: "", steps: [], images: [], recurrence: "NONE", tags: []
   });
 
   const theme = getTimeTheme(hour);
@@ -198,7 +213,37 @@ export default function CommandCenter() {
       if (res.ok) {
         const d = await res.json();
         if (Array.isArray(d)) {
-          setTasks(d);
+          let updatedD = [...d];
+          let modified = false;
+          const now = Date.now();
+          
+          updatedD.forEach(t => {
+            if (t.status === "COMPLETED" && t.recurrence && t.recurrence !== "NONE" && t.completedAt) {
+              const diffDays = (now - new Date(t.completedAt).getTime()) / 86400000;
+              if ((t.recurrence === "WEEKLY" && diffDays >= 7) || (t.recurrence === "MONTHLY" && diffDays >= 30)) {
+                // Auto duplicate
+                modified = true;
+                t.recurrence = "NONE"; // Remove recurrence from old so it doesn't duplicate again
+                const nt: Task = { 
+                  ...t, 
+                  id: `task_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
+                  status: "TODO",
+                  createdAt: new Date().toISOString(),
+                  completedAt: undefined,
+                  timeSpent: 0,
+                  isTimerRunning: false,
+                  timerStartedAt: undefined,
+                  recurrence: t.recurrence === "NONE" ? "NONE" : (diffDays >= 30 ? "MONTHLY" : "WEEKLY") // Keep new one recurring
+                };
+                updatedD.push(nt);
+              }
+            }
+          });
+          
+          if (modified) {
+            saveTasks(updatedD);
+          }
+          setTasks(updatedD);
           const due = d.filter(t => {
             if (t.status === "COMPLETED" || !t.deadline) return false;
             const diff = Math.ceil((new Date(t.deadline).getTime() - Date.now()) / 86400000);
@@ -316,7 +361,7 @@ export default function CommandCenter() {
       setTasks(updated);
       setShowForm(false);
       setEditingTask(null);
-      setForm({ title: "", client: "", description: "", priority: "HIGH", type: "BOSS_TASK", status: "TODO", deadline: "", steps: [], images: [] });
+      setForm({ title: "", client: "", description: "", priority: "HIGH", type: "BOSS_TASK", status: "TODO", deadline: "", steps: [], images: [], recurrence: "NONE", tags: [] });
     }
     setIsSaving(false);
   };
@@ -328,14 +373,58 @@ export default function CommandCenter() {
   };
 
   const handleStatus = async (task: Task, s: Status) => {
-    const updated = tasks.map(t => t.id === task.id ? { ...t, status: s } : t);
+    const updated = tasks.map(t => {
+      if (t.id === task.id) {
+        if (task.isTimerRunning && s === "COMPLETED") {
+           const start = new Date(task.timerStartedAt || new Date().toISOString()).getTime();
+           const elapsedSecs = Math.floor((new Date().getTime() - start) / 1000);
+           return { ...t, status: s, isTimerRunning: false, timeSpent: (t.timeSpent || 0) + elapsedSecs, timerStartedAt: undefined, completedAt: s === "COMPLETED" ? new Date().toISOString() : undefined };
+        }
+        return { ...t, status: s, completedAt: s === "COMPLETED" ? new Date().toISOString() : undefined };
+      }
+      return t;
+    });
     if (await saveTasks(updated)) setTasks(updated);
   };
 
   const openEdit = (task: Task) => {
-    setForm({ title: task.title, client: task.client, description: task.description || "", priority: task.priority, type: task.type, status: task.status, deadline: task.deadline || "", steps: task.steps || [], images: task.images || [] });
+    setForm({ title: task.title, client: task.client, description: task.description || "", priority: task.priority, type: task.type, status: task.status, deadline: task.deadline || "", steps: task.steps || [], images: task.images || [], recurrence: task.recurrence || "NONE", tags: task.tags || [] });
     setEditingTask(task);
     setShowForm(true);
+  };
+
+
+  const formatTime = (secs: number) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    return `${h > 0 ? h + 'h ' : ''}${m}m ${s}s`;
+  };
+
+  const getActiveTime = (task: Task) => {
+    if (!task.isTimerRunning || !task.timerStartedAt) return task.timeSpent || 0;
+    const start = new Date(task.timerStartedAt).getTime();
+    return (task.timeSpent || 0) + Math.floor((Date.now() - start) / 1000);
+  };
+
+  const toggleTimer = async (task: Task) => {
+    const now = new Date().toISOString();
+    let updatedTasks: Task[];
+    if (task.isTimerRunning) {
+      const start = new Date(task.timerStartedAt || now).getTime();
+      const elapsedSecs = Math.floor((new Date().getTime() - start) / 1000);
+      updatedTasks = tasks.map(t => t.id === task.id ? { ...t, isTimerRunning: false, timeSpent: (t.timeSpent || 0) + elapsedSecs, timerStartedAt: undefined } : t);
+    } else {
+      updatedTasks = tasks.map(t => t.id === task.id ? { ...t, isTimerRunning: true, timerStartedAt: now } : t);
+    }
+    if (await saveTasks(updatedTasks)) setTasks(updatedTasks);
+  };
+
+  const shareTask = (task: Task) => {
+    const payload = btoa(JSON.stringify({ email: user?.email, taskId: task.id }));
+    const link = `${window.location.origin}/workspace/share/${payload}`;
+    navigator.clipboard.writeText(link);
+    alert("Client Portal link copied to clipboard!");
   };
 
   const handleStepToggle = async (task: Task, stepId: string) => {
@@ -436,6 +525,186 @@ export default function CommandCenter() {
     critical: tasks.filter(t => t.priority === "CRITICAL" && t.status !== "COMPLETED").length,
   };
 
+
+        
+          const renderTaskCard = (task: Task, idx: number) => {
+    const tm = TYPE_META[task.type];
+                const pm = PRIORITY_META[task.priority];
+                const TIcon = tm.icon;
+                const isHero = task.id === heroTask?.id;
+                const dl = formatDeadline(task.deadline);
+
+                
+    return (
+      <motion.div key={task.id} 
+                    initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.96 }} transition={{ delay: idx * 0.04 }}
+                    draggable
+                    onDragStart={(e) => setDraggedTaskId(task.id)}
+                    className={`group relative bg-white rounded-2xl border p-5 shadow-sm transition-all hover:shadow-md cursor-grab active:cursor-grabbing ${
+                      task.status === "COMPLETED"
+                        ? "opacity-60 border-gray-100"
+                        : isHero ? "border-gray-200" : "border-gray-100 hover:border-gray-300"
+                    }`}
+                    style={isHero && task.status !== "COMPLETED" ? { borderColor: theme.accent + "50", boxShadow: `0 0 0 2px ${theme.accent}18` } : {}}>
+
+                    {/* Hero dot indicator */}
+                    {isHero && task.status !== "COMPLETED" && (
+                      <span className="absolute top-3 right-3 w-2 h-2 rounded-full animate-ping"
+                        style={{ background: theme.accent }} />
+                    )}
+
+                    <div className="space-y-3">
+                      {/* Badges */}
+                      <div className="flex items-center gap-2 flex-wrap pr-4">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[8px] font-black tracking-wider uppercase ${tm.bg} ${tm.border} ${tm.color}`}>
+                          <TIcon size={8} /> {tm.label}
+                        </span>
+                        <span className={`px-2 py-0.5 rounded-lg border text-[8px] font-black tracking-wider ${pm.bg} ${pm.border} ${pm.color} ${pm.pulse && task.status !== "COMPLETED" ? "animate-pulse" : ""}`}>
+                          {pm.label}
+                        </span>
+                        {task.status === "IN_PROGRESS" && (
+                          <span className="px-2 py-0.5 rounded-lg border text-[8px] font-black tracking-wider bg-amber-50 border-amber-200 text-amber-700 animate-pulse">
+                            ⚙ IN PROGRESS
+                          </span>
+                        )}
+                        {task.status === "COMPLETED" && (
+                          <span className="px-2 py-0.5 rounded-lg border text-[8px] font-black tracking-wider bg-emerald-50 border-emerald-200 text-emerald-700">
+                            ✓ DONE
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Title */}
+                      <h3 className={`font-bold text-sm leading-snug font-serif ${task.status === "COMPLETED" ? "line-through text-gray-400" : "text-gray-900"}`}>
+                        {task.title}
+                      </h3>
+                      {/* Visual Progress Bar */}
+                      {task.steps && task.steps.length > 0 && (
+                        <div className="w-full bg-gray-100 rounded-full h-1 mt-1 overflow-hidden">
+                          <div className="bg-emerald-400 h-1 transition-all duration-500" style={{ width: `${(task.steps.filter(s => s.isDone).length / task.steps.length) * 100}%` }} />
+                        </div>
+                      )}
+
+
+                      {/* Client + Deadline */}
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider truncate">
+                          {task.client || "Studio"}
+                        </span>
+                        {dl && (
+                          <span className={`text-[9px] font-mono font-bold flex items-center gap-1 shrink-0 ${dl.urgent ? "text-red-600" : "text-gray-400"}`}>
+                            <Clock size={8} /> {dl.text}
+                          </span>
+                        )}
+                      </div>
+                      {/* Tags & Timer & Share */}
+                      <div className="flex items-center justify-between mt-1">
+                        <div className="flex gap-1 flex-wrap">
+                          {task.tags?.map(tag => (
+                            <span key={tag} className="text-[8px] font-bold uppercase tracking-widest text-brand-red bg-brand-red/5 border border-brand-red/10 px-1.5 py-0.5 rounded-md">
+                              {tag}
+                            </span>
+                          ))}
+                          {task.recurrence && task.recurrence !== "NONE" && (
+                            <span className="text-[8px] font-bold uppercase tracking-widest text-purple-600 bg-purple-50 border border-purple-100 px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
+                              <Repeat size={8} /> {task.recurrence}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {task.description && (
+                        <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-2">
+                          {task.description}
+                        </p>
+                      )}
+                      
+                      {/* Steps & Images Preview */}
+                      {(task.steps?.length || task.images?.length) ? (
+                        <div className="pt-2 border-t border-gray-100">
+                          <button onClick={() => setExpandedTasks(p => ({ ...p, [task.id]: !p[task.id] }))}
+                            className="flex items-center justify-between w-full text-[10px] font-bold text-gray-500 hover:text-gray-800 transition-colors">
+                            <span className="flex items-center gap-2">
+                              {task.steps && task.steps.length > 0 && <span>{task.steps.filter(s => s.isDone).length}/{task.steps.length} Steps</span>}
+                              {task.images && task.images.length > 0 && <span className="flex items-center gap-1"><ImageIcon size={10} /> {task.images.length}</span>}
+                            </span>
+                            {expandedTasks[task.id] ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                          </button>
+                          
+                          <AnimatePresence>
+                            {expandedTasks[task.id] && (
+                              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                                <div className="py-3 space-y-3">
+                                  {task.steps && task.steps.length > 0 && (
+                                    <div className="space-y-1.5">
+                                      {task.steps.map(step => (
+                                        <label key={step.id} className="flex items-center gap-2 cursor-pointer group">
+                                          <input type="checkbox" checked={step.isDone} onChange={() => handleStepToggle(task, step.id)}
+                                            className="w-3 h-3 rounded border-gray-300 text-brand-red focus:ring-brand-red cursor-pointer" />
+                                          <span className={`text-[11px] ${step.isDone ? "text-gray-400 line-through" : "text-gray-700 group-hover:text-black"}`}>{step.name}</span>
+                                        </label>
+                                      ))}
+                                    </div>
+                                  )}
+                                  
+                                  {task.images && task.images.length > 0 && (
+                                    <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                                      {task.images.map((img, i) => (
+                                        <img key={i} src={img} alt="Ref" className="h-12 w-auto object-cover rounded-lg border border-gray-200 shrink-0 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => window.open(img, "_blank")} />
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      ) : null}
+
+                      {/* Action buttons ─ visible on hover/tap */}
+                      <div className="flex items-center gap-2 pt-1 flex-wrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        {task.status !== "IN_PROGRESS" && task.status !== "COMPLETED" && (
+                          <button onClick={() => handleStatus(task, "IN_PROGRESS")}
+                            className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[9px] font-bold hover:bg-amber-100 transition-all cursor-pointer">
+                            Start
+                          </button>
+                        )}
+                        {task.status !== "COMPLETED" && (
+                          <button onClick={() => handleStatus(task, "COMPLETED")}
+                            className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-bold hover:bg-emerald-100 transition-all cursor-pointer">
+                            Done ✓
+                          </button>
+                        )}
+                        {task.status === "COMPLETED" && (
+                          <button onClick={() => handleStatus(task, "TODO")}
+                            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 text-[9px] font-bold hover:bg-gray-100 transition-all cursor-pointer font-bold">
+                            <RotateCcw size={8} /> Reopen
+                          </button>
+                        )}
+                        <button onClick={() => openEdit(task)}
+                          className="p-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-all cursor-pointer">
+                          <Edit3 size={9} />
+                        </button>
+                        <button onClick={() => handleDelete(task.id)}
+                          className="p-1.5 rounded-lg bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer">
+                          <Trash2 size={9} />
+                        </button>
+                        <div className="w-px h-3 bg-gray-200 mx-1" />
+                        <button onClick={() => toggleTimer(task)} className={`p-1.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${task.isTimerRunning ? "bg-red-50 border-red-200 text-red-600 animate-pulse" : "bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-700"}`}>
+                          {task.isTimerRunning ? <Square size={9} /> : <Play size={9} />}
+                          <span className="text-[9px] font-mono">{formatTime(getActiveTime(task))}</span>
+                        </button>
+                        <button onClick={() => shareTask(task)} className="p-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-500 hover:bg-blue-100 transition-all cursor-pointer" title="Client Link">
+                          <Link size={9} />
+                        </button>
+                      </div>
+                    </div>
+                   </motion.div>
+    );
+  };
+        
+        
   // ─── UNAUTHENTICATED RENDER (GMAIL LOG IN / REGISTER COMPONENT) ───────────────
   if (!user) {
     return (
@@ -771,6 +1040,11 @@ export default function CommandCenter() {
         {/* ── TOOLBAR ── */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center bg-white border border-gray-200 rounded-xl p-1 mr-2 shadow-sm">
+              <button onClick={() => setViewMode("LIST")} className={`p-1.5 rounded-lg transition-colors ${viewMode === "LIST" ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"}`}><LayoutList size={14}/></button>
+              <button onClick={() => setViewMode("KANBAN")} className={`p-1.5 rounded-lg transition-colors ${viewMode === "KANBAN" ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"}`}><LayoutGrid size={14}/></button>
+            </div>
+            <div className="w-px h-6 bg-gray-200 mr-2" />
             {(["ALL", "TODO", "IN_PROGRESS", "COMPLETED"] as const).map(f => (
               <button key={f} onClick={() => setFilter(f)}
                 className={`px-3 py-1.5 rounded-xl text-[10px] font-black tracking-wider uppercase border transition-all cursor-pointer ${filter === f
@@ -782,7 +1056,7 @@ export default function CommandCenter() {
             ))}
           </div>
 
-          <button onClick={() => { setEditingTask(null); setForm({ title: "", client: "", description: "", priority: "HIGH", type: "BOSS_TASK", status: "TODO", deadline: "", steps: [], images: [] }); setShowForm(true); }}
+          <button onClick={() => { setEditingTask(null); setForm({ title: "", client: "", description: "", priority: "HIGH", type: "BOSS_TASK", status: "TODO", deadline: "", steps: [], images: [], recurrence: "NONE", tags: [] }); setShowForm(true); }}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-md transition-all hover:opacity-90 cursor-pointer"
             style={{ background: theme.accent }}>
             <Plus size={14} /> Add Task
@@ -790,164 +1064,55 @@ export default function CommandCenter() {
         </div>
 
         {/* ── TASK GRID ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-16">
+        <div className="pb-16">
           {isLoading ? (
-            <div className="md:col-span-2 flex items-center justify-center py-20 text-gray-400 font-mono text-xs border border-gray-100 rounded-2xl bg-white shadow-sm">
+            <div className="flex items-center justify-center py-20 text-gray-400 font-mono text-xs border border-gray-100 rounded-2xl bg-white shadow-sm">
               <Loader2 className="animate-spin text-brand-red mr-2" size={16} />
               লোডিং হচ্ছে...
             </div>
           ) : filtered.length === 0 ? (
-            <div className="md:col-span-2 text-center py-16 text-gray-400 font-mono text-xs border border-gray-100 rounded-2xl bg-white shadow-sm">
+            <div className="text-center py-16 text-gray-400 font-mono text-xs border border-gray-100 rounded-2xl bg-white shadow-sm">
               কোনো টাস্ক নেই — নতুন টাস্ক যোগ করো!
             </div>
+          ) : viewMode === "KANBAN" ? (
+             <div className="flex gap-4 overflow-x-auto pb-8 items-start custom-scrollbar">
+               {(["TODO", "IN_PROGRESS", "COMPLETED"] as Status[]).map(colStatus => (
+                 <div key={colStatus} className="flex-1 min-w-[300px] max-w-[350px] bg-gray-50/50 rounded-2xl p-4 border border-gray-100 shrink-0"
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={async (e) => {
+                        e.preventDefault();
+                        if (draggedTaskId) {
+                          const task = tasks.find(t => t.id === draggedTaskId);
+                          if (task && task.status !== colStatus) {
+                            await handleStatus(task, colStatus);
+                          }
+                          setDraggedTaskId(null);
+                        }
+                      }}
+                 >
+                   <h3 className="font-black text-xs uppercase tracking-widest text-gray-400 mb-4 flex items-center justify-between">
+                     {colStatus.replace("_", " ")}
+                     <span className="bg-white px-2 py-0.5 rounded-md shadow-sm border border-gray-100 text-[10px] text-gray-600">
+                        {filtered.filter(t => t.status === colStatus).length}
+                     </span>
+                   </h3>
+                   <div className="space-y-3">
+                      <AnimatePresence>
+                        {filtered.filter(t => t.status === colStatus).map((task, idx) => renderTaskCard(task, idx))}
+                      </AnimatePresence>
+                   </div>
+                 </div>
+               ))}
+             </div>
           ) : (
-            <AnimatePresence>
-              {filtered.map((task, idx) => {
-                const tm = TYPE_META[task.type];
-                const pm = PRIORITY_META[task.priority];
-                const TIcon = tm.icon;
-                const isHero = task.id === heroTask?.id;
-                const dl = formatDeadline(task.deadline);
-
-                return (
-                  <motion.div key={task.id}
-                    initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.96 }} transition={{ delay: idx * 0.04 }}
-                    className={`group relative bg-white rounded-2xl border p-5 shadow-sm transition-all hover:shadow-md ${
-                      task.status === "COMPLETED"
-                        ? "opacity-60 border-gray-100"
-                        : isHero ? "border-gray-200" : "border-gray-100 hover:border-gray-300"
-                    }`}
-                    style={isHero && task.status !== "COMPLETED" ? { borderColor: theme.accent + "50", boxShadow: `0 0 0 2px ${theme.accent}18` } : {}}>
-
-                    {/* Hero dot indicator */}
-                    {isHero && task.status !== "COMPLETED" && (
-                      <span className="absolute top-3 right-3 w-2 h-2 rounded-full animate-ping"
-                        style={{ background: theme.accent }} />
-                    )}
-
-                    <div className="space-y-3">
-                      {/* Badges */}
-                      <div className="flex items-center gap-2 flex-wrap pr-4">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[8px] font-black tracking-wider uppercase ${tm.bg} ${tm.border} ${tm.color}`}>
-                          <TIcon size={8} /> {tm.label}
-                        </span>
-                        <span className={`px-2 py-0.5 rounded-lg border text-[8px] font-black tracking-wider ${pm.bg} ${pm.border} ${pm.color} ${pm.pulse && task.status !== "COMPLETED" ? "animate-pulse" : ""}`}>
-                          {pm.label}
-                        </span>
-                        {task.status === "IN_PROGRESS" && (
-                          <span className="px-2 py-0.5 rounded-lg border text-[8px] font-black tracking-wider bg-amber-50 border-amber-200 text-amber-700 animate-pulse">
-                            ⚙ IN PROGRESS
-                          </span>
-                        )}
-                        {task.status === "COMPLETED" && (
-                          <span className="px-2 py-0.5 rounded-lg border text-[8px] font-black tracking-wider bg-emerald-50 border-emerald-200 text-emerald-700">
-                            ✓ DONE
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Title */}
-                      <h3 className={`font-bold text-sm leading-snug font-serif ${task.status === "COMPLETED" ? "line-through text-gray-400" : "text-gray-900"}`}>
-                        {task.title}
-                      </h3>
-
-                      {/* Client + Deadline */}
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider truncate">
-                          {task.client || "Studio"}
-                        </span>
-                        {dl && (
-                          <span className={`text-[9px] font-mono font-bold flex items-center gap-1 shrink-0 ${dl.urgent ? "text-red-600" : "text-gray-400"}`}>
-                            <Clock size={8} /> {dl.text}
-                          </span>
-                        )}
-                      </div>
-
-                      {task.description && (
-                        <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-2">
-                          {task.description}
-                        </p>
-                      )}
-                      
-                      {/* Steps & Images Preview */}
-                      {(task.steps?.length || task.images?.length) ? (
-                        <div className="pt-2 border-t border-gray-100">
-                          <button onClick={() => setExpandedTasks(p => ({ ...p, [task.id]: !p[task.id] }))}
-                            className="flex items-center justify-between w-full text-[10px] font-bold text-gray-500 hover:text-gray-800 transition-colors">
-                            <span className="flex items-center gap-2">
-                              {task.steps && task.steps.length > 0 && <span>{task.steps.filter(s => s.isDone).length}/{task.steps.length} Steps</span>}
-                              {task.images && task.images.length > 0 && <span className="flex items-center gap-1"><ImageIcon size={10} /> {task.images.length}</span>}
-                            </span>
-                            {expandedTasks[task.id] ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-                          </button>
-                          
-                          <AnimatePresence>
-                            {expandedTasks[task.id] && (
-                              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                                <div className="py-3 space-y-3">
-                                  {task.steps && task.steps.length > 0 && (
-                                    <div className="space-y-1.5">
-                                      {task.steps.map(step => (
-                                        <label key={step.id} className="flex items-center gap-2 cursor-pointer group">
-                                          <input type="checkbox" checked={step.isDone} onChange={() => handleStepToggle(task, step.id)}
-                                            className="w-3 h-3 rounded border-gray-300 text-brand-red focus:ring-brand-red cursor-pointer" />
-                                          <span className={`text-[11px] ${step.isDone ? "text-gray-400 line-through" : "text-gray-700 group-hover:text-black"}`}>{step.name}</span>
-                                        </label>
-                                      ))}
-                                    </div>
-                                  )}
-                                  
-                                  {task.images && task.images.length > 0 && (
-                                    <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
-                                      {task.images.map((img, i) => (
-                                        <img key={i} src={img} alt="Ref" className="h-12 w-auto object-cover rounded-lg border border-gray-200 shrink-0 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => window.open(img, "_blank")} />
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      ) : null}
-
-                      {/* Action buttons ─ visible on hover/tap */}
-                      <div className="flex items-center gap-2 pt-1 flex-wrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        {task.status !== "IN_PROGRESS" && task.status !== "COMPLETED" && (
-                          <button onClick={() => handleStatus(task, "IN_PROGRESS")}
-                            className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[9px] font-bold hover:bg-amber-100 transition-all cursor-pointer">
-                            Start
-                          </button>
-                        )}
-                        {task.status !== "COMPLETED" && (
-                          <button onClick={() => handleStatus(task, "COMPLETED")}
-                            className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-bold hover:bg-emerald-100 transition-all cursor-pointer">
-                            Done ✓
-                          </button>
-                        )}
-                        {task.status === "COMPLETED" && (
-                          <button onClick={() => handleStatus(task, "TODO")}
-                            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 text-[9px] font-bold hover:bg-gray-100 transition-all cursor-pointer font-bold">
-                            <RotateCcw size={8} /> Reopen
-                          </button>
-                        )}
-                        <button onClick={() => openEdit(task)}
-                          className="p-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-all cursor-pointer">
-                          <Edit3 size={9} />
-                        </button>
-                        <button onClick={() => handleDelete(task.id)}
-                          className="p-1.5 rounded-lg bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer">
-                          <Trash2 size={9} />
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <AnimatePresence>
+                {filtered.map((task, idx) => renderTaskCard(task, idx))}
+              </AnimatePresence>
+            </div>
           )}
         </div>
+
       </div>
 
       {/* ── BOSS AUTH MODAL ── */}
@@ -1025,6 +1190,25 @@ export default function CommandCenter() {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                  {[
+                    { label: "রিপিট", key: "recurrence", opts: [["NONE","একবার (None)"],["WEEKLY","প্রতি সপ্তাহে"],["MONTHLY","প্রতি মাসে"]] },
+                  ].map(({ label, key, opts }) => (
+                    <div key={key}>
+                      <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">{label}</label>
+                      <select value={(form as any)[key]} onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-2 py-2.5 text-[10px] text-gray-800 focus:border-gray-400 outline-none font-bold">
+                        {opts.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                      </select>
+                    </div>
+                  ))}
+                  <div className="col-span-3">
+                    <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">ট্যাগস (কমা দিয়ে লিখুন)</label>
+                    <input type="text" value={form.tags.join(", ")} onChange={e => setForm(p => ({ ...p, tags: e.target.value.split(",").map(t => t.trim()).filter(t => t) }))}
+                      placeholder="e.g. #Urgent, #Missing_Assets"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:border-gray-400 outline-none" />
+                  </div>
+                </div>
                 <div className="grid grid-cols-3 gap-3">
                   {[
                     { label: "অগ্রাধিকার", key: "priority", opts: [["CRITICAL","🔴 Critical"],["HIGH","🟠 High"],["MEDIUM","🟡 Medium"],["LOW","🟢 Low"]] },
