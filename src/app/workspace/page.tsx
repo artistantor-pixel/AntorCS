@@ -361,12 +361,16 @@ export default function CommandCenter() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("এই টাস্কটি মুছে ফেলবো?")) return;
+    if (!confirm("Are you sure?")) return;
+    const previousTasks = [...tasks];
     const updated = tasks.filter(t => t.id !== id);
-    if (await saveTasks(updated)) setTasks(updated);
+    setTasks(updated); // Optimistic Update
+    const success = await saveTasks(updated);
+    if (!success) setTasks(previousTasks);
   };
 
   const handleStatus = async (task: Task, s: Status) => {
+    const previousTasks = [...tasks];
     const updated = tasks.map(t => {
       if (t.id === task.id) {
         if (task.isTimerRunning && s === "COMPLETED") {
@@ -378,7 +382,9 @@ export default function CommandCenter() {
       }
       return t;
     });
-    if (await saveTasks(updated)) setTasks(updated);
+    setTasks(updated); // Optimistic Update
+    const success = await saveTasks(updated);
+    if (!success) setTasks(previousTasks);
   };
 
   const openEdit = (task: Task) => {
@@ -411,7 +417,11 @@ export default function CommandCenter() {
     } else {
       updatedTasks = tasks.map(t => t.id === task.id ? { ...t, isTimerRunning: true, timerStartedAt: now } : t);
     }
-    if (await saveTasks(updatedTasks)) setTasks(updatedTasks);
+    
+    const previousTasks = [...tasks];
+    setTasks(updatedTasks);
+    const success = await saveTasks(updatedTasks);
+    if (!success) setTasks(previousTasks);
   };
 
   const shareTask = (task: Task) => {
@@ -422,14 +432,14 @@ export default function CommandCenter() {
   };
 
   const handleStepToggle = async (task: Task, stepId: string) => {
-    const updated = tasks.map(t => {
-      if (t.id === task.id) {
-        const newSteps = (t.steps || []).map(s => s.id === stepId ? { ...s, isDone: !s.isDone } : s);
-        return { ...t, steps: newSteps };
-      }
-      return t;
-    });
-    if (await saveTasks(updated)) setTasks(updated);
+    const previousTasks = [...tasks];
+    const updated = tasks.map(t => t.id === task.id ? {
+      ...t,
+      steps: t.steps?.map(s => s.id === stepId ? { ...s, isDone: !s.isDone } : s)
+    } : t);
+    setTasks(updated); // Optimistic Update
+    const success = await saveTasks(updated);
+    if (!success) setTasks(previousTasks);
   };
 
   const generatePDF = async () => {
