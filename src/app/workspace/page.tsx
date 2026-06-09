@@ -153,12 +153,6 @@ export default function CommandCenter() {
   const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>({});
   const [viewMode, setViewMode] = useState<"LIST" | "KANBAN">("LIST");
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
-  const [tick, setTick] = useState(0);
-
-  useEffect(() => {
-    const t = setInterval(() => setTick(n => n + 1), 1000);
-    return () => clearInterval(t);
-  }, []);
 
   // Custom Authentication Forms State
   const [authTab, setAuthTab]       = useState<"login" | "signup">("login");
@@ -689,11 +683,6 @@ export default function CommandCenter() {
                         <button onClick={() => handleDelete(task.id)}
                           className="p-1.5 rounded-lg bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer">
                           <Trash2 size={9} />
-                        </button>
-                        <div className="w-px h-3 bg-gray-200 mx-1" />
-                        <button onClick={() => toggleTimer(task)} className={`p-1.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${task.isTimerRunning ? "bg-red-50 border-red-200 text-red-600 animate-pulse" : "bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-700"}`}>
-                          {task.isTimerRunning ? <Square size={9} /> : <Play size={9} />}
-                          <span className="text-[9px] font-mono">{formatTime(getActiveTime(task))}</span>
                         </button>
                         <button onClick={() => shareTask(task)} className="p-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-500 hover:bg-blue-100 transition-all cursor-pointer" title="Client Link">
                           <Link size={9} />
