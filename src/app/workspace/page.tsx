@@ -1546,9 +1546,14 @@ export default function CommandCenter() {
                     <h4 className="text-sm font-black text-gray-800 tracking-wide flex items-center gap-2">
                       <Clock size={16} className="text-emerald-500" /> Office Attendance
                     </h4>
-                    <span className="text-[10px] font-black tracking-widest uppercase px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md">
-                      {attendanceLogs.length} Records
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setShowDailyReport(true)} className="text-[10px] font-black tracking-widest uppercase px-2 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-md transition-colors flex items-center gap-1 cursor-pointer">
+                        <Download size={10} /> Get Report
+                      </button>
+                      <span className="text-[10px] font-black tracking-widest uppercase px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md">
+                        {attendanceLogs.length} Records
+                      </span>
+                    </div>
                   </div>
                   <div className="max-h-[250px] overflow-y-auto custom-scrollbar space-y-3 pr-2">
                     {attendanceLogs.length === 0 ? (
@@ -1779,7 +1784,9 @@ export default function CommandCenter() {
                       const link = document.createElement("a");
                       link.href = dataUrl;
                       link.download = `Daily_Report_${new Date().toISOString().split("T")[0]}.jpg`;
+                      document.body.appendChild(link);
                       link.click();
+                      document.body.removeChild(link);
                     } catch (e) {
                       console.error("Failed to generate report", e);
                     } finally {
