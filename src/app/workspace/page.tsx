@@ -8,7 +8,7 @@ import {
   Clock, Zap, Coffee, Moon, Sun, Sunset, ArrowRight,
   Flame, Target, Briefcase, ImageIcon, Film, Share2, X,
   ShieldAlert, Home, RotateCcw, Edit3, LogOut, Loader2, KeyRound, UserPlus,
-  ImagePlus, FileText, ChevronDown, ChevronUp, ChevronRight, Download, AlertCircle, Play, Square, Repeat, Tag, GripVertical, Link, LayoutList, LayoutGrid, BarChart3, LayoutDashboard, Activity, Palette, Maximize, Star, Eye
+  ImagePlus, FileText, ChevronDown, ChevronUp, ChevronRight, Download, AlertCircle, Play, Square, Repeat, Tag, GripVertical, Link, LayoutList, LayoutGrid, BarChart3, LayoutDashboard, Activity, Palette, Maximize, Star, Eye, Menu
 } from "lucide-react";
 import jsPDF from "jspdf";
 import * as htmlToImage from "html-to-image";
@@ -166,6 +166,7 @@ export default function CommandCenter() {
   const [showDailyReport, setShowDailyReport] = useState(false);
   const [reportGenerating, setReportGenerating] = useState(false);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   // Attendance State
   const [attendanceLogs, setAttendanceLogs] = useState<Attendance[]>([]);
@@ -954,8 +955,15 @@ export default function CommandCenter() {
   return (
     <div className={`min-h-screen ${theme.pageBg} text-gray-800 antialiased flex flex-col lg:flex-row max-w-[1600px] mx-auto`}>
 
+      {/* Mobile Sidebar Backdrop */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsSidebarOpen(false)} className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden" />
+        )}
+      </AnimatePresence>
+
       {/* ── SIDEBAR (DESIGNER TOOLKIT) ── */}
-      <aside className="w-full lg:w-72 shrink-0 border-r border-white/20 flex flex-col h-screen sticky top-0 bg-white/80 backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.05)] z-50">
+      <aside className={`fixed lg:sticky top-0 left-0 h-screen w-72 shrink-0 border-r border-white/20 flex flex-col bg-white/90 backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.05)] z-50 transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
         <div className="p-6 border-b border-black/5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#ea3f40] to-[#bba28a] flex items-center justify-center text-white shadow-lg shadow-[#ea3f40]/20">
@@ -1028,12 +1036,15 @@ export default function CommandCenter() {
       <main className="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto custom-scrollbar">
 
         {/* ── TOP BAR (Now inside main) ── */}
-      <header className={`sticky top-0 z-40 ${theme.headerBg} backdrop-blur-xl border-b border-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.03)]`}>
+      <header className={`sticky top-0 z-30 ${theme.headerBg} backdrop-blur-xl border-b border-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.03)]`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
 
           {/* Left */}
           <div className="flex items-center gap-3">
-            <a href="/" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:border-gray-400 text-xs font-bold text-gray-600 hover:text-gray-900 transition-all shadow-sm">
+            <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden p-2 rounded-xl bg-white border border-gray-200 shadow-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+              <Menu size={16} />
+            </button>
+            <a href="/" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:border-gray-400 text-xs font-bold text-gray-600 hover:text-gray-900 transition-all shadow-sm">
               <Home size={12} /> Home
             </a>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-gray-200 shadow-sm">
