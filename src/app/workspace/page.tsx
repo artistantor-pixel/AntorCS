@@ -8,7 +8,7 @@ import {
   Clock, Zap, Coffee, Moon, Sun, Sunset, ArrowRight,
   Flame, Target, Briefcase, ImageIcon, Film, Share2, X,
   ShieldAlert, Home, RotateCcw, Edit3, LogOut, Loader2, KeyRound, UserPlus,
-  ImagePlus, FileText, ChevronDown, ChevronUp, ChevronRight, Download, AlertCircle, Play, Square, Repeat, Tag, GripVertical, Link, LayoutList, LayoutGrid, BarChart3, LayoutDashboard, Activity, Palette, Maximize
+  ImagePlus, FileText, ChevronDown, ChevronUp, ChevronRight, Download, AlertCircle, Play, Square, Repeat, Tag, GripVertical, Link, LayoutList, LayoutGrid, BarChart3, LayoutDashboard, Activity, Palette, Maximize, Star, Eye
 } from "lucide-react";
 import jsPDF from "jspdf";
 import * as htmlToImage from "html-to-image";
@@ -42,6 +42,7 @@ interface Task {
   recurrence?: "NONE" | "WEEKLY" | "MONTHLY";
   tags?: string[];
   completedAt?: string;
+  isFeatured?: boolean;
 }
 
 interface Attendance {
@@ -164,6 +165,7 @@ export default function CommandCenter() {
   const [showActivity, setShowActivity] = useState(false);
   const [showDailyReport, setShowDailyReport] = useState(false);
   const [reportGenerating, setReportGenerating] = useState(false);
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
   
   // Attendance State
   const [attendanceLogs, setAttendanceLogs] = useState<Attendance[]>([]);
@@ -296,6 +298,17 @@ export default function CommandCenter() {
       fetchAttendance();
     }
   }, [user?.email, fetchAttendance]);
+
+  const handleFeatureTask = async (task: Task) => {
+    const previousTasks = [...tasks];
+    const updated = tasks.map(t => ({
+      ...t,
+      isFeatured: t.id === task.id ? !t.isFeatured : false
+    }));
+    setTasks(updated);
+    const success = await saveTasks(updated);
+    if (!success) setTasks(previousTasks);
+  };
 
   const handleClockToggle = async () => {
     if (!user?.email) return;
@@ -589,7 +602,7 @@ export default function CommandCenter() {
   });
 
   const filtered = filter === "ALL" ? sorted : sorted.filter(t => t.status === filter);
-  const heroTask = sorted.find(t => t.status !== "COMPLETED");
+  const heroTask = tasks.find(t => t.isFeatured) || sorted.find(t => t.status !== "COMPLETED");
 
   const stats = {
     total: tasks.length,
@@ -755,6 +768,10 @@ export default function CommandCenter() {
                             <RotateCcw size={8} /> Reopen
                           </button>
                         )}
+                        <button onClick={() => handleFeatureTask(task)} title={task.isFeatured ? "Unfeature Task" : "Feature Task"}
+                          className={`p-1.5 rounded-lg border transition-all cursor-pointer ${task.isFeatured ? 'bg-amber-50 border-amber-200 text-amber-500' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-amber-500 hover:border-amber-200'}`}>
+                          <Star size={9} className={task.isFeatured ? "fill-amber-500" : ""} />
+                        </button>
                         <button onClick={() => openEdit(task)}
                           className="p-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-all cursor-pointer">
                           <Edit3 size={9} />
@@ -1090,23 +1107,31 @@ export default function CommandCenter() {
             const htm = TYPE_META[heroTask.type];
             const hdl = formatDeadline(heroTask.deadline);
             const HTypeIcon = htm.icon;
+            
+            const steps = heroTask.steps || [];
+            const doneSteps = steps.filter(s => s.isDone).length;
+            const pct = steps.length > 0 ? Math.round((doneSteps / steps.length) * 100) : 0;
+            
+            const quotes = [
+              "রাতের নিস্তব্ধতায় সৃষ্টি হয় সেরা কাজ 🌙",
+              "পরিশ্রম সৌভাগ্যের প্রসূতি ✨",
+              "আজকের কাজ কালকের জন্য ফেলে রাখবেন না 🚀",
+              "সৃজনশীলতা হলো বুদ্ধিমত্তার আনন্দ 💡",
+              "ছোট ছোট পদক্ষেপই বড় সাফল্যের চাবিকাঠি 🎯"
+            ];
+            const quote = quotes[new Date().getHours() % quotes.length];
+
             return (
               <motion.div key={heroTask.id}
                 initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
-                className="relative bg-white rounded-[2rem] shadow-2xl border border-gray-100/50 overflow-hidden group hover:shadow-[0_20px_60px_rgba(234,63,64,0.15)] transition-shadow duration-500"
+                className="relative bg-white rounded-[2rem] shadow-2xl border border-gray-100/50 overflow-hidden group hover:shadow-[0_20px_60px_rgba(234,63,64,0.15)] transition-shadow duration-500 flex flex-col md:flex-row"
               >
-                {/* Color accent strip */}
-                <div className="h-2 w-full bg-gradient-to-r from-[#ea3f40] to-[#bba28a]" />
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#ea3f40] to-[#bba28a] z-20" />
                 
-                {/* Decorative background glow */}
-                <div className="absolute -right-20 -top-20 w-64 h-64 bg-gradient-to-br from-[#ea3f40]/5 to-[#bba28a]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#ea3f40]/10 transition-colors duration-700" />
-
-                <div className="p-7 md:p-10 space-y-5">
-                  {/* Labels */}
-                  <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex-1 p-7 md:p-10 flex flex-col justify-between space-y-8 relative z-10">
+                  <div className="space-y-5">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase border"
-                        style={{ background: theme.accent + "12", borderColor: theme.accent + "30", color: theme.accent }}>
+                      <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase border bg-purple-50 text-purple-600 border-purple-200">
                         <Target size={9} /> CURRENT MISSION
                       </span>
                       <span className={`px-3 py-1 rounded-full border text-[9px] font-black tracking-widest ${hpm.bg} ${hpm.border} ${hpm.color} ${hpm.pulse ? "animate-pulse" : ""}`}>
@@ -1116,63 +1141,89 @@ export default function CommandCenter() {
                         <HTypeIcon size={9} /> {htm.label}
                       </span>
                     </div>
-                    {hdl && (
-                      <span className={`flex items-center gap-1 text-[10px] font-mono font-bold ${hdl.urgent ? "text-red-600" : "text-gray-400"}`}>
-                        <Clock size={10} /> {hdl.text}
-                      </span>
-                    )}
-                  </div>
 
-                  {/* Title */}
-                  <div className="space-y-2">
-                    <h1 className="text-2xl md:text-4xl font-black font-serif leading-tight text-gray-900">
-                      {heroTask.title}
-                    </h1>
-                    <div className="flex items-center gap-2 text-xs font-mono font-bold text-gray-400 flex-wrap">
-                      <span className="px-2 py-0.5 rounded-lg text-xs font-bold" style={{ background: theme.accent + "15", color: theme.accent }}>
-                        {heroTask.client || "Studio"}
-                      </span>
-                      <span>·</span>
-                      <span className={heroTask.status === "IN_PROGRESS" ? "text-amber-600 animate-pulse" : "text-gray-400"}>
-                        {heroTask.status.replace("_", " ")}
-                      </span>
+                    <div className="space-y-2">
+                      <h1 className="text-3xl md:text-5xl font-black font-serif leading-tight text-gray-900 tracking-tight">
+                        {heroTask.title}
+                      </h1>
+                      <div className="flex items-center gap-2 text-xs font-bold text-gray-400 flex-wrap uppercase tracking-wider">
+                        <span className="text-[#ea3f40]">{heroTask.client || "Studio"}</span>
+                        <span>·</span>
+                        <span className={heroTask.status === "IN_PROGRESS" ? "text-amber-600 animate-pulse" : "text-gray-400"}>
+                          {heroTask.status.replace("_", " ")}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {heroTask.description && (
-                    <p className="text-sm text-gray-500 leading-relaxed bg-gray-50 border border-gray-100 rounded-2xl px-5 py-3 max-w-2xl">
-                      {heroTask.description}
-                    </p>
-                  )}
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-3 pt-2 flex-wrap relative z-10">
+                  <div className="flex items-center gap-3 flex-wrap">
                     {heroTask.status !== "IN_PROGRESS" && heroTask.status !== "COMPLETED" && (
                       <button onClick={() => handleStatus(heroTask, "IN_PROGRESS")}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer text-white bg-gradient-to-r from-[#ea3f40] to-[#bba28a]">
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 cursor-pointer text-white bg-gradient-to-r from-[#ea3f40] to-[#bba28a]">
                         <Zap size={14} /> Start Working
                       </button>
                     )}
                     {heroTask.status !== "COMPLETED" && (
                       <button onClick={() => handleStatus(heroTask, "COMPLETED")}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-all cursor-pointer">
-                        <CheckCircle2 size={12} /> Mark Done
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-all cursor-pointer">
+                        <CheckCircle2 size={14} /> Mark Done
                       </button>
                     )}
                     <button onClick={() => openEdit(heroTask)}
-                      className="p-2 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 text-gray-400 hover:text-gray-700 transition-all cursor-pointer">
-                      <Edit3 size={12} />
+                      className="p-3 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 text-gray-400 hover:text-gray-700 transition-all cursor-pointer">
+                      <Edit3 size={14} />
                     </button>
                     <button onClick={() => handleDelete(heroTask.id)}
-                      className="p-2 rounded-xl bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer">
-                      <Trash2 size={12} />
+                      className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all cursor-pointer">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex-1 p-7 md:p-10 bg-gray-50/50 border-l border-gray-100 flex flex-col justify-between relative overflow-hidden">
+                  <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-gradient-to-tl from-[#ea3f40]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+                  
+                  <div className="flex justify-end mb-8 relative z-10">
+                    <span className="text-[11px] font-bold tracking-wider text-[#ea3f40] bg-white px-3 py-1.5 rounded-lg border border-gray-100 shadow-sm">
+                      {quote}
+                    </span>
+                  </div>
+
+                  <div className="my-auto relative z-10">
+                    <div className="flex items-center gap-6">
+                      <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden relative shadow-inner">
+                        <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#ea3f40] to-[#bba28a] rounded-full transition-all duration-1000 ease-out" style={{ width: `${pct}%` }}>
+                          <div className="absolute top-0 right-0 bottom-0 w-10 bg-gradient-to-r from-transparent to-white/30" />
+                        </div>
+                      </div>
+                      <span className="text-4xl md:text-5xl font-black font-mono text-[#ea3f40] tracking-tighter">
+                        {pct}%
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 flex items-center gap-2 flex-wrap relative z-10">
+                    {steps.slice(0, 4).map((s, i) => (
+                      <div key={s.id} onClick={() => handleStepToggle(heroTask, s.id)} className={`flex items-center gap-1.5 px-3 py-2 border rounded-lg cursor-pointer transition-colors shadow-sm ${s.isDone ? 'bg-red-50 border-red-100 text-red-500' : 'bg-white border-gray-200 text-gray-600 hover:border-[#ea3f40]/50'}`}>
+                        {s.isDone ? <CheckCircle2 size={12} className="fill-red-100" /> : <div className="w-3 h-3 border border-gray-300 rounded-[3px]" />}
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${s.isDone ? 'line-through opacity-70' : ''}`}>Step {i + 1}</span>
+                      </div>
+                    ))}
+                    {steps.length > 4 && (
+                      <span className="px-2 py-1 bg-gray-100 text-gray-500 text-[10px] font-bold rounded-lg border border-gray-200">
+                        +{steps.length - 4}
+                      </span>
+                    )}
+                    
+                    <button onClick={() => setViewingTask(heroTask)} className="ml-auto flex items-center gap-1 px-4 py-2 border border-[#ea3f40] text-[#ea3f40] rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-[#ea3f40] hover:text-white transition-all shadow-sm">
+                      MORE <ArrowRight size={10} />
                     </button>
                   </div>
                 </div>
               </motion.div>
             );
           })() : (
-            <motion.div key="empty-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              <motion.div key="empty-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="bg-white rounded-3xl border border-gray-100 shadow-sm p-10 text-center space-y-3">
               <CheckCircle2 size={40} className="mx-auto text-emerald-500" />
               <h2 className="text-xl font-black font-serif text-gray-800">সব কাজ শেষ! 🎉</h2>
@@ -1851,6 +1902,78 @@ export default function CommandCenter() {
                 className="w-full py-3.5 rounded-xl bg-gray-900 hover:bg-black text-white font-bold text-sm transition-colors shadow-lg active:scale-[0.98]">
                 Let's Get to Work! 🚀
               </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── VIEWING TASK MODAL ── */}
+      <AnimatePresence>
+        {viewingTask && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-[2rem] w-full max-w-3xl p-8 shadow-2xl relative max-h-[90vh] flex flex-col">
+              
+              <div className="flex items-center justify-between mb-6 shrink-0">
+                <div>
+                  <h3 className="font-black text-2xl font-serif text-gray-900">{viewingTask.title}</h3>
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">{viewingTask.client || "Studio"} · {viewingTask.type}</p>
+                </div>
+                <button onClick={() => setViewingTask(null)}
+                  className="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-500 transition-colors">
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-8">
+                {viewingTask.description && (
+                  <div>
+                    <h4 className="text-xs font-black text-gray-800 tracking-wider uppercase flex items-center gap-2 mb-3">
+                      <FileText size={14} className="text-blue-500" /> Description
+                    </h4>
+                    <p className="text-sm text-gray-600 leading-relaxed bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                      {viewingTask.description}
+                    </p>
+                  </div>
+                )}
+
+                {viewingTask.steps && viewingTask.steps.length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-black text-gray-800 tracking-wider uppercase flex items-center gap-2 mb-3">
+                      <CheckCircle2 size={14} className="text-emerald-500" /> Steps Checklist
+                    </h4>
+                    <div className="space-y-2">
+                      {viewingTask.steps.map(step => (
+                        <div key={step.id} onClick={() => {
+                          handleStepToggle(viewingTask, step.id);
+                          setViewingTask(p => p ? {...p, steps: p.steps?.map(s => s.id === step.id ? {...s, isDone: !s.isDone} : s)} : null);
+                        }} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${step.isDone ? 'bg-emerald-50/30 border-emerald-100' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+                          {step.isDone ? <CheckCircle2 size={16} className="text-emerald-500 fill-emerald-100" /> : <div className="w-4 h-4 rounded border-2 border-gray-300" />}
+                          <span className={`text-sm font-medium ${step.isDone ? 'text-gray-400 line-through' : 'text-gray-700'}`}>{step.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {viewingTask.images && viewingTask.images.length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-black text-gray-800 tracking-wider uppercase flex items-center gap-2 mb-3">
+                      <ImageIcon size={14} className="text-purple-500" /> References
+                    </h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      {viewingTask.images.map((img, i) => (
+                        <div key={i} className="aspect-square rounded-2xl border border-gray-200 overflow-hidden group relative cursor-pointer" onClick={() => window.open(img, "_blank")}>
+                          <img src={img} alt={`Ref ${i}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                            <Eye className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={24} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </motion.div>
           </div>
         )}
