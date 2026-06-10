@@ -162,6 +162,8 @@ export default function CommandCenter() {
   const [viewMode, setViewMode] = useState<"LIST" | "KANBAN">("LIST");
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [showActivity, setShowActivity] = useState(false);
+  const [showDailyReport, setShowDailyReport] = useState(false);
+  const [reportGenerating, setReportGenerating] = useState(false);
   
   // Attendance State
   const [attendanceLogs, setAttendanceLogs] = useState<Attendance[]>([]);
@@ -307,7 +309,10 @@ export default function CommandCenter() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: user.email })
         });
-        if (res.ok) fetchAttendance();
+        if (res.ok) {
+           await fetchAttendance();
+           setShowDailyReport(true);
+        }
       } else {
         // Clock In
         const res = await fetch("/api/attendance", {
@@ -1587,6 +1592,211 @@ export default function CommandCenter() {
           </div>
         )}
       </AnimatePresence>
+
+      
+      {/* ── DAILY REPORT MODAL ── */}
+      <AnimatePresence>
+        {showDailyReport && (
+          <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white border border-gray-100 rounded-[2rem] w-full max-w-2xl p-6 shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
+              
+              <div className="flex items-center justify-between mb-4 shrink-0">
+                <h3 className="font-black text-xl font-serif text-gray-900">Daily Report</h3>
+                <button onClick={() => setShowDailyReport(false)}
+                  className="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-500 transition-colors">
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Scrollable container for the report content */}
+              <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mb-4">
+                {/* The actual element to capture */}
+                <div id="daily-report-card" className="bg-white p-8 rounded-3xl relative overflow-hidden" style={{ background: '#fcfcfc', border: '1px solid #f0f0f0' }}>
+                  {/* Decorative background for the report */}
+                  <div className="absolute -right-20 -top-20 w-64 h-64 bg-gradient-to-br from-[#ea3f40]/5 to-[#bba28a]/10 rounded-full blur-3xl pointer-events-none"></div>
+                  
+                  <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-6 relative z-10">
+                    <div>
+                      <h2 className="text-2xl font-black font-serif text-gray-900 tracking-tight">Studio Report</h2>
+                      <p className="text-xs font-bold text-gray-400 mt-1 uppercase tracking-widest">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-[#ea3f40] bg-[#ea3f40]/10 px-3 py-1 rounded-lg">{user?.name}</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Creative Command</p>
+                    </div>
+                  </div>
+
+                  {/* Summary Metric */}
+                  <div className="mb-8 relative z-10">
+                    {(() => {
+                      const todayStr = `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}`;
+                      const todaysLogs = attendanceLogs.filter(l => l.dateString === todayStr);
+                      const totalSecs = todaysLogs.reduce((acc, log) => {
+                        const start = new Date(log.clockIn).getTime();
+                        const end = log.clockOut ? new Date(log.clockOut).getTime() : Date.now();
+                        return acc + (end - start) / 1000;
+                      }, 0);
+                      const totalHours = (totalSecs / 3600).toFixed(1);
+                      return (
+                        <div className="bg-gray-50/80 rounded-2xl p-5 border border-gray-100 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+                              <Clock size={20} />
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Hours Worked</p>
+                              <p className="text-2xl font-black text-gray-900 font-mono">{totalHours} <span className="text-sm text-gray-400">hours</span></p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                             <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100">
+                               <CheckCircle2 size={10} /> Shift Completed
+                             </span>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                    {/* Left Column */}
+                    <div className="space-y-6">
+                      {/* Added Today */}
+                      <div>
+                        <h4 className="text-xs font-black text-gray-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                          <Plus size={14} className="text-[#ea3f40]" /> Added Today
+                        </h4>
+                        <div className="space-y-2">
+                          {(() => {
+                            const added = tasks.filter(t => new Date(t.createdAt).toDateString() === new Date().toDateString());
+                            if (added.length === 0) return <p className="text-[10px] text-gray-400 font-mono">No tasks added today.</p>;
+                            return added.map(t => (
+                              <div key={t.id} className="text-[11px] font-bold text-gray-600 bg-white border border-gray-100 p-2 rounded-lg flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span> {t.title}
+                              </div>
+                            ));
+                          })()}
+                        </div>
+                      </div>
+
+                      {/* Completed Today */}
+                      <div>
+                        <h4 className="text-xs font-black text-gray-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                          <CheckCircle2 size={14} className="text-emerald-500" /> Completed Today
+                        </h4>
+                        <div className="space-y-2">
+                          {(() => {
+                            const completed = tasks.filter(t => t.status === "COMPLETED" && t.completedAt && new Date(t.completedAt).toDateString() === new Date().toDateString());
+                            if (completed.length === 0) return <p className="text-[10px] text-gray-400 font-mono">No tasks completed today.</p>;
+                            return completed.map(t => (
+                              <div key={t.id} className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 p-2 rounded-lg flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> <span className="line-through opacity-70">{t.title}</span>
+                              </div>
+                            ));
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Column */}
+                    <div className="space-y-6">
+                      {/* In Progress */}
+                      <div>
+                        <h4 className="text-xs font-black text-gray-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                          <Activity size={14} className="text-blue-500" /> In Progress
+                        </h4>
+                        <div className="space-y-3">
+                          {(() => {
+                            const inProg = tasks.filter(t => t.status === "IN_PROGRESS");
+                            if (inProg.length === 0) return <p className="text-[10px] text-gray-400 font-mono">Nothing currently in progress.</p>;
+                            return inProg.map(t => {
+                              const steps = t.steps || [];
+                              const doneSteps = steps.filter(s => s.isDone).length;
+                              const pct = steps.length > 0 ? Math.round((doneSteps / steps.length) * 100) : null;
+                              return (
+                                <div key={t.id} className="bg-white border border-gray-100 p-3 rounded-xl">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[11px] font-bold text-gray-800 truncate pr-2">{t.title}</span>
+                                    {pct !== null ? (
+                                      <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">{pct}%</span>
+                                    ) : (
+                                      <span className="text-[9px] font-black text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded uppercase">Working</span>
+                                    )}
+                                  </div>
+                                  {pct !== null && (
+                                    <div className="w-full bg-gray-100 rounded-full h-1.5">
+                                      <div className="bg-gradient-to-r from-blue-400 to-blue-600 h-1.5 rounded-full" style={{ width: `${pct}%` }}></div>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            });
+                          })()}
+                        </div>
+                      </div>
+
+                      {/* Pending */}
+                      <div>
+                        <h4 className="text-xs font-black text-gray-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                          <Clock size={14} className="text-orange-400" /> Pending (To-Do)
+                        </h4>
+                        <div className="space-y-2">
+                          {(() => {
+                            const pending = tasks.filter(t => t.status === "TODO");
+                            if (pending.length === 0) return <p className="text-[10px] text-gray-400 font-mono">No pending tasks.</p>;
+                            return pending.slice(0, 5).map(t => ( // show up to 5 to keep image size reasonable
+                              <div key={t.id} className="text-[11px] font-bold text-gray-600 bg-white border border-gray-100 p-2 rounded-lg flex items-center gap-2 truncate">
+                                <span className="w-1.5 h-1.5 rounded-full bg-orange-300"></span> {t.title}
+                              </div>
+                            ));
+                          })()}
+                          {tasks.filter(t => t.status === "TODO").length > 5 && (
+                            <p className="text-[9px] font-bold text-gray-400 text-center">+ {tasks.filter(t => t.status === "TODO").length - 5} more pending...</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Footer */}
+                  <div className="mt-8 pt-4 border-t border-gray-100 text-center relative z-10">
+                    <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">Antor Creative Studio</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Download Button */}
+              <div className="shrink-0 pt-4 border-t border-gray-100">
+                <button 
+                  onClick={async () => {
+                    const el = document.getElementById("daily-report-card");
+                    if (!el) return;
+                    setReportGenerating(true);
+                    try {
+                      const canvas = await html2canvas(el, { scale: 3, useCORS: true, backgroundColor: "#ffffff" });
+                      const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+                      const link = document.createElement("a");
+                      link.href = dataUrl;
+                      link.download = `Daily_Report_${new Date().toISOString().split("T")[0]}.jpg`;
+                      link.click();
+                    } catch (e) {
+                      console.error("Failed to generate report", e);
+                    } finally {
+                      setReportGenerating(false);
+                    }
+                  }}
+                  disabled={reportGenerating}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-[#ea3f40] to-[#bba28a] hover:opacity-90 transition-opacity disabled:opacity-50">
+                  {reportGenerating ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+                  Download JPG Report
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
 
       {/* ── DUE TASKS MODAL ── */}
       <AnimatePresence>
