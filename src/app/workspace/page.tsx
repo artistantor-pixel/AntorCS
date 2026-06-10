@@ -44,6 +44,14 @@ interface Task {
   completedAt?: string;
 }
 
+interface Attendance {
+  id: number;
+  userEmail: string;
+  clockIn: string;
+  clockOut?: string;
+  dateString: string;
+}
+
 interface UserSession {
   email: string;
   name: string;
@@ -154,6 +162,10 @@ export default function CommandCenter() {
   const [viewMode, setViewMode] = useState<"LIST" | "KANBAN">("LIST");
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [showActivity, setShowActivity] = useState(false);
+  
+  // Attendance State
+  const [attendanceLogs, setAttendanceLogs] = useState<Attendance[]>([]);
+  const [isClocking, setIsClocking] = useState(false);
 
   // Custom Authentication Forms State
   const [authTab, setAuthTab]       = useState<"login" | "signup">("login");
@@ -263,6 +275,54 @@ export default function CommandCenter() {
       fetchTasks();
     }
   }, [user?.email, fetchTasks]);
+
+  const fetchAttendance = useCallback(async () => {
+    if (!user?.email) return;
+    try {
+      const res = await fetch(`/api/attendance?email=${encodeURIComponent(user.email)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAttendanceLogs(data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [user?.email]);
+
+  useEffect(() => {
+    if (user?.email) {
+      fetchAttendance();
+    }
+  }, [user?.email, fetchAttendance]);
+
+  const handleClockToggle = async () => {
+    if (!user?.email) return;
+    setIsClocking(true);
+    const isClockedIn = attendanceLogs.some(log => !log.clockOut);
+    try {
+      if (isClockedIn) {
+        // Clock Out
+        const res = await fetch("/api/attendance", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: user.email })
+        });
+        if (res.ok) fetchAttendance();
+      } else {
+        // Clock In
+        const res = await fetch("/api/attendance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: user.email })
+        });
+        if (res.ok) fetchAttendance();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsClocking(false);
+    }
+  };
 
   const saveTasks = async (updated: Task[]) => {
     if (!user?.email) return false;
@@ -890,6 +950,10 @@ export default function CommandCenter() {
             <button onClick={() => setShowActivity(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white text-gray-700 hover:text-[#ea3f40] font-bold text-sm transition-all mt-3 border border-gray-100 shadow-sm hover:shadow-md hover:border-[#ea3f40]/20 cursor-pointer">
               <Activity size={16} /> Activity
             </button>
+            <button onClick={handleClockToggle} disabled={isClocking} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all mt-3 shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 ${attendanceLogs.some(log => !log.clockOut) ? "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100" : "bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100"}`}>
+              {isClocking ? <Loader2 size={16} className="animate-spin" /> : <Clock size={16} />}
+              {attendanceLogs.some(log => !log.clockOut) ? "Clock Out" : "Clock In"}
+            </button>
             <button onClick={() => { localStorage.removeItem("workspaceToken"); setUser(null); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 font-bold text-sm transition-all mt-3 border border-red-100 hover:border-red-200 cursor-pointer">
               <LogOut size={16} /> Log Out
             </button>
@@ -1470,6 +1534,54 @@ export default function CommandCenter() {
                     ))}
                   </div>
                 </div>
+                
+                {/* ── ATTENDANCE LOG ── */}
+                <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 shadow-inner mt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-sm font-black text-gray-800 tracking-wide flex items-center gap-2">
+                      <Clock size={16} className="text-emerald-500" /> Office Attendance
+                    </h4>
+                    <span className="text-[10px] font-black tracking-widest uppercase px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md">
+                      {attendanceLogs.length} Records
+                    </span>
+                  </div>
+                  <div className="max-h-[250px] overflow-y-auto custom-scrollbar space-y-3 pr-2">
+                    {attendanceLogs.length === 0 ? (
+                      <p className="text-xs text-gray-400 font-mono text-center py-4">No attendance records found.</p>
+                    ) : (
+                      attendanceLogs.map(log => {
+                        const start = new Date(log.clockIn);
+                        const end = log.clockOut ? new Date(log.clockOut) : null;
+                        const duration = end ? ((end.getTime() - start.getTime()) / 3600000).toFixed(2) : "Ongoing";
+                        
+                        return (
+                          <div key={log.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border border-gray-200 rounded-xl shadow-sm gap-4">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-2 h-10 rounded-full ${!log.clockOut ? 'bg-emerald-400 animate-pulse' : 'bg-gray-300'}`}></div>
+                              <div>
+                                <p className="text-xs font-bold text-gray-800 font-mono">{log.dateString}</p>
+                                <div className="flex items-center gap-2 mt-1 text-[10px] text-gray-500 uppercase tracking-widest font-bold">
+                                  <span className="flex items-center gap-1"><Zap size={10} className="text-emerald-500" /> {start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                  {end && (
+                                    <>
+                                      <span>—</span>
+                                      <span className="flex items-center gap-1"><Moon size={10} className="text-red-400" /> {end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs font-black text-gray-900">{duration} {end && "hrs"}</p>
+                              <p className="text-[9px] text-gray-400 uppercase tracking-widest mt-0.5">Duration</p>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+
               </div>
             </motion.div>
           </div>
