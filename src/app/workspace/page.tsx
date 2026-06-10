@@ -153,6 +153,7 @@ export default function CommandCenter() {
   const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>({});
   const [viewMode, setViewMode] = useState<"LIST" | "KANBAN">("LIST");
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [showActivity, setShowActivity] = useState(false);
 
   // Custom Authentication Forms State
   const [authTab, setAuthTab]       = useState<"login" | "signup">("login");
@@ -886,7 +887,10 @@ export default function CommandCenter() {
             <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-[#ea3f40] to-[#bba28a] text-white font-bold text-sm transition-all shadow-lg shadow-[#ea3f40]/25 hover:shadow-xl hover:scale-[1.02]">
               <Target size={16} /> My Tasks
             </button>
-            <button onClick={() => { localStorage.removeItem("workspaceToken"); setUser(null); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 font-bold text-sm transition-all mt-4 border border-red-100 hover:border-red-200">
+            <button onClick={() => setShowActivity(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white text-gray-700 hover:text-[#ea3f40] font-bold text-sm transition-all mt-3 border border-gray-100 shadow-sm hover:shadow-md hover:border-[#ea3f40]/20 cursor-pointer">
+              <Activity size={16} /> Activity
+            </button>
+            <button onClick={() => { localStorage.removeItem("workspaceToken"); setUser(null); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 font-bold text-sm transition-all mt-3 border border-red-100 hover:border-red-200 cursor-pointer">
               <LogOut size={16} /> Log Out
             </button>
           </div>
@@ -1445,6 +1449,88 @@ export default function CommandCenter() {
                   {isSaving ? "সেভ হচ্ছে..." : editingTask ? "✓ আপডেট করুন" : "✓ টাস্ক যোগ করুন"}
                 </button>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      
+      {/* ── ACTIVITY & STATS MODAL ── */}
+      <AnimatePresence>
+        {showActivity && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white border border-gray-100 rounded-[2rem] w-full max-w-4xl p-8 shadow-2xl relative overflow-hidden">
+              
+              <div className="absolute -right-40 -top-40 w-96 h-96 bg-gradient-to-br from-[#ea3f40]/10 to-[#bba28a]/20 rounded-full blur-3xl pointer-events-none"></div>
+
+              <div className="flex items-center justify-between mb-8 relative z-10">
+                <div>
+                  <h3 className="font-black text-2xl font-serif text-gray-900 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#ea3f40]/10 text-[#ea3f40] flex items-center justify-center">
+                      <Activity size={20} />
+                    </div>
+                    Activity & Performance
+                  </h3>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1 ml-13">Workspace Analytics</p>
+                </div>
+                <button onClick={() => setShowActivity(false)}
+                  className="p-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 text-gray-400 hover:text-gray-700 transition-all cursor-pointer">
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="space-y-8 relative z-10">
+                {/* Modernized Stats Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-2xl p-5 border border-emerald-100 shadow-sm relative overflow-hidden">
+                    <CheckCircle2 size={24} className="text-emerald-500 mb-3" />
+                    <p className="text-3xl font-black text-emerald-950 font-mono">{tasksCompletedThisWeek}</p>
+                    <p className="text-[9px] font-black text-emerald-600/80 uppercase tracking-widest mt-1">Done This Week</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-5 border border-blue-100 shadow-sm relative overflow-hidden">
+                    <Activity size={24} className="text-blue-500 mb-3" />
+                    <p className="text-3xl font-black text-blue-950 font-mono">{activeProjects}</p>
+                    <p className="text-[9px] font-black text-blue-600/80 uppercase tracking-widest mt-1">Active Tasks</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-2xl p-5 border border-purple-100 shadow-sm relative overflow-hidden">
+                    <Clock size={24} className="text-purple-500 mb-3" />
+                    <p className="text-3xl font-black text-purple-950 font-mono">{totalHoursLogged}<span className="text-lg text-purple-400/80">h</span></p>
+                    <p className="text-[9px] font-black text-purple-600/80 uppercase tracking-widest mt-1">Time Logged</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-red-50 to-red-100/50 rounded-2xl p-5 border border-red-100 shadow-sm relative overflow-hidden">
+                    <AlertCircle size={24} className="text-red-500 mb-3" />
+                    <p className="text-3xl font-black text-red-950 font-mono">{dueTodayTasks}</p>
+                    <p className="text-[9px] font-black text-red-600/80 uppercase tracking-widest mt-1">Due Today</p>
+                  </div>
+                </div>
+
+                {/* Modernized Productivity Chart */}
+                <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 shadow-inner">
+                  <div className="flex items-center justify-between mb-6">
+                    <h4 className="text-sm font-black text-gray-800 tracking-wide">Tasks Completed (Last 7 Days)</h4>
+                    <BarChart3 className="text-gray-400" size={18} />
+                  </div>
+                  <div className="h-40 flex items-end justify-between gap-3 px-2">
+                    {chartData.map((d, i) => (
+                      <div key={i} className="flex-1 flex flex-col items-center gap-3">
+                        <div className="w-full relative flex-1 flex items-end justify-center">
+                          <motion.div 
+                            initial={{ height: 0 }} animate={{ height: `${(d.count / maxChartCount) * 100}%` }} transition={{ duration: 0.8, delay: i * 0.05 }}
+                            className={`w-full max-w-[32px] rounded-t-lg relative group transition-all duration-300 ${d.count > 0 ? "bg-gradient-to-t from-gray-300 to-gray-800 hover:from-[#ea3f40] hover:to-[#bba28a] shadow-lg" : "bg-gray-200"}`}>
+                              {d.count > 0 && (
+                                <div className="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-[10px] font-bold py-0.5 px-2 rounded-md pointer-events-none z-10 shadow-xl">
+                                  {d.count}
+                                </div>
+                              )}
+                          </motion.div>
+                        </div>
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{d.day}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </motion.div>
           </div>
         )}
