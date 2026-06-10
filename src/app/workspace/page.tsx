@@ -545,17 +545,16 @@ export default function CommandCenter() {
                     exit={{ opacity: 0, scale: 0.96 }} transition={{ delay: idx * 0.04 }}
                     draggable
                     onDragStart={(e) => setDraggedTaskId(task.id)}
-                    className={`group relative bg-white rounded-2xl border p-5 shadow-sm transition-all hover:shadow-md cursor-grab active:cursor-grabbing ${
+                    className={`group relative bg-white rounded-2xl border p-5 transition-all duration-300 cursor-grab active:cursor-grabbing ${
                       task.status === "COMPLETED"
-                        ? "opacity-60 border-gray-100"
-                        : isHero ? "border-gray-200" : "border-gray-100 hover:border-gray-300"
+                        ? "opacity-60 border-gray-100 shadow-sm"
+                        : isHero ? "border-[#ea3f40]/30 shadow-md" : "border-gray-100/50 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-[#ea3f40]/30"
                     }`}
-                    style={isHero && task.status !== "COMPLETED" ? { borderColor: theme.accent + "50", boxShadow: `0 0 0 2px ${theme.accent}18` } : {}}>
+                    style={isHero && task.status !== "COMPLETED" ? { boxShadow: `0 0 20px rgba(234,63,64,0.15)` } : {}}>
 
                     {/* Hero dot indicator */}
                     {isHero && task.status !== "COMPLETED" && (
-                      <span className="absolute top-3 right-3 w-2 h-2 rounded-full animate-ping"
-                        style={{ background: theme.accent }} />
+                      <span className="absolute top-3 right-3 w-2.5 h-2.5 rounded-full animate-ping bg-[#ea3f40]" />
                     )}
 
                     <div className="space-y-3">
@@ -869,10 +868,10 @@ export default function CommandCenter() {
     <div className={`min-h-screen ${theme.pageBg} text-gray-800 antialiased flex flex-col lg:flex-row max-w-[1600px] mx-auto`}>
 
       {/* ── SIDEBAR (DESIGNER TOOLKIT) ── */}
-      <aside className="w-full lg:w-72 shrink-0 border-r border-black/5 flex flex-col h-screen sticky top-0 bg-white shadow-xl shadow-black/5 z-50">
+      <aside className="w-full lg:w-72 shrink-0 border-r border-white/20 flex flex-col h-screen sticky top-0 bg-white/80 backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.05)] z-50">
         <div className="p-6 border-b border-black/5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#ea3f40] to-[#bba28a] flex items-center justify-center text-white shadow-lg shadow-[#ea3f40]/20">
               <LayoutDashboard size={20} />
             </div>
             <div>
@@ -884,10 +883,10 @@ export default function CommandCenter() {
         
         <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
           <div className="space-y-1">
-            <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-900 text-white font-bold text-sm transition-all shadow-md shadow-gray-900/20">
+            <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-[#ea3f40] to-[#bba28a] text-white font-bold text-sm transition-all shadow-lg shadow-[#ea3f40]/25 hover:shadow-xl hover:scale-[1.02]">
               <Target size={16} /> My Tasks
             </button>
-            <button onClick={() => { localStorage.removeItem("workspaceToken"); setUser(null); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 font-bold text-sm transition-all mt-4 border border-red-100">
+            <button onClick={() => { localStorage.removeItem("workspaceToken"); setUser(null); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 font-bold text-sm transition-all mt-4 border border-red-100 hover:border-red-200">
               <LogOut size={16} /> Log Out
             </button>
           </div>
@@ -923,9 +922,9 @@ export default function CommandCenter() {
               <Link size={12} /> Quick Assets
             </h3>
             <div className="space-y-2">
-              <a href="https://freepik.com" target="_blank" className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100 hover:bg-white hover:border-gray-200 hover:shadow-sm text-xs font-bold text-gray-700 transition-all">Freepik <ChevronRight size={14}/></a>
-              <a href="https://elements.envato.com" target="_blank" className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100 hover:bg-white hover:border-gray-200 hover:shadow-sm text-xs font-bold text-gray-700 transition-all">Envato <ChevronRight size={14}/></a>
-              <a href="https://pinterest.com" target="_blank" className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100 hover:bg-white hover:border-gray-200 hover:shadow-sm text-xs font-bold text-gray-700 transition-all">Pinterest <ChevronRight size={14}/></a>
+              <a href="https://freepik.com" target="_blank" className="flex items-center justify-between p-3 rounded-xl bg-white/50 border border-gray-100/50 hover:bg-white hover:border-[#ea3f40]/30 hover:shadow-md hover:text-[#ea3f40] text-xs font-bold text-gray-700 transition-all group">Freepik <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform"/></a>
+              <a href="https://elements.envato.com" target="_blank" className="flex items-center justify-between p-3 rounded-xl bg-white/50 border border-gray-100/50 hover:bg-white hover:border-[#ea3f40]/30 hover:shadow-md hover:text-[#ea3f40] text-xs font-bold text-gray-700 transition-all group">Envato <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform"/></a>
+              <a href="https://pinterest.com" target="_blank" className="flex items-center justify-between p-3 rounded-xl bg-white/50 border border-gray-100/50 hover:bg-white hover:border-[#ea3f40]/30 hover:shadow-md hover:text-[#ea3f40] text-xs font-bold text-gray-700 transition-all group">Pinterest <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform"/></a>
             </div>
           </div>
         </div>
@@ -935,7 +934,7 @@ export default function CommandCenter() {
       <main className="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto custom-scrollbar">
 
         {/* ── TOP BAR (Now inside main) ── */}
-      <header className={`sticky top-0 z-40 ${theme.headerBg} backdrop-blur-md border-b border-black/5 shadow-sm`}>
+      <header className={`sticky top-0 z-40 ${theme.headerBg} backdrop-blur-xl border-b border-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.03)]`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
 
           {/* Left */}
@@ -1000,79 +999,29 @@ export default function CommandCenter() {
 
         {/* DASHBOARD STATS */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100">
-            <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center mb-4"><CheckCircle2 size={16}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono">{tasksCompletedThisWeek}</p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Done This Week</p>
+          <div className="group bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-50 rounded-full blur-2xl group-hover:bg-emerald-100 transition-colors duration-500"></div>
+            <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 relative z-10"><CheckCircle2 size={18}/></div>
+            <p className="text-3xl font-black text-gray-900 font-mono relative z-10">{tasksCompletedThisWeek}</p>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 relative z-10">Done This Week</p>
           </div>
-          <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100">
-            <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mb-4"><Activity size={16}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono">{activeProjects}</p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Active Tasks</p>
+          <div className="group bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-50 rounded-full blur-2xl group-hover:bg-blue-100 transition-colors duration-500"></div>
+            <div className="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4 relative z-10"><Activity size={18}/></div>
+            <p className="text-3xl font-black text-gray-900 font-mono relative z-10">{activeProjects}</p>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 relative z-10">Active Tasks</p>
           </div>
-          <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100">
-            <div className="w-8 h-8 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center mb-4"><Clock size={16}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono">{totalHoursLogged}<span className="text-lg text-gray-400">h</span></p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Time Logged</p>
+          <div className="group bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-50 rounded-full blur-2xl group-hover:bg-purple-100 transition-colors duration-500"></div>
+            <div className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center mb-4 relative z-10"><Clock size={18}/></div>
+            <p className="text-3xl font-black text-gray-900 font-mono relative z-10">{totalHoursLogged}<span className="text-lg text-gray-400">h</span></p>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 relative z-10">Time Logged</p>
           </div>
-          <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100">
-            <div className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-4"><AlertCircle size={16}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono">{dueTodayTasks}</p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Due Today</p>
-          </div>
-        </div>
-
-        {/* PRODUCTIVITY CHART */}
-        <div className="bg-white rounded-[2rem] p-6 sm:p-8 shadow-sm border border-gray-100">
-           <div className="flex items-center justify-between mb-8">
-             <div>
-               <h3 className="text-lg font-black text-gray-900">Productivity</h3>
-               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Tasks Completed (Last 7 Days)</p>
-             </div>
-             <BarChart3 className="text-gray-300" size={24} />
-           </div>
-           
-           <div className="h-40 flex items-end justify-between gap-2 sm:gap-4 px-2">
-             {chartData.map((d, i) => (
-               <div key={i} className="flex-1 flex flex-col items-center gap-3">
-                 <div className="w-full relative flex-1 flex items-end justify-center">
-                    <motion.div 
-                      initial={{ height: 0 }} animate={{ height: `${(d.count / maxChartCount) * 100}%` }} transition={{ duration: 1, delay: i * 0.1 }}
-                      className="w-full max-w-[40px] bg-gradient-to-t from-gray-100 to-gray-200 rounded-t-xl relative group">
-                        {d.count > 0 && (
-                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs font-bold py-1 px-2 rounded-lg pointer-events-none">
-                            {d.count}
-                          </div>
-                        )}
-                    </motion.div>
-                 </div>
-                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{d.day}</span>
-               </div>
-             ))}
-           </div>
-        </div>
-
-        {/* DASHBOARD STATS */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100">
-            <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center mb-4"><CheckCircle2 size={16}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono">{tasksCompletedThisWeek}</p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Done This Week</p>
-          </div>
-          <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100">
-            <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mb-4"><Activity size={16}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono">{activeProjects}</p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Active Tasks</p>
-          </div>
-          <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100">
-            <div className="w-8 h-8 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center mb-4"><Clock size={16}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono">{totalHoursLogged}<span className="text-lg text-gray-400">h</span></p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Time Logged</p>
-          </div>
-          <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100">
-            <div className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-4"><AlertCircle size={16}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono">{dueTodayTasks}</p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Due Today</p>
+          <div className="group bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+             <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-50 rounded-full blur-2xl group-hover:bg-red-100 transition-colors duration-500"></div>
+            <div className="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mb-4 relative z-10"><AlertCircle size={18}/></div>
+            <p className="text-3xl font-black text-gray-900 font-mono relative z-10">{dueTodayTasks}</p>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 relative z-10">Due Today</p>
           </div>
         </div>
 
@@ -1092,9 +1041,9 @@ export default function CommandCenter() {
                  <div className="w-full relative flex-1 flex items-end justify-center">
                     <motion.div 
                       initial={{ height: 0 }} animate={{ height: `${(d.count / maxChartCount) * 100}%` }} transition={{ duration: 1, delay: i * 0.1 }}
-                      className="w-full max-w-[40px] bg-gradient-to-t from-gray-100 to-gray-200 rounded-t-xl relative group">
+                      className={`w-full max-w-[40px] rounded-t-xl relative group transition-all duration-300 ${d.count > 0 ? "bg-gradient-to-t from-[#ea3f40]/80 to-[#bba28a]/80 hover:from-[#ea3f40] hover:to-[#bba28a] shadow-[0_0_15px_rgba(234,63,64,0.3)]" : "bg-gray-100"}`}>
                         {d.count > 0 && (
-                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs font-bold py-1 px-2 rounded-lg pointer-events-none">
+                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs font-bold py-1 px-2 rounded-lg pointer-events-none z-10">
                             {d.count}
                           </div>
                         )}
@@ -1105,6 +1054,8 @@ export default function CommandCenter() {
              ))}
            </div>
         </div>
+
+
 
         {/* ── GREETING ── */}
         <div className="text-center space-y-1">
@@ -1125,11 +1076,13 @@ export default function CommandCenter() {
             return (
               <motion.div key={heroTask.id}
                 initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
-                className="relative bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden"
-                style={{ boxShadow: `0 8px 40px ${theme.accent}18` }}
+                className="relative bg-white rounded-[2rem] shadow-2xl border border-gray-100/50 overflow-hidden group hover:shadow-[0_20px_60px_rgba(234,63,64,0.15)] transition-shadow duration-500"
               >
                 {/* Color accent strip */}
-                <div className="h-1 w-full" style={{ background: `linear-gradient(90deg, ${theme.accent}, ${theme.accent}55)` }} />
+                <div className="h-2 w-full bg-gradient-to-r from-[#ea3f40] to-[#bba28a]" />
+                
+                {/* Decorative background glow */}
+                <div className="absolute -right-20 -top-20 w-64 h-64 bg-gradient-to-br from-[#ea3f40]/5 to-[#bba28a]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#ea3f40]/10 transition-colors duration-700" />
 
                 <div className="p-7 md:p-10 space-y-5">
                   {/* Labels */}
@@ -1176,12 +1129,11 @@ export default function CommandCenter() {
                   )}
 
                   {/* Actions */}
-                  <div className="flex items-center gap-3 pt-2 flex-wrap">
+                  <div className="flex items-center gap-3 pt-2 flex-wrap relative z-10">
                     {heroTask.status !== "IN_PROGRESS" && heroTask.status !== "COMPLETED" && (
                       <button onClick={() => handleStatus(heroTask, "IN_PROGRESS")}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer"
-                        style={{ background: theme.accent + "12", borderColor: theme.accent + "30", color: theme.accent }}>
-                        <Zap size={12} /> Start Working
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer text-white bg-gradient-to-r from-[#ea3f40] to-[#bba28a]">
+                        <Zap size={14} /> Start Working
                       </button>
                     )}
                     {heroTask.status !== "COMPLETED" && (
@@ -1253,8 +1205,7 @@ export default function CommandCenter() {
           </div>
 
           <button onClick={() => { setEditingTask(null); setForm({ title: "", client: "", description: "", priority: "HIGH", type: "BOSS_TASK", status: "TODO", deadline: "", steps: [], images: [], recurrence: "NONE", tags: [] }); setShowForm(true); }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-md transition-all hover:opacity-90 cursor-pointer"
-            style={{ background: theme.accent }}>
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-lg shadow-[#ea3f40]/20 transition-all hover:shadow-xl hover:-translate-y-0.5 cursor-pointer bg-gradient-to-r from-[#ea3f40] to-[#bba28a]">
             <Plus size={14} /> Add Task
           </button>
         </div>
