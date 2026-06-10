@@ -11,7 +11,7 @@ import {
   ImagePlus, FileText, ChevronDown, ChevronUp, ChevronRight, Download, AlertCircle, Play, Square, Repeat, Tag, GripVertical, Link, LayoutList, LayoutGrid, BarChart3, LayoutDashboard, Activity, Palette, Maximize
 } from "lucide-react";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import * as htmlToImage from "html-to-image";
 
 // ─── TYPES ──────────────────────────────────────────────────────────────────
 type Priority = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
@@ -547,13 +547,17 @@ export default function CommandCenter() {
       el.innerHTML = html;
       document.body.appendChild(el);
       
-      const canvas = await html2canvas(el, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
+      const dataUrl = await htmlToImage.toPng(el, { pixelRatio: 2, backgroundColor: '#ffffff' });
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      // We need to get image dimensions since we don't have canvas anymore
+      const img = new Image();
+      img.src = dataUrl;
+      await new Promise(resolve => img.onload = resolve);
+      const pdfHeight = (img.height * pdfWidth) / img.width;
+      
+      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save(`ACS_Daily_Report_${today.replace(/\//g, "-")}.pdf`);
       document.body.removeChild(el);
     } catch (e) {
@@ -1779,8 +1783,7 @@ export default function CommandCenter() {
                     if (!el) return;
                     setReportGenerating(true);
                     try {
-                      const canvas = await html2canvas(el, { scale: 3, useCORS: true, backgroundColor: "#ffffff" });
-                      const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+                      const dataUrl = await htmlToImage.toJpeg(el, { quality: 0.95, backgroundColor: "#ffffff", pixelRatio: 2 });
                       const link = document.createElement("a");
                       link.href = dataUrl;
                       link.download = `Daily_Report_${new Date().toISOString().split("T")[0]}.jpg`;
