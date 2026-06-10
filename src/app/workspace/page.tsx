@@ -1001,66 +1001,6 @@ export default function CommandCenter() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
-        {/* DASHBOARD STATS */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="group bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-50 rounded-full blur-2xl group-hover:bg-emerald-100 transition-colors duration-500"></div>
-            <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 relative z-10"><CheckCircle2 size={18}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono relative z-10">{tasksCompletedThisWeek}</p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 relative z-10">Done This Week</p>
-          </div>
-          <div className="group bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-50 rounded-full blur-2xl group-hover:bg-blue-100 transition-colors duration-500"></div>
-            <div className="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4 relative z-10"><Activity size={18}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono relative z-10">{activeProjects}</p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 relative z-10">Active Tasks</p>
-          </div>
-          <div className="group bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-50 rounded-full blur-2xl group-hover:bg-purple-100 transition-colors duration-500"></div>
-            <div className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center mb-4 relative z-10"><Clock size={18}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono relative z-10">{totalHoursLogged}<span className="text-lg text-gray-400">h</span></p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 relative z-10">Time Logged</p>
-          </div>
-          <div className="group bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-             <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-50 rounded-full blur-2xl group-hover:bg-red-100 transition-colors duration-500"></div>
-            <div className="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mb-4 relative z-10"><AlertCircle size={18}/></div>
-            <p className="text-3xl font-black text-gray-900 font-mono relative z-10">{dueTodayTasks}</p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 relative z-10">Due Today</p>
-          </div>
-        </div>
-
-        {/* PRODUCTIVITY CHART */}
-        <div className="bg-white rounded-[2rem] p-6 sm:p-8 shadow-sm border border-gray-100">
-           <div className="flex items-center justify-between mb-8">
-             <div>
-               <h3 className="text-lg font-black text-gray-900">Productivity</h3>
-               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Tasks Completed (Last 7 Days)</p>
-             </div>
-             <BarChart3 className="text-gray-300" size={24} />
-           </div>
-           
-           <div className="h-40 flex items-end justify-between gap-2 sm:gap-4 px-2">
-             {chartData.map((d, i) => (
-               <div key={i} className="flex-1 flex flex-col items-center gap-3">
-                 <div className="w-full relative flex-1 flex items-end justify-center">
-                    <motion.div 
-                      initial={{ height: 0 }} animate={{ height: `${(d.count / maxChartCount) * 100}%` }} transition={{ duration: 1, delay: i * 0.1 }}
-                      className={`w-full max-w-[40px] rounded-t-xl relative group transition-all duration-300 ${d.count > 0 ? "bg-gradient-to-t from-[#ea3f40]/80 to-[#bba28a]/80 hover:from-[#ea3f40] hover:to-[#bba28a] shadow-[0_0_15px_rgba(234,63,64,0.3)]" : "bg-gray-100"}`}>
-                        {d.count > 0 && (
-                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs font-bold py-1 px-2 rounded-lg pointer-events-none z-10">
-                            {d.count}
-                          </div>
-                        )}
-                    </motion.div>
-                 </div>
-                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{d.day}</span>
-               </div>
-             ))}
-           </div>
-        </div>
-
-
-
         {/* ── GREETING ── */}
         <div className="text-center space-y-1">
           <div className="flex items-center justify-center gap-2">
