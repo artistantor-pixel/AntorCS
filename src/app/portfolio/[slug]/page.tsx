@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import PortfolioDetailClient from "./PortfolioDetailClient";
 import { notFound } from "next/navigation";
 
 // Ensure dynamic rendering to fetch the latest project details
 export const dynamic = "force-dynamic";
 
-const prisma = new PrismaClient();
 
 export default async function PortfolioDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-const prisma = new PrismaClient();
 
 // GET: Fetch all recruitment proposals/briefs submitted by HRs
 export async function GET() {

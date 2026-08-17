@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-const prisma = new PrismaClient();
 
 function getEmailAndValidate(request: Request | { url: string }) {
   const url = new URL(request.url);

@@ -1,10 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import PortfolioClient from "./PortfolioClient";
 
 // Ensure this page is dynamically rendered so it always fetches the latest projects
 export const dynamic = "force-dynamic";
 
-const prisma = new PrismaClient();
 
 export default async function PortfolioPage() {
   // Fetch projects directly from the database during server-side rendering

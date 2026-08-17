@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import fs from "fs";
 import path from "path";
 
 export const dynamic = "force-dynamic";
-const prisma = new PrismaClient();
 const localesDir = path.join(process.cwd(), "src", "locales");
 
 export async function GET() {
