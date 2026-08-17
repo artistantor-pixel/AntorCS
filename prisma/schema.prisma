@@ -80,3 +80,51 @@ model Attendance {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
+
+model AiConversation {
+  id        String      @id @default(cuid())
+  sessionId String      @unique
+  platform  String      @default("WEBSITE") // WEBSITE, MESSENGER
+  senderId  String?     // Messenger PSID or Web Session ID
+  userName  String?
+  userEmail String?
+  userPhone String?
+  messages  AiMessage[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model AiMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         String         // USER, AI, SYSTEM
+  content        String
+  metadata       Json?          // Stores price quotes, tool output, etc.
+  createdAt      DateTime       @default(now())
+}
+
+model AiLead {
+  id             Int      @id @default(autoincrement())
+  clientName     String
+  clientPhone    String?
+  clientEmail    String?
+  platform       String   @default("WEBSITE") // WEBSITE, MESSENGER
+  serviceType    String
+  estimatedPrice Float?
+  notes          String?
+  status         String   @default("NEW") // NEW, CONTACTED, CLOSED
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  clientName String
+  role       String?
+  content    String
+  rating     Int      @default(5)
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

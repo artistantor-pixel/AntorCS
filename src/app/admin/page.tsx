@@ -7,7 +7,7 @@ import {
   Save, X, Search, Filter, CheckSquare, Square, RefreshCw, 
   AlertCircle, CheckCircle, Video, Image as ImageIcon, ExternalLink, Calendar,
   Bell, ChevronDown, Award, PieChart, Activity, Cpu, Database, Calculator, FileText, ShoppingCart, Mail, MessageCircle, Menu, Users,
-  ArrowUp, ArrowDown, GripVertical, Code, Volume2, Link as LinkIcon
+  ArrowUp, ArrowDown, GripVertical, Code, Volume2, Link as LinkIcon, Star
 } from "lucide-react";
 
 
@@ -90,6 +90,8 @@ export default function AdminDashboard() {
   const [productsData, setProductsData] = useState<Product[]>([]);
   const [visitorCount, setVisitorCount] = useState<number>(1428);
   const [workspaceUsers, setWorkspaceUsers] = useState<any[]>([]);
+  const [reviewsData, setReviewsData] = useState<any[]>([]);
+  const [socialProof, setSocialProof] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
 
@@ -259,6 +261,28 @@ export default function AdminDashboard() {
       } catch (err) {
         console.error(err);
       }
+
+      // Fetch reviews
+      try {
+        const revRes = await fetch("/api/admin/reviews", { cache: "no-store" });
+        if (revRes.ok) {
+          const revData = await revRes.json();
+          if (Array.isArray(revData)) setReviewsData(revData);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
+      // Fetch social proof
+      try {
+        const spRes = await fetch("/api/social-proof");
+        if (spRes.ok) {
+          const spData = await spRes.json();
+          if (Array.isArray(spData)) setSocialProof(spData.join(", "));
+        }
+      } catch (err) {
+        console.error(err);
+      }
     } catch (e) {
       addToast("Failed to load dashboard parameters", "error");
     } finally {
@@ -339,6 +363,25 @@ export default function AdminDashboard() {
         addToast("Layout configuration saved successfully!", "success");
       } else {
         addToast("Failed to save layout.", "error");
+      }
+    } catch (e) {
+      addToast("Network error.", "error");
+    }
+  };
+
+  const handleSaveSocialProof = async () => {
+    addToast("Saving social proof...", "info");
+    try {
+      const logos = socialProof.split(",").map(s => s.trim()).filter(s => s);
+      const res = await fetch("/api/social-proof", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ logos })
+      });
+      if (res.ok) {
+        addToast("Social proof updated successfully!", "success");
+      } else {
+        addToast("Failed to update social proof.", "error");
       }
     } catch (e) {
       addToast("Network error.", "error");
@@ -1197,6 +1240,24 @@ export default function AdminDashboard() {
               <Users size={16} />
               Workspace Users
             </button>
+            <button
+              onClick={() => { setActiveTab("reviews"); setSidebarOpen(false); }}
+              className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all border ${
+                activeTab === "reviews" 
+                  ? "bg-brand-red text-white border-brand-red shadow-[0_4px_20px_rgba(225,29,72,0.25)]" 
+                  : "text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] border-transparent"
+              }`}
+            >
+              <Star size={16} />
+              Client Reviews
+            </button>
+            <a
+              href="/admin/ai-leads"
+              className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all border text-purple-600 bg-purple-500/5 hover:bg-purple-500/10 border-purple-500/20"
+            >
+              <Cpu size={16} className="text-purple-600" />
+              AI Agent & Training 🤖
+            </a>
             <a
               href="/admin/manual"
               className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all border text-[#4B5563] hover:text-brand-red hover:bg-[#F3F4F6] border-transparent"
@@ -3057,6 +3118,31 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
+                {/* Social Proof Configuration */}
+                <div className="lg:col-span-12 mt-4 shrink-0">
+                  <div className="bg-white border border-[#E2E8F0] rounded-[2rem] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.02)] space-y-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <div>
+                        <h4 className="text-[#111827] text-sm font-bold font-serif">Social Proof / Trusted Logos</h4>
+                        <p className="text-[#6B7280] text-xs font-semibold">Comma-separated list of brand names to show in the trusted banner.</p>
+                      </div>
+                      <button 
+                        onClick={handleSaveSocialProof}
+                        className="bg-brand-red text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-[0_4px_12px_rgba(225,29,72,0.15)] flex items-center gap-2 hover:bg-blood-red"
+                      >
+                        <Save size={14} /> Save Logos
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      value={socialProof}
+                      onChange={(e) => setSocialProof(e.target.value)}
+                      placeholder="e.g. Vogue, Spotify, Nike, Netflix, Sony"
+                      className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-[#111827] font-semibold text-sm focus:outline-none focus:border-brand-red focus:bg-white transition-all"
+                    />
+                  </div>
+                </div>
+
               </div>
 
             </div>
@@ -3130,6 +3216,122 @@ export default function AdminDashboard() {
                             </td>
                           </tr>
                         ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 10: CLIENT REVIEWS */}
+          {activeTab === "reviews" && (
+            <div className="flex flex-col gap-6 flex-1 min-h-0 animate-fadeIn">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 shrink-0 border-b border-[#E2E8F0] pb-6">
+                <div>
+                  <h2 className="text-2xl font-bold tracking-tight text-[#111827] font-serif mb-2">Client Reviews</h2>
+                  <p className="text-[#6B7280] text-xs font-semibold">Manage client testimonials and reviews. Share the link below with your clients.</p>
+                </div>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.origin + "/review");
+                      addToast("Review link copied to clipboard!", "success");
+                    }} 
+                    className="bg-white border border-[#E2E8F0] text-[#111827] px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-[#F8FAFC] transition-all text-xs cursor-pointer"
+                  >
+                    <Copy size={14} /> Copy Review Link
+                  </button>
+                  <button 
+                    onClick={fetchData} 
+                    className="bg-brand-red text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-blood-red transition-all text-xs shadow-[0_4px_12px_rgba(225,29,72,0.15)] cursor-pointer"
+                  >
+                    <RefreshCw size={14} /> Refresh List
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex-1 bg-white border border-[#E2E8F0] rounded-3xl overflow-hidden flex flex-col min-h-0 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+                <div className="flex-1 overflow-auto">
+                  <table className="w-full text-left border-collapse min-w-[800px]">
+                    <thead>
+                      <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC] text-[9px] tracking-[0.2em] font-bold text-[#9CA3AF] uppercase">
+                        <th className="py-4 px-6 w-[200px]">Client</th>
+                        <th className="py-4 px-4">Review</th>
+                        <th className="py-4 px-4 w-[120px]">Rating</th>
+                        <th className="py-4 px-4 w-[120px]">Status</th>
+                        <th className="py-4 px-4 w-[150px] text-right pr-8">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#E2E8F0] text-xs text-[#4B5563] font-semibold">
+                      {reviewsData.map((review) => (
+                        <tr key={review.id} className="hover:bg-[#F8FAFC] transition-colors">
+                          <td className="py-4 px-6">
+                            <p className="font-bold text-[#111827]">{review.clientName}</p>
+                            <p className="text-[#9CA3AF]">{review.role || "N/A"}</p>
+                          </td>
+                          <td className="py-4 px-4">
+                            <p className="truncate max-w-[300px]">{review.content}</p>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="flex gap-1 text-yellow-500">
+                              {[...Array(review.rating)].map((_, i) => <Star key={i} size={12} fill="currentColor" />)}
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <span className={`px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-bold ${review.isApproved ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                              {review.isApproved ? "Approved" : "Pending"}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4 text-right pr-8 flex items-center justify-end gap-2">
+                            <button
+                              onClick={async () => {
+                                try {
+                                  const res = await fetch("/api/admin/reviews", {
+                                    method: "PUT",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ id: review.id, isApproved: !review.isApproved })
+                                  });
+                                  if (res.ok) {
+                                    addToast("Review status updated", "success");
+                                    fetchData();
+                                  }
+                                } catch (e) {
+                                  addToast("Failed to update status", "error");
+                                }
+                              }}
+                              className={`p-2.5 border rounded-xl transition-all shadow-sm cursor-pointer ${review.isApproved ? "bg-yellow-50 text-yellow-600 border-yellow-200 hover:bg-yellow-100" : "bg-green-50 text-green-600 border-green-200 hover:bg-green-100"}`}
+                              title={review.isApproved ? "Revoke Approval" : "Approve Review"}
+                            >
+                              {review.isApproved ? <X size={12} /> : <CheckCircle size={12} />}
+                            </button>
+                            <button
+                              onClick={async () => {
+                                if(!confirm("Delete this review?")) return;
+                                try {
+                                  const res = await fetch(`/api/admin/reviews?id=${review.id}`, { method: "DELETE" });
+                                  if (res.ok) {
+                                    addToast("Review deleted", "success");
+                                    fetchData();
+                                  }
+                                } catch (e) {
+                                  addToast("Failed to delete", "error");
+                                }
+                              }}
+                              className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] text-red-500 rounded-xl hover:bg-red-500/10 hover:border-red-500/30 transition-all shadow-sm cursor-pointer"
+                              title="Delete Review"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {reviewsData.length === 0 && (
+                        <tr>
+                          <td colSpan={5} className="py-16 text-center text-[#9CA3AF] font-medium font-mono">
+                            NO REVIEWS FOUND
+                          </td>
+                        </tr>
                       )}
                     </tbody>
                   </table>

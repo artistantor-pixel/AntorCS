@@ -3,6 +3,7 @@ import { Inter, Playfair_Display, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -36,8 +37,10 @@ export default function RootLayout({
         <LanguageProvider>
           <Navigation />
           {children}
+          <ChatWidget />
         </LanguageProvider>
       </body>
     </html>
   );
 }
+

@@ -1,15 +1,15 @@
 "use client";
 import { useLanguage } from "@/context/LanguageContext";
-import { Palette, LayoutTemplate, Code2, Film, Box, Lightbulb, ArrowRight } from "lucide-react";
+import { Palette, LayoutTemplate, PenTool, Film, Box, Lightbulb, ArrowRight } from "lucide-react";
 
 export default function ServicesSection() {
   const { t } = useLanguage();
   const services = [
-    { title: t('services.items.brand.title'), desc: t('services.items.brand.desc'), icon: Palette },
+    { title: t('services.items.graphic.title'), desc: t('services.items.graphic.desc'), icon: Palette },
     { title: t('services.items.uiux.title'), desc: t('services.items.uiux.desc'), icon: LayoutTemplate },
-    { title: t('services.items.web.title'), desc: t('services.items.web.desc'), icon: Code2 },
+    { title: t('services.items.illustration.title'), desc: t('services.items.illustration.desc'), icon: PenTool },
     { title: t('services.items.motion.title'), desc: t('services.items.motion.desc'), icon: Film },
-    { title: t('services.items.3d.title'), desc: t('services.items.3d.desc'), icon: Box },
+    { title: t('services.items.animation.title'), desc: t('services.items.animation.desc'), icon: Box },
     { title: t('services.items.creative.title'), desc: t('services.items.creative.desc'), icon: Lightbulb },
   ];
   return (

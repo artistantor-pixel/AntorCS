@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AdminAuthGuard from "@/components/admin/AdminAuthGuard";
 
 export const metadata: Metadata = {
   title: "AntorOS | Admin Dashboard",
@@ -12,7 +13,9 @@ export default function AdminLayout({
 }) {
   return (
     <div className="min-h-screen bg-[#050505] text-white">
-      {children}
+      <AdminAuthGuard>
+        {children}
+      </AdminAuthGuard>
     </div>
   );
 }
