@@ -165,7 +165,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
   }
 };
 
-export default function PortfolioDetailClient({ project, nextProject }: { project: any, nextProject: any }) {
+export default function PortfolioDetailClient({ project, nextProject, behanceData }: { project: any, nextProject: any, behanceData?: any }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -368,7 +368,79 @@ export default function PortfolioDetailClient({ project, nextProject }: { projec
             </>
           )}
         </section>
-        
+
+        {/* BEHANCE IMAGES GALLERY — shown when project has scraped Behance images */}
+        {behanceData && behanceData.images && behanceData.images.length > 1 && (
+          <section className="w-full max-w-[100rem] mx-auto px-0 md:px-12 pb-8">
+            <div className="flex flex-col w-full shadow-2xl shadow-black/10 md:rounded-[3rem] overflow-hidden bg-white">
+              {behanceData.images.map((imgUrl: string, i: number) => (
+                <div key={i} className="w-full relative bg-white flex flex-col">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={imgUrl}
+                    alt={`${project.title} — slide ${i + 1}`}
+                    className="w-full h-auto block"
+                    loading={i < 2 ? "eager" : "lazy"}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* View on Behance CTA */}
+            <div className="flex justify-center mt-16">
+              <a
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-[#1769ff] text-white font-bold text-sm tracking-wide hover:scale-105 transition-all shadow-xl shadow-[#1769ff]/25 group"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H13.96c.13 2.344 1.867 2.587 3.108 2.587 1.22 0 2.27-.734 2.658-1.558zm-5.648-5.078H18.5c-.184-1.587-1.3-2.084-2.408-2.084-1.244 0-2.258.59-2.514 2.084zM7.484 0C10.61 0 12 1.897 12 4.192 12 6.098 10.997 7.43 9.188 7.812 11.212 8.128 12.5 9.586 12.5 11.9c0 2.808-2.087 4.1-5.199 4.1H0V0h7.484zm-.404 6.699c1.462 0 2.297-.54 2.297-1.82 0-1.276-.803-1.879-2.274-1.879H2.556v3.699h4.524zm.299 6.408c1.64 0 2.586-.659 2.586-2.118 0-1.425-.944-2.021-2.713-2.021H2.556v4.139h4.823z"/>
+                </svg>
+                View full project on Behance
+                <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </a>
+            </div>
+          </section>
+        )}
+
+        {/* BEHANCE FULL PROJECT EMBED */}
+        {project.behanceId && (
+          <section className="w-full max-w-[100rem] mx-auto px-0 md:px-12 pb-24 pt-8">
+            <div className="w-full bg-white rounded-none md:rounded-[3rem] overflow-hidden shadow-2xl shadow-black/10 border border-black/5 relative">
+              {/* Header for the embed section */}
+              <div className="px-8 py-6 border-b border-black/5 bg-gray-50 flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-lg text-black">Project Details</h3>
+                  <p className="text-black/50 text-sm font-light">Full presentation via Behance</p>
+                </div>
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1769ff]/10 text-[#1769ff] font-bold text-xs tracking-wide hover:bg-[#1769ff] hover:text-white transition-all group"
+                >
+                  Open in Behance
+                  <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+              </div>
+              
+              {/* The Iframe */}
+              <div className="w-full h-[80vh] min-h-[800px] relative">
+                <iframe 
+                  src={`https://www.behance.net/embed/project/${project.behanceId}?ilo0=1`} 
+                  className="absolute inset-0 w-full h-full"
+                  allowFullScreen 
+                  loading="lazy" 
+                  frameBorder="0" 
+                  allow="clipboard-write" 
+                  referrerPolicy="strict-origin-when-cross-origin"
+                />
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* 6. Refined Next Project Footer (Light Mode) */}
         {nextProject && (
           <section className="h-[70vh] w-full flex flex-col items-center justify-center relative bg-white border-t border-black/5 overflow-hidden mt-20">

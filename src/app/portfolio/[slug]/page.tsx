@@ -1,34 +1,43 @@
-import prisma from "@/lib/prisma";
 import PortfolioDetailClient from "./PortfolioDetailClient";
 import { notFound } from "next/navigation";
 
-// Ensure dynamic rendering to fetch the latest project details
-export const dynamic = "force-dynamic";
+// ISR: revalidate every hour
+export const revalidate = 3600;
 
+async function getAllBehanceProjects() {
+  try {
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
+
+    const res = await fetch(`${baseUrl}/api/behance`, {
+      next: { revalidate: 3600 },
+    });
+
+    if (!res.ok) throw new Error("Behance fetch failed");
+    const data = await res.json();
+    return data.projects ?? [];
+  } catch {
+    return [];
+  }
+}
 
 export default async function PortfolioDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  
-  if (!slug) {
-    notFound();
-  }
+
+  if (!slug) notFound();
 
   const decodedSlug = decodeURIComponent(slug);
+  const allProjects = await getAllBehanceProjects();
+  const index = allProjects.findIndex(
+    (p: { slug: string }) => p.slug === slug || p.slug === decodedSlug
+  );
 
-  // Fetch all active projects ordered by ID to determine next/prev
-  const allProjects = await prisma.project.findMany({
-    where: { isActive: true },
-    orderBy: { id: 'asc' }
-  });
-
-  const index = allProjects.findIndex(p => p.slug === slug || p.slug === decodedSlug);
-  
-  if (index === -1) {
-    notFound();
-  }
+  if (index === -1) notFound();
 
   const project = allProjects[index];
   const nextProject = allProjects[(index + 1) % allProjects.length];
 
-  return <PortfolioDetailClient project={project} nextProject={nextProject} />;
+  return <PortfolioDetailClient project={project} nextProject={nextProject} behanceData={null} />;
 }
+

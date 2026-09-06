@@ -13,6 +13,7 @@ interface ImageWithFallbackProps {
   sizes?: string;
   priority?: boolean;
   objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
+  unoptimized?: boolean;
 }
 
 export default function ImageWithFallback({
@@ -25,6 +26,7 @@ export default function ImageWithFallback({
   sizes,
   priority = false,
   objectFit = "cover",
+  unoptimized = false,
 }: ImageWithFallbackProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -127,6 +129,7 @@ export default function ImageWithFallback({
           priority={priority}
           onLoad={handleLoad}
           onError={handleError}
+          unoptimized={unoptimized || resolvedSrc.startsWith('/api/image-proxy')}
           className={`${className} ${isLoading ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
           style={imageStyle}
         />
