@@ -121,9 +121,9 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
 // Stats ticker
 function StatBadge({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center gap-3 px-5 py-3 rounded-full border border-white/8 bg-white/[0.03] backdrop-blur-sm">
+    <div className="flex items-center gap-3 px-5 py-3 rounded-full border border-foreground/10 bg-foreground/[0.03] backdrop-blur-sm">
       <span className="text-brand-red font-bold text-lg leading-none">{value}</span>
-      <span className="text-white/40 text-xs uppercase tracking-widest">{label}</span>
+      <span className="text-muted-foreground text-xs uppercase tracking-widest">{label}</span>
     </div>
   );
 }
@@ -186,7 +186,7 @@ export default function PortfolioClient({ initialProjects }: { initialProjects: 
           </div>
 
           {/* ── FILTERS ── */}
-          <div className="inline-flex flex-wrap justify-center gap-1.5 bg-white/[0.03] border border-white/[0.07] p-1.5 rounded-2xl backdrop-blur-md">
+          <div className="inline-flex flex-wrap justify-center gap-1.5 bg-foreground/[0.03] border border-foreground/[0.07] p-1.5 rounded-2xl backdrop-blur-md">
             {categories.map((cat) => {
               const catKey = catKeyMap[cat] || cat.toLowerCase();
               const displayCat = t(`portfolio.categories.${catKey}`);
@@ -203,12 +203,12 @@ export default function PortfolioClient({ initialProjects }: { initialProjects: 
                   className={`relative px-4 py-2 rounded-xl text-xs font-bold tracking-wide uppercase transition-all duration-250 flex items-center gap-2 ${
                     isActive
                       ? "bg-brand-red text-white shadow-lg shadow-brand-red/25"
-                      : "text-white/40 hover:text-white/70 hover:bg-white/[0.05]"
+                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/[0.05]"
                   }`}
                 >
                   {displayCat}
                   {count > 0 && (
-                    <span className={`text-[10px] tabular-nums ${isActive ? "text-white/70" : "text-white/25"}`}>
+                    <span className={`text-[10px] tabular-nums ${isActive ? "text-white/70" : "text-muted-foreground"}`}>
                       {count}
                     </span>
                   )}
@@ -228,10 +228,10 @@ export default function PortfolioClient({ initialProjects }: { initialProjects: 
               exit={{ opacity: 0 }}
               className="py-24 text-center"
             >
-              <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
-                <Grid3X3 size={24} className="text-white/20" />
+              <div className="w-16 h-16 rounded-2xl bg-foreground/5 border border-foreground/10 flex items-center justify-center mx-auto mb-4">
+                <Grid3X3 size={24} className="text-muted-foreground" />
               </div>
-              <p className="text-white/30 font-light">No works found in this category.</p>
+              <p className="text-muted-foreground font-light">No works found in this category.</p>
             </motion.div>
           ) : (
             <motion.div
@@ -258,14 +258,14 @@ export default function PortfolioClient({ initialProjects }: { initialProjects: 
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-20 text-center"
           >
-            <p className="text-white/30 text-sm mb-4 font-light">
+            <p className="text-muted-foreground text-sm mb-4 font-light">
               See all work on Behance
             </p>
             <a
               href="https://www.behance.net/antorkumarbiswas"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full border border-white/10 bg-white/[0.04] text-white/60 hover:text-white hover:border-white/25 hover:bg-white/[0.07] transition-all duration-300 text-sm font-medium group"
+              className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full border border-foreground/10 bg-foreground/[0.04] text-muted-foreground hover:text-foreground hover:border-foreground/25 hover:bg-foreground/[0.07] transition-all duration-300 text-sm font-medium group"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-[#1769ff]">
                 <path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H13.96c.13 2.344 1.867 2.587 3.108 2.587 1.22 0 2.27-.734 2.658-1.558zm-5.648-5.078H18.5c-.184-1.587-1.3-2.084-2.408-2.084-1.244 0-2.258.59-2.514 2.084zM7.484 0C10.61 0 12 1.897 12 4.192 12 6.098 10.997 7.43 9.188 7.812 11.212 8.128 12.5 9.586 12.5 11.9c0 2.808-2.087 4.1-5.199 4.1H0V0h7.484zm-.404 6.699c1.462 0 2.297-.54 2.297-1.82 0-1.276-.803-1.879-2.274-1.879H2.556v3.699h4.524zm.299 6.408c1.64 0 2.586-.659 2.586-2.118 0-1.425-.944-2.021-2.713-2.021H2.556v4.139h4.823z"/>
