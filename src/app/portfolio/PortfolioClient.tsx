@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowUpRight, Sparkles, Grid3X3, LayoutList } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
-const categories = ["All", "Branding", "Motion Design", "3D Animation", "Creative Direction", "UI/UX"];
+const categories = ["All", "Branding", "Motion Design", "3D Animation", "Creative Direction", "UI/UX", "Social Media Design"];
 
 const catKeyMap: Record<string, string> = {
   "All": "all",
@@ -15,6 +15,7 @@ const catKeyMap: Record<string, string> = {
   "3D Animation": "animation3d",
   "Creative Direction": "creative",
   "UI/UX": "uiux",
+  "Social Media Design": "social",
 };
 
 const catColors: Record<string, string> = {
@@ -23,6 +24,7 @@ const catColors: Record<string, string> = {
   "3D Animation": "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
   "Creative Direction": "bg-amber-500/20 text-amber-300 border-amber-500/30",
   "UI/UX": "bg-pink-500/20 text-pink-300 border-pink-500/30",
+  "Social Media Design": "bg-orange-500/20 text-orange-300 border-orange-500/30",
 };
 
 // Animated card that reveals on scroll

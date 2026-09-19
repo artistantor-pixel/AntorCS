@@ -15,7 +15,12 @@ async function getBehanceProjects() {
   }
 }
 
+import { socialMediaProject } from "@/lib/driveData";
+
 export default async function PortfolioPage() {
-  const projects = await getBehanceProjects();
+  const behanceProjects = await getBehanceProjects();
+  // Inject the local Google Drive project into the array
+  const projects = [socialMediaProject, ...behanceProjects];
+  
   return <PortfolioClient initialProjects={projects} />;
 }

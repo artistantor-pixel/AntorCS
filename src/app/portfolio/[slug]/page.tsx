@@ -1,5 +1,6 @@
 import PortfolioDetailClient from "./PortfolioDetailClient";
 import { notFound } from "next/navigation";
+import { socialMediaProject } from "@/lib/driveData";
 
 // ISR: revalidate every minute
 export const revalidate = 60;
@@ -22,7 +23,9 @@ export default async function PortfolioDetailPage({ params }: { params: Promise<
   if (!slug) notFound();
 
   const decodedSlug = decodeURIComponent(slug);
-  const allProjects = await getAllBehanceProjects();
+  const behanceProjects = await getAllBehanceProjects();
+  const allProjects = [socialMediaProject, ...behanceProjects];
+  
   const index = allProjects.findIndex(
     (p: { slug: string }) => p.slug === slug || p.slug === decodedSlug
   );
