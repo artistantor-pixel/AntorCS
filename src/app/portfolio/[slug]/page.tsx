@@ -1,8 +1,8 @@
 import PortfolioDetailClient from "./PortfolioDetailClient";
 import { notFound } from "next/navigation";
 
-// ISR: revalidate every hour
-export const revalidate = 3600;
+// ISR: revalidate every minute
+export const revalidate = 60;
 
 import { fetchBehanceProjects } from "@/app/api/behance/route";
 

@@ -25,9 +25,8 @@ export async function POST(request: NextRequest) {
 
   try {
     // Revalidate the portfolio page and Behance API
-    revalidatePath("/portfolio");
-    revalidatePath("/api/behance");
-    revalidateTag("behance", { expire: 0 });
+    revalidatePath("/portfolio", "layout");
+    revalidateTag("behance");
 
     return NextResponse.json({
       revalidated: true,

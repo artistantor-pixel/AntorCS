@@ -146,7 +146,10 @@ function parseRSS(xml: string): BehanceProject[] {
 
 export async function fetchBehanceProjects(): Promise<BehanceProject[]> {
   const response = await fetch(RSS_URL, {
-    next: { revalidate: 3600 }, // Cache for 1 hour
+    next: { 
+      revalidate: 60, // Cache for 1 minute
+      tags: ["behance"] 
+    },
     headers: {
       "User-Agent": "Mozilla/5.0 (compatible; AnitorCSWebsite/1.0)",
       "Accept": "application/rss+xml, application/xml, text/xml",
