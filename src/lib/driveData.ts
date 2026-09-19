@@ -31,8 +31,8 @@ export const driveImageIds = [
   "1QIlzBHtm-xr-jIgj1tOARzI4XW7KAWCx"
 ];
 
-// Map the IDs into full image URLs for the gallery
-export const socialMediaProjectUrls = driveImageIds.map(id => `https://drive.google.com/uc?export=view&id=${id}`);
+// Map the IDs into full image URLs for the gallery using the reliable thumbnail API
+export const socialMediaProjectUrls = driveImageIds.map(id => `https://drive.google.com/thumbnail?id=${id}&sz=w1920`);
 
 // Create a mock project object to inject into the portfolio
 export const socialMediaProject = {
