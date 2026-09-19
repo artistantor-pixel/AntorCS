@@ -4,20 +4,14 @@ import { notFound } from "next/navigation";
 // ISR: revalidate every hour
 export const revalidate = 3600;
 
+import { fetchBehanceProjects } from "@/app/api/behance/route";
+
 async function getAllBehanceProjects() {
   try {
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000";
-
-    const res = await fetch(`${baseUrl}/api/behance`, {
-      next: { revalidate: 3600 },
-    });
-
-    if (!res.ok) throw new Error("Behance fetch failed");
-    const data = await res.json();
-    return data.projects ?? [];
-  } catch {
+    const projects = await fetchBehanceProjects();
+    return projects ?? [];
+  } catch (error) {
+    console.error("Failed to load Behance projects:", error);
     return [];
   }
 }
