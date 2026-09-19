@@ -9,18 +9,26 @@ export interface BehanceProject {
   catId: string;
   size: "large" | "medium" | "small";
   behanceId: string;
+  gallery?: string[];
 }
 
 const BEHANCE_USERNAME = "antorkumarbiswas";
 const RSS_URL = `https://www.behance.net/feeds/user?username=${BEHANCE_USERNAME}`;
 
-function extractImage(description: string): string {
-  const match = description.match(/src='([^']+)'/);
-  if (match) {
+function extractAllImages(description: string): string[] {
+  const regex = /src='([^']+)'/g;
+  let match;
+  const urls: string[] = [];
+  while ((match = regex.exec(description)) !== null) {
     const originalUrl = match[1];
-    return `/api/image-proxy?url=${encodeURIComponent(originalUrl)}`;
+    urls.push(`/api/image-proxy?url=${encodeURIComponent(originalUrl)}`);
   }
-  return "";
+  return urls;
+}
+
+function extractImage(description: string): string {
+  const images = extractAllImages(description);
+  return images.length > 0 ? images[0] : "";
 }
 
 function extractDescription(description: string): string {
@@ -86,6 +94,7 @@ function parseRSS(xml: string): BehanceProject[] {
     const pubDate = dateMatch ? dateMatch[1] : "";
     
     const image = extractImage(description);
+    const gallery = extractAllImages(description); // Get all images for the project body
     const overview = extractDescription(description);
     const catId = detectCategory(title, description);
     const behanceId = extractBehanceId(link);
@@ -105,6 +114,7 @@ function parseRSS(xml: string): BehanceProject[] {
       catId,
       size,
       behanceId,
+      gallery,
     });
     
     index++;
