@@ -1,0 +1,35 @@
+⚠ Port 3000 is in use by process 2817, using available port 3004 instead.
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3004
+- Network:       http://192.168.0.102:3004
+- Environments: .env.local
+✓ Ready in 17.5s
+2026-09-06T17:54:56.344Z next:router-server:filesystem nextDataRoutes Set(0) {}
+2026-09-06T17:54:56.344Z next:router-server:filesystem dynamicRoutes []
+2026-09-06T17:54:56.344Z next:router-server:filesystem customRoutes {
+  headers: [],
+  onMatchHeaders: [],
+  rewrites: { beforeFiles: [], afterFiles: [], fallback: [] },
+  redirects: [
+    {
+      source: '/:path+/',
+      destination: '/:path+',
+      permanent: true,
+      locale: undefined,
+      internal: true,
+      priority: true
+    }
+  ]
+}
+2026-09-06T17:54:56.345Z next:router-server:filesystem publicFolderItems Set(0) {}
+2026-09-06T17:54:56.345Z next:router-server:filesystem nextStaticFolderItems Set(0) {}
+2026-09-06T17:54:56.345Z next:router-server:filesystem pageFiles Set(0) {}
+2026-09-06T17:54:56.345Z next:router-server:filesystem appFiles Set(0) {}
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3005
+- PID:          3088
+- Dir:          /Users/antorbiswas/Desktop/AntorCS
+- Log:          .next/dev/logs/next-development.log
+
+Run kill 3088 to stop it.

@@ -144,22 +144,26 @@ function parseRSS(xml: string): BehanceProject[] {
   return projects;
 }
 
+export async function fetchBehanceProjects(): Promise<BehanceProject[]> {
+  const response = await fetch(RSS_URL, {
+    next: { revalidate: 3600 }, // Cache for 1 hour
+    headers: {
+      "User-Agent": "Mozilla/5.0 (compatible; AnitorCSWebsite/1.0)",
+      "Accept": "application/rss+xml, application/xml, text/xml",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Behance RSS fetch failed: ${response.status}`);
+  }
+
+  const xml = await response.text();
+  return parseRSS(xml);
+}
+
 export async function GET() {
   try {
-    const response = await fetch(RSS_URL, {
-      next: { revalidate: 3600 }, // Cache for 1 hour
-      headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; AnitorCSWebsite/1.0)",
-        "Accept": "application/rss+xml, application/xml, text/xml",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Behance RSS fetch failed: ${response.status}`);
-    }
-
-    const xml = await response.text();
-    const projects = parseRSS(xml);
+    const projects = await fetchBehanceProjects();
 
     return NextResponse.json(
       { projects, source: "behance", cachedAt: new Date().toISOString() },

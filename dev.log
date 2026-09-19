@@ -1,0 +1,17 @@
+
+> antor-creative-studio@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.102:3000
+- Environments: .env.local
+✓ Ready in 6.3min
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3005
+- PID:          3088
+- Dir:          /Users/antorbiswas/Desktop/AntorCS
+- Log:          .next/dev/logs/next-development.log
+
+Run kill 3088 to stop it.
