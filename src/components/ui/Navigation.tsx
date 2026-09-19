@@ -70,9 +70,11 @@ export default function Navigation() {
           <div className="hidden md:flex items-center gap-10 text-sm font-medium">
             <Link href="/" className="hover:text-muted transition-colors">{t('nav.home')}</Link>
             <Link href="/portfolio" className="hover:text-muted transition-colors">{t('nav.works')}</Link>
+            {/* 
             <Link href="/case-studies" className="hover:text-muted transition-colors">
               {lang === 'bn' ? 'কেইজ স্টাডি' : 'Case Studies'}
             </Link>
+            */}
             <Link href="/about" className="hover:text-muted transition-colors">{t('nav.about')}</Link>
             <Link href="/journal" className="hover:text-muted transition-colors">{t('nav.journal')}</Link>
             <Link href="/shop" className="hover:text-muted transition-colors">{t('nav.shop')}</Link>
