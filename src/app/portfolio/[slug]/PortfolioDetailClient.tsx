@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
@@ -166,6 +166,7 @@ const BlockRenderer = ({ block }: { block: any }) => {
 };
 
 export default function PortfolioDetailClient({ project, nextProject, behanceData }: { project: any, nextProject: any, behanceData?: any }) {
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -349,14 +350,19 @@ export default function PortfolioDetailClient({ project, nextProject, behanceDat
                 </div>
               </div>
 
-              {/* Behance-Style Continuous Case Study Gallery */}
+              {/* Grid Layout Card Gallery */}
               {project.gallery && project.gallery.length > 0 && (
-                <div className="w-full max-w-[100rem] mx-auto mt-16 px-0 md:px-12">
-                  <div className="flex flex-col w-full shadow-2xl shadow-black/10 md:rounded-[3rem] overflow-hidden bg-white">
+                <div className="w-full max-w-[120rem] mx-auto mt-16 px-6 md:px-12 pb-24">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 w-full">
                     {Array.isArray(project.gallery) && project.gallery.map((mediaUrl: any, i: number) => {
                       return (
-                        <div key={i} className="w-full relative bg-white flex flex-col">
-                          <MediaRenderer intrinsic={true} url={mediaUrl} className="w-full h-auto flex items-center justify-center object-contain" />
+                        <div 
+                          key={i} 
+                          className="w-full aspect-[4/5] relative bg-neutral-100 rounded-2xl md:rounded-[2rem] overflow-hidden group cursor-pointer border border-black/5 shadow-sm hover:shadow-2xl transition-all duration-500"
+                          onClick={() => setLightboxImage(mediaUrl)}
+                        >
+                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500 z-10" />
+                           <MediaRenderer intrinsic={false} url={mediaUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         </div>
                       );
                     })}
@@ -463,6 +469,43 @@ export default function PortfolioDetailClient({ project, nextProject, behanceDat
           </section>
         )}
       </main>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {lightboxImage && (
+           <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-12 cursor-pointer"
+              onClick={() => setLightboxImage(null)}
+           >
+              <div className="absolute top-6 right-6 z-[210]">
+                 <button 
+                   className="text-xs uppercase tracking-widest font-bold text-white/70 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full px-6 py-3 transition-all"
+                   onClick={(e) => { e.stopPropagation(); setLightboxImage(null); }}
+                 >
+                   Close
+                 </button>
+              </div>
+              
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="relative w-full h-full flex items-center justify-center"
+              >
+                <img 
+                  src={lightboxImage} 
+                  alt="Fullscreen view" 
+                  className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                />
+              </motion.div>
+           </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
