@@ -3,7 +3,7 @@ import PortfolioClient from "./PortfolioClient";
 // Auto-refresh every 1 minute — new Behance projects appear within 1 min
 export const revalidate = 60;
 
-import { fetchBehanceProjects } from "@/app/api/behance/route";
+import { fetchBehanceProjects } from "@/lib/behance";
 
 async function getBehanceProjects() {
   try {

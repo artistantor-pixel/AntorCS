@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 // ISR: revalidate every minute
 export const revalidate = 60;
 
-import { fetchBehanceProjects } from "@/app/api/behance/route";
+import { fetchBehanceProjects } from "@/lib/behance";
 
 async function getAllBehanceProjects() {
   try {
