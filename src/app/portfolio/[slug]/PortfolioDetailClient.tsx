@@ -239,92 +239,31 @@ export default function PortfolioDetailClient({ project, nextProject, behanceDat
           </Link>
         </div>
 
-        {/* 1. Header Section - Editorial Split Layout */}
-        <section className="pt-48 pb-20 px-6 md:px-12 max-w-[100rem] mx-auto min-h-[60vh] flex flex-col justify-center">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8 items-center">
-             
-             {/* Left side: Typography */}
-             <motion.div 
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                className="col-span-1 lg:col-span-7 flex flex-col gap-8"
-             >
-                 {/* Decorative line/badge */}
-                 <motion.div 
-                   initial={{ width: 0, opacity: 0 }}
-                   animate={{ width: "auto", opacity: 1 }}
-                   transition={{ delay: 0.4, duration: 1 }}
-                   className="flex items-center gap-4 w-fit"
-                 >
-                    <span className="w-12 md:w-20 h-[2px] bg-brand-red origin-left"></span>
-                    <span className="text-brand-red uppercase tracking-[0.3em] text-[10px] md:text-xs font-black">
-                       {project.catId}
-                    </span>
-                 </motion.div>
-                 
-                 <h1 className="text-5xl md:text-7xl lg:text-[7rem] font-serif leading-[0.95] tracking-tighter text-black">
-                   {project.title}
-                 </h1>
-                 
-                 <p className="text-lg md:text-2xl font-light text-black/60 leading-relaxed max-w-2xl">
-                   {project.overview}
-                 </p>
-             </motion.div>
-
-             {/* Right side: Case Study Details Bento Card */}
-             <motion.div 
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="col-span-1 lg:col-span-5 w-full flex lg:justify-end"
-             >
-                 <div className="w-full max-w-md bg-white border border-black/5 rounded-[2.5rem] p-8 md:p-10 shadow-2xl shadow-black/5 relative overflow-hidden group">
-                     {/* Subtle gradient hover effect */}
-                     <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-                     
-                     <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-black/40 mb-8 border-b border-black/5 pb-5 flex items-center justify-between">
-                       Project Details
-                       <span className="w-2 h-2 rounded-full bg-brand-red/50 animate-pulse" />
-                     </h3>
-                     
-                     <div className="flex flex-col gap-6 relative z-10">
-                        <div className="flex justify-between items-end border-b border-black/5 pb-4">
-                           <span className="text-xs font-medium text-black/50 uppercase tracking-wider">Client</span>
-                           <span className="text-sm font-bold text-black text-right max-w-[60%] leading-tight">{project.client || "Self Initiated"}</span>
-                        </div>
-                        <div className="flex justify-between items-end border-b border-black/5 pb-4">
-                           <span className="text-xs font-medium text-black/50 uppercase tracking-wider">Role</span>
-                           <span className="text-sm font-bold text-black text-right">{project.role || "Lead Artist"}</span>
-                        </div>
-                        <div className="flex justify-between items-end border-b border-black/5 pb-4">
-                           <span className="text-xs font-medium text-black/50 uppercase tracking-wider">Year</span>
-                           <span className="text-sm font-bold text-black">{project.year || "2024"}</span>
-                        </div>
-                        <div className="flex justify-between items-center pt-2">
-                           <span className="text-xs font-medium text-black/50 uppercase tracking-wider">Category</span>
-                           <span className="text-xs font-bold text-brand-red bg-brand-red/10 px-4 py-1.5 rounded-full uppercase tracking-wider">{project.catId}</span>
-                        </div>
-                        {project.liveLink && (
-                           <div className="mt-4">
-                             <a href={project.liveLink} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 w-full py-4 bg-black text-white rounded-2xl text-xs uppercase tracking-widest font-bold hover:bg-brand-red hover:shadow-lg hover:shadow-brand-red/30 transition-all hover:-translate-y-1">
-                               View Live Project <ArrowUpRight size={16} />
-                             </a>
-                           </div>
-                        )}
-                     </div>
-                 </div>
-             </motion.div>
-
-          </div>
+        {/* 1. Minimal Title Section */}
+        <section className="pt-40 pb-12 px-6 md:px-12 max-w-[90rem] mx-auto text-center flex flex-col items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full flex flex-col items-center"
+          >
+            <div className="inline-flex items-center gap-3 mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-red animate-pulse" />
+              <span className="text-black/40 uppercase tracking-[0.25em] text-xs font-bold">{project.catId}</span>
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif leading-tight tracking-tight capitalize text-black max-w-5xl">
+              {project.title}
+            </h1>
+          </motion.div>
         </section>
 
-        {/* 2. Massive Hero Parallax Media with Cinematic Reveal */}
-        <section className="px-6 md:px-12 max-w-[100rem] mx-auto relative h-[70vh] md:h-[85vh] overflow-hidden rounded-[2.5rem] md:rounded-[3rem] group cursor-default shadow-2xl border border-black/5">
+        {/* 2. Hero Thumbnail Section */}
+        <section className="px-6 md:px-12 max-w-[100rem] mx-auto relative h-[60vh] md:h-[80vh] overflow-hidden rounded-[2rem] md:rounded-[3rem] group cursor-default shadow-lg border border-black/5">
           <motion.div 
-            initial={{ clipPath: "inset(10% 10% 10% 10% round 3rem)", scale: 1.1 }}
-            animate={{ clipPath: "inset(0% 0% 0% 0% round 0rem)", scale: 1 }}
-            transition={{ duration: 1.5, ease: [0.25, 1, 0.5, 1] }}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.2 }}
             className="w-full h-full origin-center" 
           >
             <motion.div className="w-full h-full" style={{ scale: scaleHero, opacity: opacityHero }}>
@@ -336,9 +275,51 @@ export default function PortfolioDetailClient({ project, nextProject, behanceDat
             </motion.div>
           </motion.div>
           
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 pointer-events-none" />
-          
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10 pointer-events-none" />
+        </section>
 
+        {/* 3. Description & Project Details Section */}
+        <section className="pt-20 pb-16 px-6 md:px-12 max-w-[90rem] mx-auto">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start"
+          >
+            {/* Left: Description */}
+            <div className="lg:col-span-8 text-lg md:text-2xl font-light text-black/70 leading-relaxed md:pr-8">
+              {project.overview}
+            </div>
+
+            {/* Right: Features / Details (Minimal List) */}
+            <div className="lg:col-span-4 flex flex-col gap-8 border-t lg:border-t-0 lg:border-l border-black/10 pt-10 lg:pt-0 lg:pl-12">
+                <div>
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Client</h4>
+                  <p className="text-base font-medium text-black">{project.client || "Self Initiated"}</p>
+                </div>
+                <div>
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Role</h4>
+                  <p className="text-base font-medium text-black">{project.role || "Lead Artist"}</p>
+                </div>
+                <div>
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Year</h4>
+                  <p className="text-base font-medium text-black">{project.year || "2024"}</p>
+                </div>
+                <div>
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Category</h4>
+                  <p className="text-base font-medium text-black">{project.catId}</p>
+                </div>
+                
+                {project.liveLink && (
+                  <div className="pt-6 mt-2 border-t border-black/5">
+                    <a href={project.liveLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-red hover:text-black transition-colors group">
+                      View Live Project <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </a>
+                  </div>
+                )}
+            </div>
+          </motion.div>
         </section>
 
         {/* DYNAMIC BEHANCE BLOCKS RENDERING CANVAS */}
