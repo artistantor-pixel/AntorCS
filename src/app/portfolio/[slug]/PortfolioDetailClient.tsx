@@ -240,29 +240,28 @@ export default function PortfolioDetailClient({ project, nextProject, behanceDat
         </div>
 
         {/* 1. Header Section */}
-        <section className="pt-48 pb-20 px-6 md:px-12 max-w-[100rem] mx-auto">
+        <section className="pt-40 pb-16 px-6 md:px-12 max-w-[90rem] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col lg:flex-row lg:items-end justify-between gap-16"
+            className="flex flex-col max-w-4xl"
           >
-            <div className="max-w-5xl">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3, duration: 1 }}
-                className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-brand-red/20 text-brand-red uppercase tracking-[0.25em] text-[10px] font-bold mb-10 bg-brand-red/5 backdrop-blur-sm shadow-sm"
-              >
-                <span className="w-2 h-2 rounded-full bg-brand-red animate-pulse" />
-                {project.catId}
-              </motion.div>
-              <h1 className="text-5xl md:text-[7vw] font-serif leading-[0.95] tracking-tighter capitalize text-black">
-                {project.title}
-              </h1>
-            </div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 1 }}
+              className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-brand-red/20 text-brand-red uppercase tracking-[0.2em] text-[10px] font-bold mb-8 bg-brand-red/5 backdrop-blur-sm shadow-sm w-fit"
+            >
+              <span className="w-2 h-2 rounded-full bg-brand-red animate-pulse" />
+              {project.catId}
+            </motion.div>
             
-            <div className="lg:w-1/3 text-base md:text-xl font-light text-black/70 leading-relaxed border-l-2 border-brand-red/20 pl-8 py-2">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif leading-[1.1] tracking-tight capitalize text-black mb-10">
+              {project.title}
+            </h1>
+            
+            <div className="text-base md:text-xl font-light text-black/70 leading-relaxed border-l-2 border-brand-red/40 pl-6 md:pl-8 py-1 max-w-3xl">
               {project.overview}
             </div>
           </motion.div>
