@@ -239,32 +239,84 @@ export default function PortfolioDetailClient({ project, nextProject, behanceDat
           </Link>
         </div>
 
-        {/* 1. Header Section */}
-        <section className="pt-40 pb-16 px-6 md:px-12 max-w-[90rem] mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col max-w-4xl"
-          >
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 1 }}
-              className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-brand-red/20 text-brand-red uppercase tracking-[0.2em] text-[10px] font-bold mb-8 bg-brand-red/5 backdrop-blur-sm shadow-sm w-fit"
-            >
-              <span className="w-2 h-2 rounded-full bg-brand-red animate-pulse" />
-              {project.catId}
-            </motion.div>
-            
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif leading-[1.1] tracking-tight capitalize text-black mb-10">
-              {project.title}
-            </h1>
-            
-            <div className="text-base md:text-xl font-light text-black/70 leading-relaxed border-l-2 border-brand-red/40 pl-6 md:pl-8 py-1 max-w-3xl">
-              {project.overview}
-            </div>
-          </motion.div>
+        {/* 1. Header Section - Editorial Split Layout */}
+        <section className="pt-48 pb-20 px-6 md:px-12 max-w-[100rem] mx-auto min-h-[60vh] flex flex-col justify-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8 items-center">
+             
+             {/* Left side: Typography */}
+             <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                className="col-span-1 lg:col-span-7 flex flex-col gap-8"
+             >
+                 {/* Decorative line/badge */}
+                 <motion.div 
+                   initial={{ width: 0, opacity: 0 }}
+                   animate={{ width: "auto", opacity: 1 }}
+                   transition={{ delay: 0.4, duration: 1 }}
+                   className="flex items-center gap-4 w-fit"
+                 >
+                    <span className="w-12 md:w-20 h-[2px] bg-brand-red origin-left"></span>
+                    <span className="text-brand-red uppercase tracking-[0.3em] text-[10px] md:text-xs font-black">
+                       {project.catId}
+                    </span>
+                 </motion.div>
+                 
+                 <h1 className="text-5xl md:text-7xl lg:text-[7rem] font-serif leading-[0.95] tracking-tighter text-black">
+                   {project.title}
+                 </h1>
+                 
+                 <p className="text-lg md:text-2xl font-light text-black/60 leading-relaxed max-w-2xl">
+                   {project.overview}
+                 </p>
+             </motion.div>
+
+             {/* Right side: Case Study Details Bento Card */}
+             <motion.div 
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="col-span-1 lg:col-span-5 w-full flex lg:justify-end"
+             >
+                 <div className="w-full max-w-md bg-white border border-black/5 rounded-[2.5rem] p-8 md:p-10 shadow-2xl shadow-black/5 relative overflow-hidden group">
+                     {/* Subtle gradient hover effect */}
+                     <div className="absolute inset-0 bg-gradient-to-br from-brand-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                     
+                     <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-black/40 mb-8 border-b border-black/5 pb-5 flex items-center justify-between">
+                       Project Details
+                       <span className="w-2 h-2 rounded-full bg-brand-red/50 animate-pulse" />
+                     </h3>
+                     
+                     <div className="flex flex-col gap-6 relative z-10">
+                        <div className="flex justify-between items-end border-b border-black/5 pb-4">
+                           <span className="text-xs font-medium text-black/50 uppercase tracking-wider">Client</span>
+                           <span className="text-sm font-bold text-black text-right max-w-[60%] leading-tight">{project.client || "Self Initiated"}</span>
+                        </div>
+                        <div className="flex justify-between items-end border-b border-black/5 pb-4">
+                           <span className="text-xs font-medium text-black/50 uppercase tracking-wider">Role</span>
+                           <span className="text-sm font-bold text-black text-right">{project.role || "Lead Artist"}</span>
+                        </div>
+                        <div className="flex justify-between items-end border-b border-black/5 pb-4">
+                           <span className="text-xs font-medium text-black/50 uppercase tracking-wider">Year</span>
+                           <span className="text-sm font-bold text-black">{project.year || "2024"}</span>
+                        </div>
+                        <div className="flex justify-between items-center pt-2">
+                           <span className="text-xs font-medium text-black/50 uppercase tracking-wider">Category</span>
+                           <span className="text-xs font-bold text-brand-red bg-brand-red/10 px-4 py-1.5 rounded-full uppercase tracking-wider">{project.catId}</span>
+                        </div>
+                        {project.liveLink && (
+                           <div className="mt-4">
+                             <a href={project.liveLink} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 w-full py-4 bg-black text-white rounded-2xl text-xs uppercase tracking-widest font-bold hover:bg-brand-red hover:shadow-lg hover:shadow-brand-red/30 transition-all hover:-translate-y-1">
+                               View Live Project <ArrowUpRight size={16} />
+                             </a>
+                           </div>
+                        )}
+                     </div>
+                 </div>
+             </motion.div>
+
+          </div>
         </section>
 
         {/* 2. Massive Hero Parallax Media with Cinematic Reveal */}
@@ -286,38 +338,7 @@ export default function PortfolioDetailClient({ project, nextProject, behanceDat
           
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 pointer-events-none" />
           
-          {/* Subtle Floating Metadata Card (Light Mode adapted) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 1 }}
-            className="absolute bottom-8 right-8 md:bottom-12 md:right-12 bg-white/95 backdrop-blur-2xl p-8 rounded-[2rem] shadow-2xl max-w-sm hidden md:block border border-black/5"
-          >
-            <div className="grid grid-cols-2 gap-x-12 gap-y-8">
-              <div>
-                <p className="text-black/40 uppercase tracking-[0.2em] text-[10px] font-bold mb-2">Client</p>
-                <p className="font-bold text-sm text-black">{project.client || "N/A"}</p>
-              </div>
-              <div>
-                <p className="text-black/40 uppercase tracking-[0.2em] text-[10px] font-bold mb-2">Role</p>
-                <p className="font-bold text-sm text-black">{project.role || "Lead Artist"}</p>
-              </div>
-              <div>
-                <p className="text-black/40 uppercase tracking-[0.2em] text-[10px] font-bold mb-2">Timeline</p>
-                <p className="font-bold text-sm text-black">{project.duration || "N/A"}</p>
-              </div>
-              <div>
-                <p className="text-black/40 uppercase tracking-[0.2em] text-[10px] font-bold mb-2">Live Link</p>
-                {project.liveLink ? (
-                  <a href={project.liveLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-bold text-sm text-brand-red hover:text-blood-red transition-colors group/link">
-                    View Project <ArrowUpRight size={14} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-                  </a>
-                ) : (
-                  <span className="font-bold text-sm text-black/40">N/A</span>
-                )}
-              </div>
-            </div>
-          </motion.div>
+
         </section>
 
         {/* DYNAMIC BEHANCE BLOCKS RENDERING CANVAS */}
