@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Download, CreditCard, X, ShieldCheck, RefreshCw, FileText, BookOpen, Lock, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { CONTACT_INFO } from "@/config/contact";
 
 interface Product {
   id: number;
@@ -607,7 +608,7 @@ export default function ShopPage() {
                     <p className="text-foreground font-bold">Follow these steps carefully:</p>
                     <p>1. Open your {paymentMethod === "bkash" ? "bKash" : "Nagad"} App or dial USSD code.</p>
                     <p>2. Select <span className="text-brand-red font-bold">"Send Money"</span> option.</p>
-                    <p>3. Enter Personal Number: <span className="text-foreground font-mono font-bold tracking-wider">01712-345678</span></p>
+                    <p>3. Enter Personal Number: <span className="text-foreground font-mono font-bold tracking-wider">{CONTACT_INFO.localNumber}</span></p>
                     <p>4. Input Amount: <span className="text-foreground font-mono font-bold">৳ {selectedProduct.price}</span></p>
                   </div>
 

@@ -4,7 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, ArrowUp, Mail, MessageCircle } from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowUp, Mail, MessageCircle, MapPin, Phone } from "lucide-react";
+import { CONTACT_INFO, getWhatsAppUrl } from "@/config/contact";
 
 export default function FooterSection() {
   const { t } = useLanguage();
@@ -24,15 +25,39 @@ export default function FooterSection() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 mb-12 md:mb-16">
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="inline-block mb-6 hover:opacity-80 transition-opacity">
-              <Image 
-                src="/logo.png" 
-                alt="Antor Logo" 
-                width={120} 
-                height={40} 
-                className="h-10 w-auto object-contain" 
+              <Image
+                src="/logo.png"
+                alt="Antor Logo"
+                width={120}
+                height={40}
+                className="h-10 w-auto object-contain"
               />
             </Link>
             <p className="text-muted max-w-sm text-sm leading-relaxed">{t("footer.desc")}</p>
+
+            {/* Direct Contact Details (Desktop view) */}
+            <div className="hidden md:flex flex-col gap-2 mt-6 text-xs text-muted">
+              <a
+                href={`mailto:${CONTACT_INFO.email}`}
+                className="inline-flex items-center gap-2 hover:text-brand-red transition-colors w-fit"
+              >
+                <Mail size={14} className="text-brand-red" />
+                <span>{CONTACT_INFO.email}</span>
+              </a>
+              <a
+                href={getWhatsAppUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 hover:text-emerald-500 transition-colors w-fit"
+              >
+                <Phone size={14} className="text-emerald-500" />
+                <span>{CONTACT_INFO.phoneDisplay}</span>
+              </a>
+              <span className="inline-flex items-center gap-2 w-fit">
+                <MapPin size={14} className="text-muted" />
+                <span>{CONTACT_INFO.address}</span>
+              </span>
+            </div>
 
             {/* Premium Touch Actions Card for Mobile view */}
             <div className="flex md:hidden mt-8 p-5 bg-background/50 border border-border rounded-2xl items-center justify-between gap-4 backdrop-blur-md shadow-sm">
@@ -40,20 +65,21 @@ export default function FooterSection() {
                 <span className="text-[9px] uppercase tracking-[0.2em] text-muted font-bold block">
                   {t("nav.journal") || "Let's connect"}
                 </span>
-                <span className="text-sm font-bold text-foreground mt-0.5">hello@antorstudio.com</span>
+                <span className="text-sm font-bold text-foreground mt-0.5">{CONTACT_INFO.email}</span>
+                <span className="text-[11px] text-muted mt-0.5">{CONTACT_INFO.phoneDisplay}</span>
               </div>
               <div className="flex gap-2.5">
-                <a 
-                  href="mailto:hello@antorstudio.com" 
+                <a
+                  href={`mailto:${CONTACT_INFO.email}`}
                   className="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center text-brand-red border border-brand-red/15 hover:bg-brand-red hover:text-white transition-all active:scale-95"
                   title="Email"
                 >
                   <Mail size={16} />
                 </a>
-                <a 
-                  href="https://wa.me/8801712345678" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href={getWhatsAppUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/15 hover:bg-emerald-500 hover:text-white transition-all active:scale-95"
                   title="WhatsApp"
                 >
@@ -70,7 +96,7 @@ export default function FooterSection() {
               {t("footer.links_title")}
             </h4>
             {/* Mobile Header (Accordion Trigger) */}
-            <button 
+            <button
               onClick={() => setLinksOpen(!linksOpen)}
               className="flex md:hidden w-full items-center justify-between py-2 text-left font-bold text-sm uppercase tracking-wider text-foreground"
             >
@@ -114,7 +140,7 @@ export default function FooterSection() {
               {t("footer.legal_title")}
             </h4>
             {/* Mobile Header (Accordion Trigger) */}
-            <button 
+            <button
               onClick={() => setLegalOpen(!legalOpen)}
               className="flex md:hidden w-full items-center justify-between py-2 text-left font-bold text-sm uppercase tracking-wider text-foreground"
             >
@@ -163,8 +189,8 @@ export default function FooterSection() {
 
           {/* Elegant Back to Top button */}
           <div className="order-1 md:order-3 w-full md:w-auto flex justify-center md:justify-end">
-            <button 
-              onClick={scrollToTop} 
+            <button
+              onClick={scrollToTop}
               className="flex items-center gap-2 px-4 py-2.5 bg-background hover:bg-brand-red text-muted hover:text-white rounded-full transition-all border border-border hover:border-brand-red group shadow-sm active:scale-95 cursor-pointer font-bold text-xs uppercase tracking-wider"
               aria-label="Scroll to top"
             >

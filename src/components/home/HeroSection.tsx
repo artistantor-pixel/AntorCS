@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Download, ArrowDown } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { CONTACT_INFO } from "@/config/contact";
 
 export default function HeroSection() {
   const { t } = useLanguage();
@@ -98,8 +99,8 @@ export default function HeroSection() {
             {t("hero.cta")} <ArrowRight size={18} />
           </Link>
           <a
-            href="/ANTOR_KUMAR_BISWAS.pdf"
-            download="ANTOR_KUMAR_BISWAS.pdf"
+            href={CONTACT_INFO.cvPath}
+            download={CONTACT_INFO.cvFileName}
             className="bg-surface/70 backdrop-blur-sm border border-brand-red text-brand-red px-8 py-4 rounded-full hover:bg-brand-red/10 hover:scale-105 transition-all duration-300 flex items-center gap-3 font-medium w-full sm:w-auto justify-center"
           >
             {t("hero.download_cv")} <Download size={18} />

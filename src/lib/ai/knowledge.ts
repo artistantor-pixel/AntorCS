@@ -1,3 +1,5 @@
+import { CONTACT_INFO } from "@/config/contact";
+
 export interface ServicePackage {
   id: string;
   name: string;
@@ -16,10 +18,10 @@ export const AGENCY_KNOWLEDGE = {
   tagline: "Crafting High-Performance Web Apps, Dynamic 3D Experiences & Custom AI Agents",
   supportedLanguages: ["Bangla", "English", "Banglish (Bengali in Latin script)"],
   contact: {
-    email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "antor@antorcreativestudio.com",
-    phone: process.env.NEXT_PUBLIC_CONTACT_PHONE || "+880 1793-157956",
-    whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || "+880 1793-157956",
-    location: "Dhaka, Bangladesh (Serving Clients Worldwide)",
+    email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || CONTACT_INFO.email,
+    phone: process.env.NEXT_PUBLIC_CONTACT_PHONE || CONTACT_INFO.phoneDisplay,
+    whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || CONTACT_INFO.phoneRaw,
+    location: `${CONTACT_INFO.address}, ${CONTACT_INFO.city} (Serving Clients Worldwide)`,
   },
   services: [
     {

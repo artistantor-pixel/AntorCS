@@ -33,12 +33,12 @@ export default function AboutPage() {
             {lang === 'bn' ? 'অন্তর কুমার বিশ্বাস' : 'Antor Kumar Biswas'}
           </h1>
           <h2 className="text-xl md:text-3xl font-serif text-brand-red mb-8">
-            {lang === 'bn' ? 'ভিজ্যুয়াল কমিউনিকেটর | ক্রিয়েটিভ লিডার | অ্যানিমেটর' : 'Visual Communicator | Creative Lead | Animator'}
+            {lang === 'bn' ? 'ক্রিয়েটিভ ডিজাইনার | ভিজ্যুয়াল কমিউনিকেটর | অ্যানিমেটর' : 'Creative Designer | Visual Communicator | Animator'}
           </h2>
           <p className="text-lg md:text-2xl text-muted font-light leading-relaxed max-w-3xl mx-auto">
             {lang === 'bn' 
-              ? 'আমি একজন ভিজ্যুয়াল কমিউনিকেটর, মূলত এডুকেশনাল কনটেন্ট, ই-লার্নিং অ্যানিমেশন এবং ব্র্যান্ডিং নিয়ে কাজ করি। ঢাকা বিশ্ববিদ্যালয়ের গ্রাফিক ডিজাইন বিভাগের ৪র্থ বর্ষের ছাত্র হিসেবে, আমি সৃজনশীলতার সাথে উদ্দেশ্যের মেলবন্ধন ঘটাতে ভালোবাসি—তা সে এক্সিবিশন ডিজাইন হোক বা জাতীয় পর্যায়ের অ্যানিমেশন সিরিজ তৈরি।' 
-              : 'Visual communicator with a strong background in graphic design, illustration, and animation. Currently a 4th-year student of Graphic Design at the University of Dhaka. I specialize in creating engaging educational content, e-learning visuals, and branding for large-scale creative events.'}
+              ? 'গ্রাফিক ডিজাইন, ইলাস্ট্রেশন এবং অ্যানিমেশনে শক্তিশালী অভিজ্ঞতা সম্পন্ন একজন ভিজ্যুয়াল কমিউনিকেটর। ঢাকা বিশ্ববিদ্যালয়ের গ্রাফিক ডিজাইন বিভাগের একজন শিক্ষার্থী হিসেবে আমি এডুকেশনাল কনটেন্ট, ই-লার্নিং ভিজ্যুয়াল এবং বড় পরিসরের ক্রিয়েটিভ ইভেন্টের ব্র্যান্ডিং তৈরিতে বিশেষভাবে কাজ করি—এক্সিবিশন ডিজাইন থেকে শুরু করে জাতীয় পর্যায়ের অ্যানিমেশন সিরিজ পর্যন্ত।' 
+              : 'Visual communicator with a strong background in graphic design, illustration, and animation. Currently a student of Graphic Design at the University of Dhaka, I specialize in creating engaging educational content, e-learning visuals, and branding for large-scale creative events. I have extensive experience blending creativity with purpose from leading exhibition designs to producing national-level animation series.'}
           </p>
         </motion.div>
         
@@ -65,22 +65,34 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
               <h3 className="text-2xl font-bold uppercase tracking-tight mb-8 flex items-center gap-3"><Star className="text-brand-red"/> {lang === 'bn' ? 'কোর স্কিলস' : 'Core Competencies'}</h3>
-              <div className="flex flex-wrap gap-4">
-                {['Graphic Design', 'Motion Design', 'Animation', 'Illustration', 'Artificial Intelligence'].map((skill) => (
-                  <span key={skill} className="px-6 py-3 bg-background border border-border rounded-full text-foreground font-medium shadow-sm">{skill}</span>
+              <div className="flex flex-wrap gap-3">
+                {[
+                  'Branding & Visual Identity',
+                  'UI Design',
+                  'Packaging & Dieline Design',
+                  'Motion Graphics',
+                  '2D Animation',
+                  'Digital & Traditional Illustration',
+                  'Minimalist Layout Design'
+                ].map((skill) => (
+                  <span key={skill} className="px-5 py-2.5 bg-background border border-border rounded-full text-foreground text-sm font-medium shadow-sm">{skill}</span>
                 ))}
               </div>
             </div>
             <div>
               <h3 className="text-2xl font-bold uppercase tracking-tight mb-8 flex items-center gap-3"><Zap className="text-brand-red"/> {lang === 'bn' ? 'সফটওয়্যার পারদর্শিতা' : 'Software Expertise'}</h3>
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   { name: 'Adobe Illustrator', val: 95 },
-                  { name: 'Adobe AfterEffects', val: 90 },
+                  { name: 'Adobe Photoshop', val: 85 },
+                  { name: 'Adobe After Effects', val: 90 },
                   { name: 'Adobe Premiere Pro', val: 85 },
-                  { name: 'Adobe Photoshop', val: 80 },
+                  { name: 'CapCut', val: 88 },
                   { name: 'Adobe Animate', val: 90 },
-                  { name: 'Procreate', val: 85 }
+                  { name: 'Adobe InDesign', val: 85 },
+                  { name: 'Procreate', val: 88 },
+                  { name: 'Cinema 4D', val: 80 },
+                  { name: 'Blender', val: 82 }
                 ].map((software) => (
                   <div key={software.name}>
                     <div className="flex justify-between mb-1">
@@ -145,18 +157,16 @@ export default function AboutPage() {
             <h3 className="text-2xl font-bold uppercase tracking-tight mb-8 flex items-center gap-3"><GraduationCap className="text-brand-red"/> {lang === 'bn' ? 'শিক্ষাগত যোগ্যতা' : 'Education'}</h3>
             <div className="space-y-6">
               <div className="border-l-2 border-brand-red pl-4">
-                <h4 className="font-bold text-lg">Bachelor of Fine Art (BFA) in Graphic Design</h4>
-                <p className="text-brand-red text-sm mb-2">University of Dhaka</p>
+                <h4 className="font-bold text-lg">Bachelor of Fine Arts (BFA) | 2026</h4>
+                <p className="text-brand-red text-sm mb-2">Faculty of Fine Arts, University of Dhaka</p>
               </div>
               <div className="border-l-2 border-border pl-4">
-                <h4 className="font-bold">Higher Secondary Certificate (HSC)</h4>
-                <p className="text-muted text-sm mb-1">Biharilal Shikdar GOVT. College</p>
-                <p className="text-xs text-muted/70">Group: Humanities | 2021</p>
+                <h4 className="font-bold">Higher Secondary Certificate (HSC) | 2021</h4>
+                <p className="text-muted text-sm mb-1">Biharilal Sikder Govt. College, Shalikha, Magura</p>
               </div>
               <div className="border-l-2 border-border pl-4">
-                <h4 className="font-bold">Secondary School Certificate (SSC)</h4>
-                <p className="text-muted text-sm mb-1">Singra Tilkhari Secondary School</p>
-                <p className="text-xs text-muted/70">Group: Humanities | 2019</p>
+                <h4 className="font-bold">Secondary School Certificate (SSC) | 2019</h4>
+                <p className="text-muted text-sm mb-1">Singra-Tilkhari Secondary School, Shalikha, Magura</p>
               </div>
             </div>
           </div>
@@ -196,12 +206,12 @@ export default function AboutPage() {
             </div>
             
             <div className="mt-12">
-              <h3 className="text-xl font-bold uppercase tracking-tight mb-4">{lang === 'bn' ? 'পার্সোনাল স্কিলস' : 'Personal Skills'}</h3>
+              <h3 className="text-xl font-bold uppercase tracking-tight mb-4">{lang === 'bn' ? 'পার্সোনাল ও লিডারশিপ স্কিলস' : 'Interpersonal & Leadership'}</h3>
               <ul className="text-sm text-muted space-y-2 list-disc list-inside">
-                <li>Exceptional verbal and written communication.</li>
-                <li>Highly self-motivated quick learner.</li>
-                <li>Proven leadership & collaborative problem-solving.</li>
-                <li>Ability to deliver high-quality results under pressure.</li>
+                <li>Creative Direction</li>
+                <li>Strategic Problem-Solving</li>
+                <li>Exceptional Presentation & Communication</li>
+                <li>High-Pressure Project Execution</li>
               </ul>
             </div>
           </div>

@@ -9,11 +9,11 @@ export default function ExperienceSection() {
         <h2 className="text-3xl md:text-5xl font-bold mb-6 font-serif">{t('experience.title')}</h2>
         <p className="text-muted max-w-2xl mx-auto">{t('experience.subtitle')}</p>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {[0, 1, 2].map((i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[0, 1, 2, 3].map((i) => (
           <div key={i} className="bg-surface border border-border p-8 rounded-3xl flex flex-col justify-between group hover:border-brand-red/50 hover:shadow-2xl hover:shadow-brand-red/5 transition-all duration-300 relative overflow-hidden">
             <div className="absolute -top-4 -right-4 p-6 text-brand-tan/10 group-hover:text-brand-red/5 transition-colors duration-300 pointer-events-none">
-              <span className="text-[8rem] font-serif font-black leading-none">{i+1}</span>
+              <span className="text-[8rem] font-serif font-black leading-none">{i + 1}</span>
             </div>
             <div className="relative z-10">
               <span className="inline-block px-4 py-1.5 rounded-full border border-border text-xs font-bold tracking-widest uppercase mb-8 bg-background">

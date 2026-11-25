@@ -3,16 +3,17 @@
 import { useState, useEffect } from "react";
 import { motion as motionElement, AnimatePresence } from "framer-motion";
 import ParticleBackground from "@/components/3d/ParticleBackground";
-import { 
-  ArrowRight, Mail, Phone, Copy, Check, MessageCircle, Clock, 
-  Sparkles, Send, RefreshCw, Briefcase, Download, GraduationCap, 
+import {
+  ArrowRight, Mail, Phone, Copy, Check, MessageCircle, Clock,
+  Sparkles, Send, RefreshCw, Briefcase, Download, GraduationCap,
   Award, Layers, CheckCircle2, ChevronRight, HelpCircle
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { CONTACT_INFO } from "@/config/contact";
 
 export default function HireMePage() {
   const { lang } = useLanguage();
-  
+
   // Recruitment Form State
   const [companyName, setCompanyName] = useState("");
   const [hrName, setHrName] = useState("");
@@ -21,13 +22,13 @@ export default function HireMePage() {
   const [positionType, setPositionType] = useState("full-time");
   const [offeredRange, setOfferedRange] = useState("medium");
   const [jobDescription, setJobDescription] = useState("");
-  
+
   // UI states
   const [isCopied, setIsCopied] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  
+
   // Skill Matrix details
   const skillsList = [
     { nameEn: "2D/3D Animation & Explainer Videos", nameBn: "২D/৩D অ্যানিমেশন ও ব্যাখ্যামূলক ভিডিও", pct: 95, color: "from-rose-500 to-red-600" },
@@ -38,7 +39,7 @@ export default function HireMePage() {
   ];
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText("hello@antorstudio.com");
+    navigator.clipboard.writeText(CONTACT_INFO.email);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2500);
   };
@@ -46,7 +47,7 @@ export default function HireMePage() {
   const validateForm = () => {
     const errors: Record<string, string> = {};
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
+
     if (!companyName.trim()) {
       errors.companyName = lang === "bn" ? "প্রতিষ্ঠানের নাম লিখুন।" : "Company name is required.";
     }
@@ -72,7 +73,7 @@ export default function HireMePage() {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    
+
     try {
       const res = await fetch("/api/recruitment", {
         method: "POST",
@@ -115,16 +116,16 @@ export default function HireMePage() {
   return (
     <main className="relative min-h-screen bg-background text-foreground pt-32 pb-24 overflow-hidden selection:bg-brand-red selection:text-white">
       <ParticleBackground />
-      
+
       {/* Premium ambient circles */}
       <div className="absolute top-[-5%] right-[-5%] w-[450px] h-[450px] bg-brand-red/5 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-[-5%] left-[-5%] w-[450px] h-[450px] bg-brand-red/5 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="container mx-auto px-6 md:px-12 relative z-10 max-w-7xl">
-        
+
         {/* UPPER TITLE / HUB INTRO */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <motionElement.div 
+          <motionElement.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -132,8 +133,8 @@ export default function HireMePage() {
           >
             <Sparkles size={13} /> {lang === "bn" ? "রিক্রুটমেন্ট ও অফার প্যানেল" : "Recruiting & Talent Acquisition"}
           </motionElement.div>
-          
-          <motionElement.h1 
+
+          <motionElement.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
@@ -142,14 +143,14 @@ export default function HireMePage() {
             {lang === "bn" ? "অন্তরকে আপনার টিমে" : "Recruit Antor Into"}<br />
             <span className="text-brand-red">{lang === "bn" ? "যুক্ত করুন" : "Your Creative Team"}</span>
           </motionElement.h1>
-          
-          <motionElement.p 
+
+          <motionElement.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-muted text-base md:text-lg leading-relaxed font-light"
           >
-            {lang === "bn" 
+            {lang === "bn"
               ? "ঢাকা বিশ্ববিদ্যালয়ের গ্রাফিক ডিজাইন থেকে আগত একজন দক্ষ ভিজ্যুয়াল কমিউনিকেটর এবং অ্যানিমেটর। আপনি যদি কোনো ফুল-টাইম রোল, রিমোট কনট্র্যাক্ট কিংবা স্পেশাল ক্রিয়েটিভ প্রজেক্টের জন্য উপযুক্ত প্রতিভার সন্ধানে থাকেন, তবে অফারটি এখানে সরাসরি সাবমিট করুন।"
               : "A versatile visual storyteller & motion animator from Dhaka University. Connect with Antor for high-impact full-time roles, direct contracts, or premium creative solutions by providing your brief below."
             }
@@ -158,12 +159,12 @@ export default function HireMePage() {
 
         {/* MAIN PANEL CONTENT */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          
+
           {/* LEFT SIDE: TALENT CARD & LIVE MATRICES */}
           <div className="lg:col-span-5 space-y-8">
-            
+
             {/* Elite Profile Stat Card */}
-            <motionElement.div 
+            <motionElement.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
@@ -172,7 +173,7 @@ export default function HireMePage() {
               <div className="absolute top-0 right-0 bg-brand-red/15 text-brand-red px-4 py-1.5 rounded-bl-2xl font-bold text-[10px] tracking-wider uppercase">
                 {lang === "bn" ? "হায়ারিং স্ট্যাটাস: ওপেন" : "STATUS: OPEN FOR OFFERS"}
               </div>
-              
+
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-2xl bg-brand-red/10 border border-brand-red/20 flex items-center justify-center text-brand-red text-2xl font-bold">
@@ -180,7 +181,7 @@ export default function HireMePage() {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-foreground">Antor Kumar Biswas</h3>
-                    <p className="text-xs text-muted font-medium">{lang === "bn" ? "ভিজ্যুয়াল কমিউনিকেটর ও ক্রিয়েটিভ লিড" : "Visual Communicator & Creative Lead"}</p>
+                    <p className="text-xs text-muted font-medium">{lang === "bn" ? "ক্রিয়েটিভ ডিজাইনার ও ভিজ্যুয়াল কমিউনিকেটর" : "Creative Designer & Visual Communicator"}</p>
                   </div>
                 </div>
 
@@ -207,26 +208,26 @@ export default function HireMePage() {
 
                 {/* Primary CV Download Trigger */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <a 
-                    href="/ANTOR_KUMAR_BISWAS.pdf" 
-                    download="ANTOR_KUMAR_BISWAS.pdf"
+                  <a
+                    href={CONTACT_INFO.cvPath}
+                    download={CONTACT_INFO.cvFileName}
                     className="flex-1 bg-brand-red text-white py-3 px-5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform duration-300 shadow-md shadow-brand-red/10"
                   >
                     <Download size={14} /> {lang === "bn" ? "সিভি ডাউনলোড করুন" : "Download CV / Resume"}
                   </a>
-                  <button 
+                  <button
                     onClick={handleCopyEmail}
                     className="bg-background border border-border text-foreground py-3 px-5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-surface-heavy transition-colors duration-300"
                   >
                     {isCopied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
-                    {lang === "bn" ? "অফিসিয়াল ইমেইল" : "Copy Official Email"}
+                    {isCopied ? (lang === "bn" ? "কপি হয়েছে!" : "Copied!") : CONTACT_INFO.email}
                   </button>
                 </div>
               </div>
             </motionElement.div>
 
             {/* Premium Skills Matrix */}
-            <motionElement.div 
+            <motionElement.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -245,7 +246,7 @@ export default function HireMePage() {
                       <span className="font-mono text-brand-red">{skill.pct}%</span>
                     </div>
                     <div className="h-2 w-full bg-background border border-border/80 rounded-full overflow-hidden">
-                      <motionElement.div 
+                      <motionElement.div
                         initial={{ width: 0 }}
                         animate={{ width: `${skill.pct}%` }}
                         transition={{ duration: 1.2, delay: index * 0.1, ease: "easeOut" }}
@@ -261,18 +262,18 @@ export default function HireMePage() {
 
           {/* RIGHT SIDE: CUSTOM RECRUITMENT BRIEF FORM */}
           <div className="lg:col-span-7">
-            <motionElement.div 
+            <motionElement.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
               className="bg-surface border border-border p-8 md:p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-36 h-36 bg-brand-red/5 rounded-full blur-3xl pointer-events-none" />
-              
+
               <AnimatePresence mode="wait">
                 {!isSuccess ? (
                   <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-                    
+
                     <div className="space-y-1 pb-2">
                       <h3 className="text-2xl font-serif font-black uppercase text-foreground">
                         {lang === "bn" ? "হায়ারিং ও কাজের বিবরণ" : "Talent Placement Form"}
@@ -289,32 +290,30 @@ export default function HireMePage() {
                       <label className="block text-[10px] uppercase tracking-wider text-muted font-bold pl-1">
                         {lang === "bn" ? "১. কোম্পানি এবং অফিসিয়াল তথ্য" : "1. Official Recruiting Agency / Company"}
                       </label>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Company Name */}
                         <div className="space-y-1">
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             placeholder={lang === "bn" ? "প্রতিষ্ঠানের নাম *" : "Company Name *"}
                             value={companyName}
                             onChange={e => setCompanyName(e.target.value)}
-                            className={`w-full bg-background border rounded-2xl px-5 py-4 text-xs text-foreground focus:outline-none transition-all ${
-                              formErrors.companyName ? "border-brand-red focus:ring-1 focus:ring-brand-red/10" : "border-border focus:border-brand-red"
-                            }`}
+                            className={`w-full bg-background border rounded-2xl px-5 py-4 text-xs text-foreground focus:outline-none transition-all ${formErrors.companyName ? "border-brand-red focus:ring-1 focus:ring-brand-red/10" : "border-border focus:border-brand-red"
+                              }`}
                           />
                           {formErrors.companyName && <p className="text-[10px] text-brand-red font-bold pl-3">{formErrors.companyName}</p>}
                         </div>
 
                         {/* HR Name/Role */}
                         <div className="space-y-1">
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             placeholder={lang === "bn" ? "আপনার নাম ও পদবি *" : "Your Name / Title *"}
                             value={hrName}
                             onChange={e => setHrName(e.target.value)}
-                            className={`w-full bg-background border rounded-2xl px-5 py-4 text-xs text-foreground focus:outline-none transition-all ${
-                              formErrors.hrName ? "border-brand-red focus:ring-1 focus:ring-brand-red/10" : "border-border focus:border-brand-red"
-                            }`}
+                            className={`w-full bg-background border rounded-2xl px-5 py-4 text-xs text-foreground focus:outline-none transition-all ${formErrors.hrName ? "border-brand-red focus:ring-1 focus:ring-brand-red/10" : "border-border focus:border-brand-red"
+                              }`}
                           />
                           {formErrors.hrName && <p className="text-[10px] text-brand-red font-bold pl-3">{formErrors.hrName}</p>}
                         </div>
@@ -323,28 +322,26 @@ export default function HireMePage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Official Email */}
                         <div className="space-y-1">
-                          <input 
-                            type="email" 
+                          <input
+                            type="email"
                             placeholder={lang === "bn" ? "অফিসিয়াল ইমেইল এড্রেস *" : "Official Email *"}
                             value={email}
                             onChange={e => setEmail(e.target.value)}
-                            className={`w-full bg-background border rounded-2xl px-5 py-4 text-xs text-foreground focus:outline-none transition-all ${
-                              formErrors.email ? "border-brand-red focus:ring-1 focus:ring-brand-red/10" : "border-border focus:border-brand-red"
-                            }`}
+                            className={`w-full bg-background border rounded-2xl px-5 py-4 text-xs text-foreground focus:outline-none transition-all ${formErrors.email ? "border-brand-red focus:ring-1 focus:ring-brand-red/10" : "border-border focus:border-brand-red"
+                              }`}
                           />
                           {formErrors.email && <p className="text-[10px] text-brand-red font-bold pl-3">{formErrors.email}</p>}
                         </div>
 
                         {/* Direct Mobile/Phone */}
                         <div className="space-y-1">
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             placeholder={lang === "bn" ? "যোগাযোগের ফোন নম্বর *" : "Contact Number *"}
                             value={phone}
                             onChange={e => setPhone(e.target.value)}
-                            className={`w-full bg-background border rounded-2xl px-5 py-4 text-xs text-foreground focus:outline-none transition-all ${
-                              formErrors.phone ? "border-brand-red focus:ring-1 focus:ring-brand-red/10" : "border-border focus:border-brand-red"
-                            }`}
+                            className={`w-full bg-background border rounded-2xl px-5 py-4 text-xs text-foreground focus:outline-none transition-all ${formErrors.phone ? "border-brand-red focus:ring-1 focus:ring-brand-red/10" : "border-border focus:border-brand-red"
+                              }`}
                           />
                           {formErrors.phone && <p className="text-[10px] text-brand-red font-bold pl-3">{formErrors.phone}</p>}
                         </div>
@@ -369,11 +366,10 @@ export default function HireMePage() {
                             key={item.id}
                             type="button"
                             onClick={() => setPositionType(item.id)}
-                            className={`p-3 rounded-xl border text-[10px] font-bold transition-all text-center ${
-                              positionType === item.id 
-                                ? "border-brand-red bg-brand-red/5 text-brand-red shadow-sm" 
-                                : "border-border bg-background text-muted hover:border-brand-red/20"
-                            }`}
+                            className={`p-3 rounded-xl border text-[10px] font-bold transition-all text-center ${positionType === item.id
+                              ? "border-brand-red bg-brand-red/5 text-brand-red shadow-sm"
+                              : "border-border bg-background text-muted hover:border-brand-red/20"
+                              }`}
                           >
                             {lang === "bn" ? item.labelBn : item.labelEn}
                           </button>
@@ -398,11 +394,10 @@ export default function HireMePage() {
                             key={item.id}
                             type="button"
                             onClick={() => setOfferedRange(item.id)}
-                            className={`p-3.5 rounded-xl border text-[9px] font-bold tracking-wider transition-all text-center ${
-                              offeredRange === item.id 
-                                ? "border-brand-red bg-brand-red/5 text-brand-red shadow-sm" 
-                                : "border-border bg-background text-muted hover:border-brand-red/20"
-                            }`}
+                            className={`p-3.5 rounded-xl border text-[9px] font-bold tracking-wider transition-all text-center ${offeredRange === item.id
+                              ? "border-brand-red bg-brand-red/5 text-brand-red shadow-sm"
+                              : "border-border bg-background text-muted hover:border-brand-red/20"
+                              }`}
                           >
                             {lang === "bn" ? item.labelBn : item.labelEn}
                           </button>
@@ -417,21 +412,20 @@ export default function HireMePage() {
                       <label className="block text-[10px] uppercase tracking-wider text-muted font-bold pl-1 mb-2">
                         {lang === "bn" ? "৪. কাজের সুযোগ, দায়িত্ব বা প্রজেক্ট ব্রিফ *" : "4. Scope of Works & Job Description *"}
                       </label>
-                      <textarea 
-                        rows={4} 
+                      <textarea
+                        rows={4}
                         placeholder={lang === "bn" ? "পজিশনটির মূল লক্ষ্য, কাজের দায়িত্ব, টিম ডাইনামিকস এবং প্রয়োজনীয় যোগ্যতা সম্পর্কে লিখুন..." : "Tell us about the role, technical software stack requirements, target timelines, and core deliverables..."}
                         value={jobDescription}
                         onChange={e => setJobDescription(e.target.value)}
-                        className={`w-full bg-background border rounded-2xl px-5 py-4 text-xs text-foreground focus:outline-none transition-all resize-none ${
-                          formErrors.jobDescription ? "border-brand-red focus:ring-1 focus:ring-brand-red/10" : "border-border focus:border-brand-red"
-                        }`}
+                        className={`w-full bg-background border rounded-2xl px-5 py-4 text-xs text-foreground focus:outline-none transition-all resize-none ${formErrors.jobDescription ? "border-brand-red focus:ring-1 focus:ring-brand-red/10" : "border-border focus:border-brand-red"
+                          }`}
                       />
                       {formErrors.jobDescription && <p className="text-[10px] text-brand-red font-bold pl-3">{formErrors.jobDescription}</p>}
                     </div>
 
                     {/* Submit Offer Trigger */}
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       disabled={isSubmitting}
                       className="w-full bg-brand-red hover:bg-blood-red text-white py-4.5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-brand-red/15 text-xs uppercase tracking-wider"
                     >
@@ -454,20 +448,20 @@ export default function HireMePage() {
                     <div className="w-20 h-20 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center mx-auto shadow-sm">
                       <CheckCircle2 size={36} className="animate-bounce" />
                     </div>
-                    
+
                     <div className="space-y-2 max-w-sm mx-auto">
                       <h3 className="text-2xl font-serif font-black text-foreground">
                         {lang === "bn" ? "অফারটি সফলভাবে পৌছেছে!" : "Recruitment Brief Received!"}
                       </h3>
                       <p className="text-xs text-muted leading-relaxed">
-                        {lang === "bn" 
+                        {lang === "bn"
                           ? "আপনার প্রতিষ্ঠানের নিয়োগ প্রপোজালটি সফলভাবে অন্তরBiswas এর ডেসবোর্ডে জমা হয়েছে। আমরা পর্যালোচনা শেষে দ্রুত আপনার প্রোভাইড করা ইমেইল বা ফোন নম্বরে যোগাযোগ করবো।"
                           : "Your recruitment specifications have been safely delivered to Antor's inbox. Our team will review the parameters and contact you via your official email shortly."
                         }
                       </p>
                     </div>
 
-                    <button 
+                    <button
                       onClick={resetForm}
                       className="px-6 py-3 bg-background hover:bg-brand-red text-foreground hover:text-white rounded-xl font-bold border border-border hover:border-brand-red transition-all text-xs"
                     >
