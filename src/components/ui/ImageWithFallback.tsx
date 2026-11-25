@@ -105,6 +105,13 @@ export default function ImageWithFallback({
     transition: "opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
   };
 
+  const bypassNextOptimization =
+    unoptimized ||
+    resolvedSrc.startsWith("/api/image-proxy") ||
+    resolvedSrc.includes("drive.google.com") ||
+    resolvedSrc.includes("googleusercontent.com") ||
+    resolvedSrc.includes("unsplash.com");
+
   return (
     <div
       className={`relative overflow-hidden w-full h-full bg-surface-heavy/20 ${
@@ -129,7 +136,7 @@ export default function ImageWithFallback({
           priority={priority}
           onLoad={handleLoad}
           onError={handleError}
-          unoptimized={unoptimized || resolvedSrc.startsWith('/api/image-proxy')}
+          unoptimized={bypassNextOptimization}
           className={`${className} ${isLoading ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
           style={imageStyle}
         />
@@ -140,6 +147,7 @@ export default function ImageWithFallback({
           alt={alt}
           width={width}
           height={height}
+          referrerPolicy="no-referrer"
           onLoad={handleLoad}
           onError={handleError}
           className={`${className} ${isLoading ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}

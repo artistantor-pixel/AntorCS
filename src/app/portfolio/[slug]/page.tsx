@@ -1,40 +1,19 @@
-import PortfolioDetailClient from "./PortfolioDetailClient";
 import { notFound } from "next/navigation";
-import { socialMediaProject } from "@/lib/driveData";
+import { getPortfolioProjectBySlug } from "@/lib/portfolio-loader";
+import PortfolioDetailClient from "./PortfolioDetailClient";
 
-// ISR: revalidate every minute
 export const revalidate = 60;
 
-import { fetchBehanceProjects } from "@/lib/behance";
-
-async function getAllBehanceProjects() {
-  try {
-    const projects = await fetchBehanceProjects();
-    return projects ?? [];
-  } catch (error) {
-    console.error("Failed to load Behance projects:", error);
-    return [];
-  }
-}
-
-export default async function PortfolioDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PortfolioDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
-
   if (!slug) notFound();
 
-  const decodedSlug = decodeURIComponent(slug);
-  const behanceProjects = await getAllBehanceProjects();
-  const allProjects = [socialMediaProject, ...behanceProjects];
-  
-  const index = allProjects.findIndex(
-    (p: { slug: string }) => p.slug === slug || p.slug === decodedSlug
-  );
-
-  if (index === -1) notFound();
-
-  const project = allProjects[index];
-  const nextProject = allProjects[(index + 1) % allProjects.length];
+  const { project, nextProject } = await getPortfolioProjectBySlug(slug);
+  if (!project) notFound();
 
   return <PortfolioDetailClient project={project} nextProject={nextProject} behanceData={null} />;
 }
-

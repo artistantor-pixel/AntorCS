@@ -1,47 +1,54 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, ZoomIn, X } from "lucide-react";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import type { PortfolioProject } from "@/lib/portfolio-loader";
 
-// Helper to check if URL is a video
 const isVideoUrl = (url: string) => {
   if (!url) return false;
-  return url.includes('vimeo.com') || url.includes('youtube.com') || url.match(/\.(mp4|webm)$/i);
+  return url.includes("vimeo.com") || url.includes("youtube.com") || /\.(mp4|webm)$/i.test(url);
 };
 
-// Helper to format video URL for embed if needed
 const getEmbedUrl = (url: string) => {
-  if (url.includes('vimeo.com') && !url.includes('player.vimeo.com')) {
+  if (url.includes("vimeo.com") && !url.includes("player.vimeo.com")) {
     const vimeoMatch = url.match(/vimeo\.com\/(?:manage\/videos\/)?(\d+)/);
-    if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}?background=1&autoplay=1&loop=1&byline=0&title=0`;
+    if (vimeoMatch)
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}?background=1&autoplay=1&loop=1&byline=0&title=0`;
   }
-  if (url.includes('youtube.com/watch')) {
+  if (url.includes("youtube.com/watch")) {
     const ytMatch = url.match(/v=([^&]+)/);
-    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&controls=0`;
+    if (ytMatch)
+      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&controls=0`;
   }
   return url;
 };
 
-const MediaRenderer = ({ url, className, style, intrinsic = false }: { url: string, className?: string, style?: any, intrinsic?: boolean }) => {
-  const isVideo = isVideoUrl(url);
-  
-  if (isVideo) {
+const MediaRenderer = ({
+  url,
+  className,
+  intrinsic = false,
+}: {
+  url: string;
+  className?: string;
+  intrinsic?: boolean;
+}) => {
+  if (isVideoUrl(url)) {
     const embedUrl = getEmbedUrl(url);
     return (
-      <div className={`relative overflow-hidden ${className}`} style={style}>
-        {url.match(/\.(mp4|webm)$/i) ? (
+      <div className={`relative overflow-hidden ${className || ""}`}>
+        {/\.(mp4|webm)$/i.test(url) ? (
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover pointer-events-none">
             <source src={url} />
           </video>
         ) : (
-          <iframe 
+          <iframe
             src={embedUrl}
             className="absolute top-1/2 left-1/2 w-[150vw] h-[150vh] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-            frameBorder="0" 
-            allow="autoplay; fullscreen; picture-in-picture" 
+            frameBorder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
             allowFullScreen
           />
         )}
@@ -51,7 +58,7 @@ const MediaRenderer = ({ url, className, style, intrinsic = false }: { url: stri
 
   if (intrinsic) {
     return (
-      <div style={style} className={`${className}`}>
+      <div className={className}>
         <ImageWithFallback
           src={url}
           alt="Project Media"
@@ -64,62 +71,81 @@ const MediaRenderer = ({ url, className, style, intrinsic = false }: { url: stri
   }
 
   return (
-    <div style={style} className={`relative overflow-hidden ${className}`}>
-      <ImageWithFallback
-        src={url}
-        alt="Project Media"
-        fill
-        objectFit="cover"
-      />
+    <div className={`relative overflow-hidden ${className || ""}`}>
+      <ImageWithFallback src={url} alt="Project Media" fill objectFit="cover" />
     </div>
   );
 };
 
-// Render block structures in simple but sleek ways
-const BlockRenderer = ({ block }: { block: any }) => {
+interface BlockData {
+  id?: string;
+  type?: string;
+  content?: string;
+  urls?: string[];
+  gridColumns?: number;
+  marginZero?: boolean;
+}
+
+const BlockRenderer = ({ block }: { block: BlockData }) => {
   if (!block) return null;
 
   switch (block.type) {
-    case "text":
-      // A raw rich-text paragraph helper with refined, peaceful typography
+    case "text": {
       const lines = (block.content || "").split("\n");
       return (
-        <div className="max-w-4xl mx-auto px-6 py-12">
-          <div className="space-y-6 text-foreground/80 leading-loose font-light text-base md:text-[1.125rem]">
-            {lines.map((line: string, i: number) => {
+        <div className="max-w-4xl mx-auto px-6 py-10">
+          <div className="space-y-5 text-foreground/80 leading-loose text-base md:text-lg">
+            {lines.map((line, i) => {
               if (line.startsWith("### ")) {
-                return <h3 key={i} className="text-xl md:text-2xl font-serif text-foreground font-medium pt-8 tracking-wide">{line.replace("### ", "")}</h3>;
+                return (
+                  <h3 key={i} className="text-xl md:text-2xl font-serif text-foreground font-bold pt-6">
+                    {line.replace("### ", "")}
+                  </h3>
+                );
               }
               if (line.startsWith("## ")) {
-                return <h2 key={i} className="text-2xl md:text-3xl font-serif text-foreground font-medium pt-10 tracking-tight">{line.replace("## ", "")}</h2>;
+                return (
+                  <h2 key={i} className="text-2xl md:text-3xl font-serif text-foreground font-bold pt-8">
+                    {line.replace("## ", "")}
+                  </h2>
+                );
               }
               if (line.startsWith("# ")) {
-                return <h1 key={i} className="text-4xl md:text-5xl font-serif text-foreground font-medium pt-12 tracking-tighter">{line.replace("# ", "")}</h1>;
+                return (
+                  <h1 key={i} className="text-4xl md:text-5xl font-serif text-foreground font-bold pt-10">
+                    {line.replace("# ", "")}
+                  </h1>
+                );
               }
               return <p key={i} className="whitespace-pre-line">{line}</p>;
             })}
           </div>
         </div>
       );
+    }
 
-    case "image":
-      const urls = Array.isArray(block.urls) ? block.urls : ["/uploads/placeholder.jpg"];
+    case "image": {
+      const urls = Array.isArray(block.urls) ? block.urls : [];
       const gridCols = block.gridColumns || 1;
-      const marginZero = !!block.marginZero;
-
+      const marginZero = Boolean(block.marginZero);
       let gridClass = "grid grid-cols-1 gap-6 md:gap-8";
       if (gridCols === 2) gridClass = "grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8";
       if (gridCols === 3) gridClass = "grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8";
 
       return (
-        <div className={`w-full ${marginZero ? "px-0 py-2" : "px-6 md:px-12 max-w-[100rem] mx-auto py-10"}`}>
+        <div className={`w-full ${marginZero ? "px-0 py-2" : "px-6 md:px-12 max-w-7xl mx-auto py-8"}`}>
           <div className={gridClass}>
-            {urls.map((url: string, i: number) => (
-              <div key={i} className={`overflow-hidden relative bg-surface/20 ${marginZero ? "rounded-none" : "rounded-3xl md:rounded-[2.5rem]"}`}>
-                <ImageWithFallback 
-                  src={url} 
-                  alt="Behance artwork element" 
-                  className="w-full h-auto block" 
+            {urls.map((url, i) => (
+              <div
+                key={i}
+                className={`overflow-hidden relative bg-surface ${
+                  marginZero ? "rounded-none" : "rounded-3xl border border-border"
+                }`}
+              >
+                <ImageWithFallback
+                  src={url}
+                  alt="Artwork showcase"
+                  className="w-full h-auto block"
                   objectFit="contain"
                 />
               </div>
@@ -127,22 +153,23 @@ const BlockRenderer = ({ block }: { block: any }) => {
           </div>
         </div>
       );
+    }
 
     case "video":
       if (!block.content) return null;
       return (
-        <div className="px-6 md:px-12 max-w-[100rem] mx-auto py-10">
-          <div className="rounded-3xl md:rounded-[2.5rem] overflow-hidden relative aspect-video bg-surface shadow-sm border border-border/30">
-            {block.content.match(/\.(mp4|webm)$/i) ? (
+        <div className="px-6 md:px-12 max-w-7xl mx-auto py-8">
+          <div className="rounded-3xl overflow-hidden relative aspect-video bg-surface border border-border">
+            {/\.(mp4|webm)$/i.test(block.content) ? (
               <video autoPlay loop muted playsInline controls className="w-full h-full object-cover block">
                 <source src={block.content} />
               </video>
             ) : (
-              <iframe 
-                src={getEmbedUrl(block.content)} 
-                className="w-full h-full block" 
-                frameBorder="0" 
-                allow="autoplay; fullscreen; picture-in-picture" 
+              <iframe
+                src={getEmbedUrl(block.content)}
+                className="w-full h-full block"
+                frameBorder="0"
+                allow="autoplay; fullscreen; picture-in-picture"
                 allowFullScreen
               />
             )}
@@ -153,9 +180,12 @@ const BlockRenderer = ({ block }: { block: any }) => {
     case "embed":
       if (!block.content) return null;
       return (
-        <div className="px-6 md:px-12 max-w-[100rem] mx-auto py-10">
-          <div className="rounded-3xl md:rounded-[2.5rem] overflow-hidden border border-border/50 bg-surface/30 p-2 flex justify-center backdrop-blur-sm">
-            <div className="w-full overflow-x-auto flex justify-center" dangerouslySetInnerHTML={{ __html: block.content }} />
+        <div className="px-6 md:px-12 max-w-7xl mx-auto py-8">
+          <div className="rounded-3xl overflow-hidden border border-border bg-surface p-2 flex justify-center">
+            <div
+              className="w-full overflow-x-auto flex justify-center"
+              dangerouslySetInnerHTML={{ __html: block.content }}
+            />
           </div>
         </div>
       );
@@ -165,279 +195,318 @@ const BlockRenderer = ({ block }: { block: any }) => {
   }
 };
 
-export default function PortfolioDetailClient({ project, nextProject, behanceData }: { project: any, nextProject: any, behanceData?: any }) {
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+export default function PortfolioDetailClient({
+  project,
+  nextProject,
+}: {
+  project: PortfolioProject | null;
+  nextProject: PortfolioProject | null;
+  behanceData?: unknown;
+}) {
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"]
+    offset: ["start start", "end end"],
   });
-  
+
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
-    restDelta: 0.001
+    restDelta: 0.001,
   });
 
-  // Parallax effects for Hero
   const { scrollY: heroScroll } = useScroll();
-  const yHero = useTransform(heroScroll, [0, 1000], ["0%", "30%"]);
-  const scaleHero = useTransform(heroScroll, [0, 1000], [1, 1.05]);
-  const opacityHero = useTransform(heroScroll, [0, 800], [1, 0.2]);
+  const yHero = useTransform(heroScroll, [0, 800], ["0%", "25%"]);
+  const scaleHero = useTransform(heroScroll, [0, 800], [1, 1.05]);
 
-  // Map custom theme backgrounds
-  const themeBgMap: Record<string, string> = {
-    white: "bg-[#FAFAFA] text-[#1A1A1A] selection:bg-brand-red/20 selection:text-brand-red",
-    gray: "bg-[#F3F4F6] text-[#1F2937] selection:bg-brand-red/20 selection:text-brand-red",
-    black: "bg-[#FAFAFA] text-[#1A1A1A] selection:bg-brand-red/20 selection:text-brand-red" // Forced light mode as per user request
-  };
+  const galleryImages = Array.isArray(project?.gallery)
+    ? project.gallery.filter((u): u is string => typeof u === "string" && u.length > 0)
+    : [];
 
-  const bgStyle = themeBgMap[project?.themeBackground || "white"] || themeBgMap.white;
+  const showPrev = useCallback(() => {
+    setLightboxIndex((prev) =>
+      prev === null ? null : (prev - 1 + galleryImages.length) % galleryImages.length
+    );
+  }, [galleryImages.length]);
+
+  const showNext = useCallback(() => {
+    setLightboxIndex((prev) =>
+      prev === null ? null : (prev + 1) % galleryImages.length
+    );
+  }, [galleryImages.length]);
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxIndex(null);
+      if (e.key === "ArrowLeft") showPrev();
+      if (e.key === "ArrowRight") showNext();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxIndex, showPrev, showNext]);
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 relative overflow-hidden">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-brand-red/5 rounded-full blur-[120px] pointer-events-none" />
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center relative z-10 max-w-md p-10 rounded-[2.5rem] bg-white/80 border border-black/5 backdrop-blur-md shadow-2xl"
-        >
-          <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-black/5 text-black/50 mb-6 border border-black/10">
-            <ArrowLeft size={24} className="rotate-45" />
-          </span>
-          <h1 className="text-3xl font-serif font-bold mb-4 tracking-tight text-black">Project Not Found</h1>
-          <p className="text-black/60 text-sm font-light mb-8 leading-relaxed">
-            The project you are trying to view does not exist or has been relocated to another workspace.
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+        <div className="text-center max-w-md p-10 rounded-3xl bg-surface border border-border shadow-xl">
+          <h1 className="text-3xl font-serif font-bold mb-4 text-foreground">Project Not Found</h1>
+          <p className="text-muted text-sm mb-8 leading-relaxed">
+            The project you are trying to view could not be located.
           </p>
-          <Link 
-            href="/portfolio" 
-            className="inline-flex bg-brand-red text-white px-8 py-3.5 rounded-full font-bold hover:scale-105 transition-all text-xs tracking-wider uppercase shadow-xl shadow-brand-red/20"
+          <Link
+            href="/portfolio"
+            className="inline-flex bg-brand-red text-white px-8 py-3.5 rounded-full font-bold hover:scale-105 transition-all text-xs tracking-wider uppercase"
           >
             Return to Portfolio
           </Link>
-        </motion.div>
+        </div>
       </div>
     );
   }
 
+  const externalLink = project.liveLink || project.link;
+  const hasCaseStudyNarrative = Boolean(project.challenge || project.solution);
+  const hasResults = Array.isArray(project.results) && project.results.length > 0;
+  const hasBlocks = Array.isArray(project.blocks) && project.blocks.length > 0;
+
   return (
-    <div ref={containerRef} className="w-full h-full relative">
-      <main className={`min-h-screen transition-colors duration-1000 ${bgStyle}`}>
-        
-        {/* Soft Progress Bar */}
-        <motion.div 
-          className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-red/80 to-brand-red origin-left z-[100]" 
-          style={{ scaleX }} 
+    <div ref={containerRef} className="w-full relative">
+      <main className="min-h-screen bg-background text-foreground selection:bg-brand-red/20 selection:text-brand-red">
+        {/* Reading Progress Bar */}
+        <motion.div
+          className="fixed top-0 left-0 right-0 h-1 bg-brand-red origin-left z-[110]"
+          style={{ scaleX }}
         />
 
-        {/* Glassmorphic Navigation Top Bar (Light Mode) */}
-        <div className="fixed top-6 left-6 md:top-10 md:left-10 z-50">
-          <Link href="/portfolio" className="flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-white/80 backdrop-blur-xl border border-black/5 text-black hover:bg-white hover:scale-105 transition-all shadow-xl shadow-black/5 group">
-            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform text-brand-red" /> 
-            <span className="text-[11px] uppercase tracking-[0.2em] font-bold mt-0.5 text-black">Archive</span>
-          </Link>
-        </div>
-
-        {/* 1. Immersive Cinematic Cover (100vh) */}
-        <section className="relative w-full h-[100svh] min-h-[600px] flex flex-col justify-end overflow-hidden bg-black">
-          {/* Hero Background Media with Parallax */}
-          <motion.div 
+        {/* Hero Section */}
+        <section className="relative w-full min-h-[75vh] flex flex-col justify-end overflow-hidden bg-black pt-28">
+          <motion.div
             className="absolute inset-0 z-0 origin-center"
-            style={{ y: yHero, scale: scaleHero, opacity: opacityHero }}
+            style={{ y: yHero, scale: scaleHero }}
           >
-            <MediaRenderer 
-              url={project.image} 
-              className="w-full h-[120%] absolute -top-[10%] left-0" 
-            />
-            {/* Dark gradients to ensure text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/20" />
-            <div className="absolute inset-0 bg-black/20" />
+            <MediaRenderer url={project.image} className="w-full h-[115%] absolute -top-[8%] left-0" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/65 to-black/30" />
           </motion.div>
-          
-          {/* Cover Content */}
-          <div className="relative z-10 w-full max-w-[100rem] mx-auto px-6 md:px-12 pb-12 md:pb-20">
-            <motion.div
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-10 pb-12 md:pb-16 space-y-8">
+            <Link
+              href="/portfolio"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-black transition-all text-xs uppercase tracking-widest font-bold w-fit"
             >
-              {/* Category Pill */}
-              <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-md mb-6 md:mb-8 shadow-xl">
-                <span className="w-2 h-2 rounded-full bg-brand-red animate-pulse" />
-                <span className="text-white uppercase tracking-[0.25em] text-[10px] md:text-xs font-bold">{project.catId}</span>
+              <ArrowLeft size={15} />
+              <span>All Works</span>
+            </Link>
+
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+            >
+              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-md mb-5">
+                <span className="w-2 h-2 rounded-full bg-brand-red" />
+                <span className="text-white uppercase tracking-widest text-[11px] font-bold">
+                  {project.catId}
+                </span>
               </div>
-              
-              {/* Massive Title */}
-              <h1 className="text-5xl md:text-[6rem] lg:text-[8rem] font-serif leading-[0.9] tracking-tighter capitalize text-white mb-10 md:mb-16 mix-blend-plus-lighter max-w-6xl drop-shadow-2xl">
+
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-black leading-[1.06] tracking-tight text-white mb-8 max-w-5xl">
                 {project.title}
               </h1>
-              
-              {/* Glassmorphic Project Details Bento */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 p-6 md:p-8 rounded-[2rem] bg-white/10 border border-white/20 backdrop-blur-2xl w-full max-w-5xl shadow-2xl relative overflow-hidden group">
-                 {/* Hover effect */}
-                 <div className="absolute inset-0 bg-gradient-to-br from-brand-red/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-                 
-                 <div className="relative z-10">
-                    <h4 className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-white/50 mb-2">Client</h4>
-                    <p className="text-sm md:text-base font-medium text-white">{project.client || "Self Initiated"}</p>
-                 </div>
-                 <div className="relative z-10">
-                    <h4 className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-white/50 mb-2">Role</h4>
-                    <p className="text-sm md:text-base font-medium text-white">{project.role || "Lead Artist"}</p>
-                 </div>
-                 <div className="relative z-10">
-                    <h4 className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-white/50 mb-2">Year</h4>
-                    <p className="text-sm md:text-base font-medium text-white">{project.year || "2024"}</p>
-                 </div>
-                 <div className="flex items-center relative z-10">
-                    {project.liveLink ? (
-                      <a href={project.liveLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-brand-red text-white rounded-full text-xs uppercase tracking-wider font-bold hover:bg-white hover:text-black hover:scale-105 transition-all shadow-lg shadow-brand-red/30">
-                        Live Project <ArrowUpRight size={16} />
-                      </a>
-                    ) : (
-                      <div className="w-full h-full border border-white/10 rounded-full flex items-center justify-center">
-                        <span className="text-[10px] uppercase tracking-widest font-bold text-white/30">Showcase Only</span>
-                      </div>
-                    )}
-                 </div>
+
+              {/* Metadata Bento */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-5 p-6 md:p-7 rounded-3xl bg-white/10 border border-white/20 backdrop-blur-xl max-w-5xl">
+                <div>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">
+                    Client / Studio
+                  </h4>
+                  <p className="text-sm md:text-base font-semibold text-white">
+                    {project.client || "Antor Creative Studio"}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">
+                    Role
+                  </h4>
+                  <p className="text-sm md:text-base font-semibold text-white">
+                    {project.role || "Visual Designer"}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">
+                    Year
+                  </h4>
+                  <p className="text-sm md:text-base font-semibold text-white">
+                    {project.year || "2025"}
+                  </p>
+                </div>
+                <div className="flex items-center">
+                  {externalLink ? (
+                    <a
+                      href={externalLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 bg-brand-red text-white rounded-full text-xs uppercase tracking-wider font-bold hover:bg-white hover:text-black transition-all shadow-lg"
+                    >
+                      <span>{project.behanceId ? "Open on Behance" : "Live Project"}</span>
+                      <ArrowUpRight size={15} />
+                    </a>
+                  ) : (
+                    <Link
+                      href="/hire"
+                      className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 bg-white/15 hover:bg-white hover:text-black text-white rounded-full text-xs uppercase tracking-wider font-bold transition-all border border-white/20"
+                    >
+                      <span>Hire for Similar</span>
+                      <ArrowUpRight size={15} />
+                    </Link>
+                  )}
+                </div>
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* 2. Cinematic Overview Quote */}
-        <section className="py-24 md:py-40 px-6 md:px-12 max-w-[80rem] mx-auto text-center">
-          <motion.h2 
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-2xl md:text-4xl lg:text-[3.5rem] font-light text-black/90 leading-[1.3] font-serif tracking-tight"
-          >
-            "{project.overview}"
-          </motion.h2>
-        </section>
+        {/* Overview & Impact Results */}
+        {(project.overview || hasResults) && (
+          <section className="py-16 md:py-24 px-6 max-w-6xl mx-auto space-y-12">
+            {project.overview && (
+              <p className="text-xl sm:text-2xl md:text-3xl font-serif text-foreground leading-relaxed text-center max-w-4xl mx-auto">
+                {project.overview}
+              </p>
+            )}
 
-        {/* DYNAMIC BEHANCE BLOCKS RENDERING CANVAS */}
-        <section className="py-24 md:py-32 flex flex-col gap-0">
-          {Array.isArray(project.blocks) && project.blocks.length > 0 ? (
-            project.blocks.map((block: any, idx: number) => (
-              <BlockRenderer key={block.id || idx} block={block} />
-            ))
-          ) : (
-            // Softened Legacy Fallback Layout (Light Mode)
-            <>
-              <div className="py-12 md:py-24 px-6 md:px-12 max-w-[100rem] mx-auto relative">
-                <div className="flex flex-col lg:flex-row gap-16 lg:gap-32">
-                  <div className="lg:w-1/3 lg:sticky lg:top-40 h-fit">
-                    <h2 className="text-4xl md:text-5xl font-serif tracking-tight mb-8 font-bold text-black">Process & <span className="italic text-brand-red">Execution</span></h2>
-                    <p className="text-lg md:text-xl text-black/60 leading-relaxed font-light">
-                      Every pixel, every frame, and every interaction is designed with pure intention to create a peaceful and premium experience.
+            {hasResults && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                {project.results?.map((res, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-surface border border-border rounded-2xl p-6 text-center shadow-sm"
+                  >
+                    <p className="text-3xl font-black font-mono text-brand-red">{res.value}</p>
+                    <p className="text-xs uppercase tracking-wider font-bold text-muted mt-1">
+                      {res.label}
                     </p>
                   </div>
-                  <div className="lg:w-2/3 flex flex-col gap-12 md:gap-16">
-                    <div className="bg-white border border-black/5 p-10 md:p-16 rounded-[2.5rem] relative overflow-hidden shadow-xl shadow-black/5">
-                      <h3 className="text-xl md:text-2xl font-serif text-black/50 mb-6 tracking-wide font-bold">The Challenge</h3>
-                      <p className="text-xl md:text-2xl leading-relaxed font-light text-black/90">{project.challenge}</p>
-                    </div>
-                    <div className="bg-white border border-black/5 p-10 md:p-16 rounded-[2.5rem] shadow-xl shadow-black/5 relative overflow-hidden">
-                      <h3 className="text-xl md:text-2xl font-serif text-black/50 mb-6 tracking-wide font-bold">The Solution</h3>
-                      <p className="text-xl md:text-2xl leading-relaxed font-light text-black/90">{project.solution}</p>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
+            )}
+          </section>
+        )}
 
-              {/* Grid Layout Card Gallery */}
-              {project.gallery && project.gallery.length > 0 && (
-                <div className="w-full max-w-[120rem] mx-auto mt-16 px-6 md:px-12 pb-24">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 w-full">
-                    {Array.isArray(project.gallery) && project.gallery.map((mediaUrl: any, i: number) => {
-                      return (
-                        <div 
-                          key={i} 
-                          className="w-full aspect-[4/5] relative bg-neutral-100 rounded-2xl md:rounded-[2rem] overflow-hidden group cursor-pointer border border-black/5 shadow-sm hover:shadow-2xl transition-all duration-500"
-                          onClick={() => setLightboxImage(mediaUrl)}
-                        >
-                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500 z-10" />
-                           <MediaRenderer intrinsic={false} url={mediaUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                        </div>
-                      );
-                    })}
-                  </div>
+        {/* Dynamic Blocks (Admin/DB projects) */}
+        {hasBlocks && (
+          <section className="py-8 flex flex-col">
+            {(project.blocks as BlockData[]).map((block, idx) => (
+              <BlockRenderer key={block.id || idx} block={block} />
+            ))}
+          </section>
+        )}
+
+        {/* Challenge & Solution (only when present) */}
+        {hasCaseStudyNarrative && (
+          <section className="py-10 px-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {project.challenge && (
+                <div className="bg-surface border border-border p-8 md:p-10 rounded-3xl shadow-sm">
+                  <h3 className="text-xs uppercase tracking-widest font-bold text-brand-red mb-3">
+                    The Challenge
+                  </h3>
+                  <p className="text-base md:text-lg leading-relaxed text-foreground/90">
+                    {project.challenge}
+                  </p>
                 </div>
               )}
-            </>
-          )}
-        </section>
-
-        {/* BEHANCE IMAGES GALLERY — shown when project has scraped Behance images */}
-        {behanceData && behanceData.images && behanceData.images.length > 1 && (
-          <section className="w-full max-w-[100rem] mx-auto px-0 md:px-12 pb-8">
-            <div className="flex flex-col w-full shadow-2xl shadow-black/10 md:rounded-[3rem] overflow-hidden bg-white">
-              {behanceData.images.map((imgUrl: string, i: number) => (
-                <div key={i} className="w-full relative bg-white flex flex-col">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={imgUrl}
-                    alt={`${project.title} — slide ${i + 1}`}
-                    className="w-full h-auto block"
-                    loading={i < 2 ? "eager" : "lazy"}
-                  />
+              {project.solution && (
+                <div className="bg-surface border border-border p-8 md:p-10 rounded-3xl shadow-sm">
+                  <h3 className="text-xs uppercase tracking-widest font-bold text-emerald-600 mb-3">
+                    The Solution
+                  </h3>
+                  <p className="text-base md:text-lg leading-relaxed text-foreground/90">
+                    {project.solution}
+                  </p>
                 </div>
-              ))}
-            </div>
-
-            {/* View on Behance CTA */}
-            <div className="flex justify-center mt-16">
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-[#1769ff] text-white font-bold text-sm tracking-wide hover:scale-105 transition-all shadow-xl shadow-[#1769ff]/25 group"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H13.96c.13 2.344 1.867 2.587 3.108 2.587 1.22 0 2.27-.734 2.658-1.558zm-5.648-5.078H18.5c-.184-1.587-1.3-2.084-2.408-2.084-1.244 0-2.258.59-2.514 2.084zM7.484 0C10.61 0 12 1.897 12 4.192 12 6.098 10.997 7.43 9.188 7.812 11.212 8.128 12.5 9.586 12.5 11.9c0 2.808-2.087 4.1-5.199 4.1H0V0h7.484zm-.404 6.699c1.462 0 2.297-.54 2.297-1.82 0-1.276-.803-1.879-2.274-1.879H2.556v3.699h4.524zm.299 6.408c1.64 0 2.586-.659 2.586-2.118 0-1.425-.944-2.021-2.713-2.021H2.556v4.139h4.823z"/>
-                </svg>
-                View full project on Behance
-                <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </a>
+              )}
             </div>
           </section>
         )}
 
-        {/* BEHANCE FULL PROJECT EMBED */}
-        {project.behanceId && (
-          <section className="w-full max-w-[100rem] mx-auto px-0 md:px-12 pb-24 pt-8">
-            <div className="w-full bg-white rounded-none md:rounded-[3rem] overflow-hidden shadow-2xl shadow-black/10 border border-black/5 relative">
-              {/* Header for the embed section */}
-              <div className="px-8 py-6 border-b border-black/5 bg-gray-50 flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-lg text-black">Project Details</h3>
-                  <p className="text-black/50 text-sm font-light">Full presentation via Behance</p>
-                </div>
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1769ff]/10 text-[#1769ff] font-bold text-xs tracking-wide hover:bg-[#1769ff] hover:text-white transition-all group"
-                >
-                  Open in Behance
-                  <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </a>
+        {/* Gallery Grid with Lightbox */}
+        {galleryImages.length > 0 && (
+          <section className="py-12 md:py-16 px-6 max-w-7xl mx-auto space-y-8">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-serif font-bold">Visual Showcase</h2>
+                <p className="text-xs text-muted mt-0.5">
+                  Click any artwork to inspect in fullscreen ({galleryImages.length}{" "}
+                  {galleryImages.length === 1 ? "item" : "items"})
+                </p>
               </div>
-              
-              {/* The Iframe */}
-              <div className="w-full h-[80vh] min-h-[800px] relative">
-                <iframe 
-                  src={`https://www.behance.net/embed/project/${project.behanceId}?ilo0=1`} 
+            </div>
+
+            <div
+              className={`grid gap-5 ${
+                galleryImages.length === 1
+                  ? "grid-cols-1 max-w-4xl mx-auto"
+                  : galleryImages.length === 2
+                  ? "grid-cols-1 md:grid-cols-2"
+                  : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+              }`}
+            >
+              {galleryImages.map((mediaUrl, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setLightboxIndex(i)}
+                  className="w-full aspect-[4/3] relative bg-surface rounded-3xl overflow-hidden group cursor-pointer border border-border shadow-sm hover:shadow-xl hover:border-brand-red/40 transition-all duration-300 text-left"
+                >
+                  <MediaRenderer
+                    intrinsic={false}
+                    url={mediaUrl}
+                    className="w-full h-full group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-black rounded-full p-3 shadow-lg">
+                      <ZoomIn size={18} />
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Behance Full Project Embed */}
+        {project.behanceId && (
+          <section className="w-full max-w-7xl mx-auto px-6 pb-16 pt-6">
+            <div className="w-full bg-surface rounded-3xl overflow-hidden shadow-sm border border-border">
+              <div className="px-6 py-5 border-b border-border flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-bold text-base text-foreground">Behance Interactive Presentation</h3>
+                  <p className="text-muted text-xs">Full project preview synced from Behance</p>
+                </div>
+                {externalLink && (
+                  <a
+                    href={externalLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1769ff] text-white font-bold text-xs tracking-wide hover:opacity-90 transition-opacity shrink-0"
+                  >
+                    <span>Open on Behance</span>
+                    <ArrowUpRight size={14} />
+                  </a>
+                )}
+              </div>
+
+              <div className="w-full h-[75vh] min-h-[600px] relative bg-white">
+                <iframe
+                  src={`https://www.behance.net/embed/project/${project.behanceId}?ilo0=1`}
                   className="absolute inset-0 w-full h-full"
-                  allowFullScreen 
-                  loading="lazy" 
-                  frameBorder="0" 
-                  allow="clipboard-write" 
+                  allowFullScreen
+                  loading="lazy"
+                  frameBorder="0"
+                  allow="clipboard-write"
                   referrerPolicy="strict-origin-when-cross-origin"
                 />
               </div>
@@ -445,65 +514,102 @@ export default function PortfolioDetailClient({ project, nextProject, behanceDat
           </section>
         )}
 
-        {/* 6. Refined Next Project Footer (Light Mode) */}
-        {nextProject && (
-          <section className="h-[70vh] w-full flex flex-col items-center justify-center relative bg-white border-t border-black/5 overflow-hidden mt-20">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vh] bg-brand-red/5 rounded-full blur-[120px] pointer-events-none" />
-            
-            <Link href={`/portfolio/${nextProject.slug}`} className="group flex flex-col items-center relative z-10 hoverable p-12">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                className="flex flex-col items-center"
+        {/* Up Next Project */}
+        {nextProject && nextProject.slug !== project.slug && (
+          <section className="border-t border-border bg-surface py-16 px-6">
+            <div className="max-w-5xl mx-auto">
+              <Link
+                href={`/portfolio/${nextProject.slug}`}
+                className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-8 rounded-3xl bg-background border border-border hover:border-brand-red/40 transition-all"
               >
-                <p className="text-brand-red text-[10px] md:text-xs tracking-[0.4em] uppercase mb-10 font-bold transition-colors flex items-center gap-3">
-                  Up Next <ArrowUpRight size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                </p>
-                <h2 className="text-5xl md:text-[8vw] font-serif tracking-tighter capitalize text-black/50 group-hover:text-black transition-colors duration-700 leading-none text-center">
-                  {nextProject.title}
-                </h2>
-              </motion.div>
-            </Link>
+                <div>
+                  <p className="text-brand-red text-xs tracking-widest uppercase mb-2 font-bold">
+                    Up Next
+                  </p>
+                  <h2 className="text-2xl sm:text-4xl font-serif font-black text-foreground group-hover:text-brand-red transition-colors">
+                    {nextProject.title}
+                  </h2>
+                </div>
+                <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-foreground group-hover:text-brand-red shrink-0">
+                  <span>View Project</span>
+                  <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform" />
+                </span>
+              </Link>
+            </div>
           </section>
         )}
       </main>
 
-      {/* Lightbox Modal */}
+      {/* Lightbox Modal with Prev/Next */}
       <AnimatePresence>
-        {lightboxImage && (
-           <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-12 cursor-pointer"
-              onClick={() => setLightboxImage(null)}
-           >
-              <div className="absolute top-6 right-6 z-[210]">
-                 <button 
-                   className="text-xs uppercase tracking-widest font-bold text-white/70 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full px-6 py-3 transition-all"
-                   onClick={(e) => { e.stopPropagation(); setLightboxImage(null); }}
-                 >
-                   Close
-                 </button>
-              </div>
-              
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="relative w-full h-full flex items-center justify-center"
+        {lightboxIndex !== null && galleryImages[lightboxIndex] && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-12"
+            onClick={() => setLightboxIndex(null)}
+          >
+            <div className="absolute top-6 left-6 right-6 z-[210] flex items-center justify-between">
+              <span className="text-xs font-mono font-bold text-white/80 bg-white/10 px-4 py-2 rounded-full">
+                {lightboxIndex + 1} / {galleryImages.length}
+              </span>
+              <button
+                type="button"
+                className="text-xs uppercase tracking-widest font-bold text-white bg-white/15 hover:bg-white/25 backdrop-blur-md rounded-full p-3 transition-all cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIndex(null);
+                }}
               >
-                <img 
-                  src={lightboxImage} 
-                  alt="Fullscreen view" 
-                  className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
-                />
-              </motion.div>
-           </motion.div>
+                <X size={18} />
+              </button>
+            </div>
+
+            {galleryImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    showPrev();
+                  }}
+                  className="absolute left-4 md:left-8 z-[210] p-3 rounded-full bg-white/15 hover:bg-white/30 text-white transition-colors cursor-pointer"
+                >
+                  <ArrowLeft size={20} />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    showNext();
+                  }}
+                  className="absolute right-4 md:right-8 z-[210] p-3 rounded-full bg-white/15 hover:bg-white/30 text-white transition-colors cursor-pointer"
+                >
+                  <ArrowRight size={20} />
+                </button>
+              </>
+            )}
+
+            <motion.div
+              key={lightboxIndex}
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="relative w-full h-full flex items-center justify-center max-w-6xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={galleryImages[lightboxIndex]}
+                alt={`${project.title} artwork ${lightboxIndex + 1}`}
+                referrerPolicy="no-referrer"
+                className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
+              />
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
