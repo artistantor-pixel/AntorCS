@@ -1,64 +1,8 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import prisma from "@/lib/prisma";
-import {
-  DEFAULT_JOURNAL_ENTRIES,
-  slugifyTitle,
-  type JournalEntry,
-} from "@/config/journal";
+import { slugifyTitle, type JournalEntry } from "@/config/journal";
+import { persistJournalEntries, readJournalEntries } from "@/lib/journal-store";
 
 export const dynamic = "force-dynamic";
-
-const DATA_FILE = path.join(process.cwd(), "src", "data", "journal.json");
-
-function readLocalJournal(): JournalEntry[] {
-  try {
-    if (fs.existsSync(DATA_FILE)) {
-      const parsed = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error("Failed reading local journal.json:", err);
-  }
-  return DEFAULT_JOURNAL_ENTRIES;
-}
-
-function writeLocalJournal(entries: JournalEntry[]): void {
-  try {
-    fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
-    fs.writeFileSync(DATA_FILE, JSON.stringify(entries, null, 2), "utf8");
-  } catch (err) {
-    console.error("Failed writing local journal.json:", err);
-  }
-}
-
-async function readJournalEntries(): Promise<JournalEntry[]> {
-  try {
-    const rec = await prisma.content.findUnique({ where: { id: "journal_posts" } });
-    if (rec && Array.isArray((rec.data as { entries?: JournalEntry[] })?.entries)) {
-      return (rec.data as { entries: JournalEntry[] }).entries;
-    }
-  } catch {
-    // Fallback cleanly to local JSON when Postgres is offline
-  }
-  return readLocalJournal();
-}
-
-async function persistJournalEntries(entries: JournalEntry[]): Promise<void> {
-  writeLocalJournal(entries);
-  try {
-    await prisma.content.upsert({
-      where: { id: "journal_posts" },
-      update: { data: { entries } as unknown as object },
-      create: { id: "journal_posts", data: { entries } as unknown as object },
-    });
-  } catch {
-    // Local JSON already persisted when DB is unavailable
-  }
-}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
