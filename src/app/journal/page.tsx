@@ -36,8 +36,8 @@ import {
 const JOURNEY_TIMELINE_BASE = [
   {
     year: "May 2026 – Ongoing",
-    titleEn: "Creative Head — Canvas",
-    titleBn: "ক্রিয়েটিভ হেড — Canvas",
+    titleEn: "Visualizer — Canvas",
+    titleBn: "ভিজ্যুয়ালাইজার — Canvas",
     descEn:
       "Leading visual strategy, packaging dielines, e-commerce hero concepts, and UI consulting in Dhaka.",
     descBn:

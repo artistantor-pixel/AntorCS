@@ -517,7 +517,7 @@ export const EXPERTISE_LIST: ExpertiseItem[] = [
         },
       ],
       highlights: [
-        "Canvas — Creative Head leading all visual design, packaging & branding strategy",
+        "Canvas — Visualizer leading visual design, packaging & branding strategy",
         "Gallery Hamiduzzaman — Creative Manager & Brand Strategist for exhibitions",
         "Fine Arts Admission Support Workshop — Creative Lead & official Workshop Book designer",
         "1st Animation Festival, Faculty of Fine Arts (DU) — Lead Branding Designer",
@@ -559,7 +559,7 @@ export const EXPERTISE_LIST: ExpertiseItem[] = [
         },
       ],
       highlights: [
-        "Canvas — ক্রিয়েটিভ হেড হিসেবে ভিজ্যুয়াল ডিজাইন ও ব্র্যান্ডিং স্ট্র্যাটেজি পরিচালনা",
+        "Canvas — ভিজ্যুয়ালাইজার হিসেবে ভিজ্যুয়াল ডিজাইন ও ব্র্যান্ডিং স্ট্র্যাটেজি পরিচালনা",
         "গ্যালারি হামিদুজ্জামান — প্রদর্শনীর ক্রিয়েটিভ ম্যানেজার ও ব্র্যান্ড স্ট্র্যাটেজিস্ট",
         "ফাইন আর্টস অ্যাডমিশন সাপোর্ট ওয়ার্কশপ — ক্রিয়েটিভ লিড ও অফিসিয়াল বুক ডিজাইনার",
         "১ম অ্যানিমেশন ফেস্টিভ্যাল, চারুকলা অনুষদ (ঢাবি) — লিড ব্র্যান্ডিং ডিজাইনার",
