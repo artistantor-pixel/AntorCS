@@ -138,9 +138,8 @@ const BlockRenderer = ({ block }: { block: BlockData }) => {
             {urls.map((url, i) => (
               <div
                 key={i}
-                className={`overflow-hidden relative bg-surface ${
-                  marginZero ? "rounded-none" : "rounded-3xl border border-border"
-                }`}
+                className={`overflow-hidden relative bg-surface ${marginZero ? "rounded-none" : "rounded-3xl border border-border"
+                  }`}
               >
                 <ImageWithFallback
                   src={url}
@@ -445,13 +444,12 @@ export default function PortfolioDetailClient({
             </div>
 
             <div
-              className={`grid gap-5 ${
-                galleryImages.length === 1
-                  ? "grid-cols-1 max-w-4xl mx-auto"
-                  : galleryImages.length === 2
+              className={`grid gap-5 ${galleryImages.length === 1
+                ? "grid-cols-1 max-w-4xl mx-auto"
+                : galleryImages.length === 2
                   ? "grid-cols-1 md:grid-cols-2"
                   : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-              }`}
+                }`}
             >
               {galleryImages.map((mediaUrl, i) => (
                 <button
