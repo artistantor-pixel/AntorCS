@@ -3,7 +3,6 @@ import { Inter, Playfair_Display, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
 import { LanguageProvider } from "@/context/LanguageContext";
-import { ChatWidget } from "@/components/chat/ChatWidget";
 import { CONTACT_INFO } from "@/config/contact";
 import { getSiteUrl } from "@/lib/seo";
 
@@ -154,7 +153,6 @@ export default function RootLayout({
           <div className="relative z-10 flex-1 flex flex-col">
             {children}
           </div>
-          <ChatWidget />
         </LanguageProvider>
       </body>
     </html>
