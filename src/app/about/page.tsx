@@ -20,13 +20,10 @@ export default function AboutPage() {
           className="text-center max-w-5xl"
         >
           <div className="mb-8">
-            <img 
-              src="/placeholder-avatar.jpg" // Placeholder if they don't have one, or they can replace it.
-              alt="Antor Kumar Biswas" 
-              className="w-32 h-32 md:w-48 md:h-48 rounded-full mx-auto object-cover border-4 border-brand-red/20 shadow-2xl shadow-brand-red/10"
-              onError={(e) => {
-                e.currentTarget.src = "https://ui-avatars.com/api/?name=Antor+Kumar+Biswas&background=ff0000&color=fff";
-              }}
+            <img
+              src="/antor-portrait.jpg"
+              alt="Antor Kumar Biswas"
+              className="w-36 h-36 md:w-52 md:h-52 rounded-full mx-auto object-cover object-top bg-white border-4 border-brand-red/20 ring-1 ring-border shadow-2xl shadow-brand-red/10"
             />
           </div>
           <h1 className="text-4xl md:text-[6vw] font-black tracking-tighter uppercase mb-4 leading-none text-foreground">
