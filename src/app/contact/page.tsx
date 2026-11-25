@@ -211,7 +211,7 @@ export default function ContactPage() {
     BUDGET_TIERS.find((b) => b.id === budgetTier)?.range || "৳30K – ৳75K";
 
   return (
-    <main className="relative min-h-screen bg-background text-foreground pt-28 md:pt-36 pb-28 overflow-hidden selection:bg-brand-red selection:text-white">
+    <main className="relative min-h-screen bg-transparent text-foreground pt-28 md:pt-36 pb-28 overflow-hidden selection:bg-brand-red selection:text-white">
       {/* Subtle Ambient Background Accents */}
       <div className="absolute -top-24 -left-24 w-[420px] h-[420px] bg-brand-red/[0.06] rounded-full blur-[130px] pointer-events-none" />
       <div className="absolute top-1/3 -right-32 w-[460px] h-[460px] bg-brand-tan/20 rounded-full blur-[140px] pointer-events-none" />

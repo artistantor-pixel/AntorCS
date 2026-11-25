@@ -172,7 +172,7 @@ export default function PortfolioClient({
   const uniqueCats = [...new Set(initialProjects.map((p) => p.catId))].length;
 
   return (
-    <main className="relative min-h-screen pt-28 md:pt-36 pb-28 bg-background text-foreground overflow-hidden">
+    <main className="relative min-h-screen pt-28 md:pt-36 pb-28 bg-transparent text-foreground overflow-hidden">
       {/* Subtle Ambient Glows */}
       <div className="absolute -top-24 left-1/3 w-[520px] h-[520px] bg-brand-red/[0.05] rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-32 right-1/4 w-[420px] h-[420px] bg-brand-tan/20 rounded-full blur-[140px] pointer-events-none" />

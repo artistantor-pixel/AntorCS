@@ -15,18 +15,28 @@
 }
 
 :root {
-  --background: #f6f3ee;
+  --background: #f7f3ec;
   --foreground: #1c1b18;
   --surface: #ffffff;
-  --surface-heavy: #e8dfcd;
+  --surface-heavy: #eae1d2;
   --muted: #6b6a65;
   --border: rgba(28, 27, 24, 0.1);
   --brand-red: #ea3f40;
   --brand-tan: #bba28a;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background-color: var(--background);
+  background-color: #f7f3ec;
+  background-image:
+    radial-gradient(ellipse 75% 55% at 12% 8%, rgba(234, 63, 64, 0.055), transparent 65%),
+    radial-gradient(ellipse 65% 55% at 88% 22%, rgba(187, 162, 138, 0.16), transparent 65%),
+    radial-gradient(ellipse 60% 50% at 50% 92%, rgba(234, 63, 64, 0.045), transparent 65%),
+    linear-gradient(160deg, #fcfaf6 0%, #f7f2ea 45%, #f3ece1 78%, #faf6ef 100%);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-hind-siliguri), sans-serif !important;
   -webkit-font-smoothing: antialiased;
@@ -67,18 +77,28 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, input, select, textarea, div {
 
   /* 70:20:10 Design Ratio & Colorfulness Utilities */
   .bg-dominant-70 {
-    background-color: var(--background) !important;
+    background-color: transparent !important;
   }
   .bg-surface-20 {
-    background-color: var(--surface) !important;
+    background-color: rgba(255, 255, 255, 0.86) !important;
+    backdrop-filter: blur(12px);
     border-color: rgba(28, 27, 24, 0.08) !important;
   }
   .text-accent-10 {
     color: var(--brand-red) !important;
   }
+
+  /* Soft frosted surface utility for floating cards */
+  .glass-surface {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.8));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
   
-  /* Rich brand gradient borders and colorful neumorphic hover animations */
+  /* Rich brand gradient borders and colorful hover animations */
   .colorful-card {
+    background-color: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(10px);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
@@ -96,8 +116,9 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, input, select, textarea, div {
     transition: transform 0.4s ease;
   }
   .colorful-card:hover {
-    border-color: rgba(234, 63, 64, 0.3) !important;
-    box-shadow: 0 25px 50px -12px rgba(234, 63, 64, 0.08) !important;
+    background-color: rgba(255, 255, 255, 0.96);
+    border-color: rgba(234, 63, 64, 0.28) !important;
+    box-shadow: 0 24px 48px -12px rgba(234, 63, 64, 0.09), 0 8px 20px -8px rgba(28, 27, 24, 0.04) !important;
     transform: translateY(-4px);
   }
   .colorful-card:hover::after {
@@ -105,17 +126,17 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, input, select, textarea, div {
   }
 }
 
-/* Hide scrollbar for immersive experience */
+/* Custom sleek scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: #f5efe6;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--surface-heavy);
-  border-radius: 4px;
+  background: #d5c7b2;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
+  background: var(--brand-tan);
 }

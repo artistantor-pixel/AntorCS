@@ -17,9 +17,9 @@ export default function FooterSection() {
   };
 
   return (
-    <footer className="w-full bg-surface border-t border-border pt-16 md:pt-20 pb-10 relative">
+    <footer className="w-full bg-white/80 backdrop-blur-xl border-t border-border/80 pt-16 md:pt-20 pb-10 relative">
       {/* Decorative gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-brand-red/[0.01] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-brand-tan/[0.05] to-brand-red/[0.04] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 mb-12 md:mb-16">

@@ -67,7 +67,7 @@ export default function Home() {
     .sort((a, b) => a.order - b.order);
 
   return (
-    <main className="min-h-screen flex flex-col items-center overflow-hidden bg-background">
+    <main className="min-h-screen flex flex-col items-center overflow-hidden bg-transparent">
       {ordered.map((s) => (
         <section key={s.id} className="w-full">
           {sectionsMap[s.id]}

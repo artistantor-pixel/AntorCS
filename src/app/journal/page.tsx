@@ -360,7 +360,7 @@ export default function JournalPage() {
   };
 
   return (
-    <main className="relative min-h-screen bg-background text-foreground pt-28 md:pt-36 pb-28 overflow-hidden selection:bg-brand-red selection:text-white">
+    <main className="relative min-h-screen bg-transparent text-foreground pt-28 md:pt-36 pb-28 overflow-hidden selection:bg-brand-red selection:text-white">
       {/* Subtle Ambient Background */}
       <div className="absolute -top-24 right-0 w-[440px] h-[440px] bg-brand-red/[0.05] rounded-full blur-[130px] pointer-events-none" />
       <div className="absolute top-1/2 -left-32 w-[400px] h-[400px] bg-brand-tan/20 rounded-full blur-[140px] pointer-events-none" />

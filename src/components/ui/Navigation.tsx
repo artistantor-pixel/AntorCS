@@ -33,7 +33,9 @@ export default function Navigation() {
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
-          scrolled ? "py-4 bg-background/90 backdrop-blur-md border-b border-border" : "py-6"
+          scrolled
+            ? "py-3.5 bg-white/75 backdrop-blur-xl border-b border-border/80 shadow-[0_8px_30px_rgba(28,27,24,0.04)]"
+            : "py-6 bg-gradient-to-b from-white/40 to-transparent backdrop-blur-[2px]"
         }`}
       >
         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
@@ -51,12 +53,12 @@ export default function Navigation() {
           
           {/* Center Links */}
           <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-            <Link href="/" className="hover:text-muted transition-colors">{t('nav.home')}</Link>
-            <Link href="/portfolio" className="hover:text-muted transition-colors">{t('nav.works')}</Link>
-            <Link href="/services" className="hover:text-muted transition-colors">{t('nav.services')}</Link>
-            <Link href="/about" className="hover:text-muted transition-colors">{t('nav.about')}</Link>
-            <Link href="/journal" className="hover:text-muted transition-colors">{t('nav.journal')}</Link>
-            <Link href="/contact" className="hover:text-muted transition-colors">Contact</Link>
+            <Link href="/" className={`transition-colors ${pathname === "/" ? "text-brand-red font-bold" : "hover:text-brand-red"}`}>{t('nav.home')}</Link>
+            <Link href="/portfolio" className={`transition-colors ${pathname?.startsWith("/portfolio") ? "text-brand-red font-bold" : "hover:text-brand-red"}`}>{t('nav.works')}</Link>
+            <Link href="/services" className={`transition-colors ${pathname?.startsWith("/services") ? "text-brand-red font-bold" : "hover:text-brand-red"}`}>{t('nav.services')}</Link>
+            <Link href="/about" className={`transition-colors ${pathname === "/about" ? "text-brand-red font-bold" : "hover:text-brand-red"}`}>{t('nav.about')}</Link>
+            <Link href="/journal" className={`transition-colors ${pathname?.startsWith("/journal") ? "text-brand-red font-bold" : "hover:text-brand-red"}`}>{t('nav.journal')}</Link>
+            <Link href="/contact" className={`transition-colors ${pathname === "/contact" ? "text-brand-red font-bold" : "hover:text-brand-red"}`}>Contact</Link>
           </div>
 
           {/* Right CTA & Lang Switcher */}

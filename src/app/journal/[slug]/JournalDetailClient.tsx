@@ -84,7 +84,7 @@ export default function JournalDetailClient({
     .filter(Boolean);
 
   return (
-    <main className="min-h-screen bg-background text-foreground pt-28 md:pt-36 pb-28">
+    <main className="min-h-screen bg-transparent text-foreground pt-28 md:pt-36 pb-28">
       {/* Top Reading Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-1 bg-transparent z-[110] pointer-events-none">
         <div

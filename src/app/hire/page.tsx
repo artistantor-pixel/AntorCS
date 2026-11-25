@@ -114,7 +114,7 @@ export default function HireMePage() {
   };
 
   return (
-    <main className="relative min-h-screen bg-background text-foreground pt-32 pb-24 overflow-hidden selection:bg-brand-red selection:text-white">
+    <main className="relative min-h-screen bg-transparent text-foreground pt-32 pb-24 overflow-hidden selection:bg-brand-red selection:text-white">
       <ParticleBackground />
 
       {/* Premium ambient circles */}

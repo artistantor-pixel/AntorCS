@@ -272,7 +272,7 @@ export default function PortfolioDetailClient({
 
   return (
     <div ref={containerRef} className="w-full relative">
-      <main className="min-h-screen bg-background text-foreground selection:bg-brand-red/20 selection:text-brand-red">
+      <main className="min-h-screen bg-transparent text-foreground selection:bg-brand-red/20 selection:text-brand-red">
         {/* Reading Progress Bar */}
         <motion.div
           className="fixed top-0 left-0 right-0 h-1 bg-brand-red origin-left z-[110]"

@@ -50,7 +50,7 @@ export default function HeroSection() {
     >
       {/* Background Gradient */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-transparent" />
         <motion.div
           animate={{
             scale: [1, 1.12, 1],

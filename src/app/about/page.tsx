@@ -9,7 +9,7 @@ export default function AboutPage() {
   const { lang } = useLanguage();
 
   return (
-    <main className="relative min-h-screen bg-background overflow-hidden text-foreground pb-32">
+    <main className="relative min-h-screen bg-transparent overflow-hidden text-foreground pb-32">
       <ParticleBackground />
 
       <section className="relative min-h-screen w-full flex flex-col items-center justify-center pt-32 px-6 z-10">

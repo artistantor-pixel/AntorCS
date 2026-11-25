@@ -417,7 +417,7 @@ export default function CalculatorPage() {
   const progressPercentage = ((step - 1) / 3) * 100;
 
   return (
-    <main className="min-h-screen pt-32 pb-32 bg-background text-foreground flex flex-col items-center selection:bg-brand-red selection:text-white relative overflow-hidden">
+    <main className="min-h-screen pt-32 pb-32 bg-transparent text-foreground flex flex-col items-center selection:bg-brand-red selection:text-white relative overflow-hidden">
       
       {/* Immersive Background Gradients */}
       <div className="absolute top-[-10%] left-[-15%] w-[35rem] h-[35rem] bg-brand-red/5 rounded-full blur-[120px] pointer-events-none" />
