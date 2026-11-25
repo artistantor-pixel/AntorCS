@@ -45,9 +45,11 @@ function ProjectCard({ project, index }: { project: PortfolioProject; index: num
 
   const sourceLabel =
     project.source === "drive"
-      ? `${project.gallery?.length || 30}+ Designs`
-      : project.source === "behance"
-      ? "Behance"
+      ? project.videos?.length
+        ? `${project.videos.length} Videos`
+        : project.pdfPreviewUrl
+        ? "PDF Portfolio"
+        : `${project.gallery?.length || 10} Works`
       : "Case Study";
 
   return (
@@ -203,7 +205,7 @@ export default function PortfolioClient({
           <div className="flex flex-wrap justify-center gap-3 mb-8">
             <StatBadge value={`${initialProjects.length}`} label={isBn ? "মোট প্রজেক্ট" : "Total Works"} />
             <StatBadge value={`${uniqueCats}`} label={isBn ? "ক্যাটাগরি" : "Categories"} />
-            <StatBadge value="Live" label="Behance + Case Studies" />
+            <StatBadge value="Drive" label="Showcases + Case Studies" />
           </div>
 
           {/* Search + Filters */}
@@ -295,20 +297,29 @@ export default function PortfolioClient({
         {filteredProjects.length > 0 && (
           <div className="mt-20 text-center space-y-4">
             <p className="text-muted text-sm font-medium">
-              {isBn ? "বিহ্যান্সে আমার সম্পূর্ণ পোর্টফোলিও দেখুন" : "See my full Behance portfolio"}
+              {isBn
+                ? "আমার গুগল ড্রাইভে সকল মূল ফাইল ও সম্পূর্ণ আর্কাইভ দেখুন"
+                : "Browse source archives and full-resolution files on Google Drive"}
             </p>
-            <a
-              href="https://www.behance.net/antorkumarbiswas"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full border border-border bg-surface text-foreground hover:border-brand-red/40 hover:text-brand-red transition-all duration-300 text-sm font-bold shadow-sm group"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-[#1769ff]">
-                <path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H13.96c.13 2.344 1.867 2.587 3.108 2.587 1.22 0 2.27-.734 2.658-1.558zm-5.648-5.078H18.5c-.184-1.587-1.3-2.084-2.408-2.084-1.244 0-2.258.59-2.514 2.084zM7.484 0C10.61 0 12 1.897 12 4.192 12 6.098 10.997 7.43 9.188 7.812 11.212 8.128 12.5 9.586 12.5 11.9c0 2.808-2.087 4.1-5.199 4.1H0V0h7.484zm-.404 6.699c1.462 0 2.297-.54 2.297-1.82 0-1.276-.803-1.879-2.274-1.879H2.556v3.699h4.524zm.299 6.408c1.64 0 2.586-.659 2.586-2.118 0-1.425-.944-2.021-2.713-2.021H2.556v4.139h4.823z" />
-              </svg>
-              <span>behance.net/antorkumarbiswas</span>
-              <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </a>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <a
+                href="https://drive.google.com/drive/folders/11gnUtx_ekf8B67Fuxs4-FK31roBToq6C"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full border border-border bg-surface text-foreground hover:border-brand-red/40 hover:text-brand-red transition-all duration-300 text-sm font-bold shadow-sm group"
+              >
+                <Layers size={15} className="text-brand-red" />
+                <span>{isBn ? "গুগল ড্রাইভ আর্কাইভ খুলুন" : "Open Google Drive Archive"}</span>
+                <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </a>
+              <Link
+                href="/hire"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-brand-red text-white hover:bg-foreground transition-all duration-300 text-sm font-bold shadow-sm"
+              >
+                <span>{isBn ? "হায়ার বা প্রজেক্টের জন্য যোগাযোগ" : "Hire Me"}</span>
+                <ArrowRight size={14} />
+              </Link>
+            </div>
           </div>
         )}
       </div>

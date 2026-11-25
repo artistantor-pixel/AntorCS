@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ArrowUpRight, ZoomIn, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, ZoomIn, X, Play, FileText } from "lucide-react";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import type { PortfolioProject } from "@/lib/portfolio-loader";
 
@@ -201,7 +201,6 @@ export default function PortfolioDetailClient({
 }: {
   project: PortfolioProject | null;
   nextProject: PortfolioProject | null;
-  behanceData?: unknown;
 }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -350,7 +349,7 @@ export default function PortfolioDetailClient({
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 bg-brand-red text-white rounded-full text-xs uppercase tracking-wider font-bold hover:bg-white hover:text-black transition-all shadow-lg"
                     >
-                      <span>{project.behanceId ? "Open on Behance" : "Live Project"}</span>
+                      <span>{project.pdfPreviewUrl ? "Open PDF Dossier" : project.source === "drive" ? "Open Drive Folder" : "Live Project"}</span>
                       <ArrowUpRight size={15} />
                     </a>
                   ) : (
@@ -432,8 +431,8 @@ export default function PortfolioDetailClient({
           </section>
         )}
 
-        {/* Gallery Grid with Lightbox */}
-        {galleryImages.length > 0 && (
+        {/* Gallery Grid with Lightbox (shown for image showcases when no video archive replaces it) */}
+        {galleryImages.length > 0 && (!project.videos || project.videos.length === 0) && (
           <section className="py-12 md:py-16 px-6 max-w-7xl mx-auto space-y-8">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
@@ -477,37 +476,109 @@ export default function PortfolioDetailClient({
           </section>
         )}
 
-        {/* Behance Full Project Embed */}
-        {project.behanceId && (
-          <section className="w-full max-w-7xl mx-auto px-6 pb-16 pt-6">
+        {/* Playable Google Drive Video Reels */}
+        {Array.isArray(project.videos) && project.videos.length > 0 && (
+          <section className="w-full max-w-7xl mx-auto px-6 pb-20 pt-4">
+            <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.22em] font-bold text-brand-red mb-1.5">
+                  Motion & Video Reels
+                </p>
+                <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+                  Playable Showreel Archive ({project.videos.length})
+                </h2>
+              </div>
+              {externalLink && (
+                <a
+                  href={externalLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-surface text-foreground hover:border-brand-red/40 hover:text-brand-red font-bold text-xs tracking-wide transition-colors shrink-0 w-fit"
+                >
+                  <Play size={13} className="text-brand-red" />
+                  <span>Open Full Video Folder</span>
+                  <ArrowUpRight size={14} />
+                </a>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {project.videos.map((video, idx) => (
+                <div
+                  key={video.id}
+                  className="bg-surface rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-lg transition-shadow flex flex-col"
+                >
+                  <div className="relative aspect-video w-full bg-black">
+                    <iframe
+                      src={video.embedUrl}
+                      title={video.title}
+                      className="absolute inset-0 w-full h-full"
+                      allow="autoplay; fullscreen"
+                      allowFullScreen
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="px-5 py-4 flex items-center justify-between gap-3 border-t border-border/60">
+                    <div className="min-w-0">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-muted block">
+                        Clip {String(idx + 1).padStart(2, "0")}
+                      </span>
+                      <h3 className="text-sm font-bold text-foreground truncate">{video.title}</h3>
+                    </div>
+                    <a
+                      href={video.viewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-heavy/60 hover:bg-brand-red hover:text-white text-foreground text-xs font-bold transition-colors shrink-0"
+                    >
+                      <span>Drive</span>
+                      <ArrowUpRight size={12} />
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Interactive PDF Portfolio Book Reader */}
+        {project.pdfPreviewUrl && (
+          <section className="w-full max-w-7xl mx-auto px-6 pb-20 pt-4">
             <div className="w-full bg-surface rounded-3xl overflow-hidden shadow-sm border border-border">
-              <div className="px-6 py-5 border-b border-border flex items-center justify-between gap-4">
-                <div>
-                  <h3 className="font-bold text-base text-foreground">Behance Interactive Presentation</h3>
-                  <p className="text-muted text-xs">Full project preview synced from Behance</p>
+              <div className="px-6 py-5 border-b border-border flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-brand-red/10 border border-brand-red/20 flex items-center justify-center text-brand-red shrink-0">
+                    <FileText size={18} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-foreground">
+                      Corporate Portfolio Book — Interactive PDF Reader
+                    </h3>
+                    <p className="text-muted text-xs">
+                      Scroll inside the reader below or open in full screen for download
+                    </p>
+                  </div>
                 </div>
                 {externalLink && (
                   <a
                     href={externalLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1769ff] text-white font-bold text-xs tracking-wide hover:opacity-90 transition-opacity shrink-0"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-red text-white font-bold text-xs tracking-wide hover:opacity-90 transition-opacity shrink-0"
                   >
-                    <span>Open on Behance</span>
+                    <span>Open / Download PDF</span>
                     <ArrowUpRight size={14} />
                   </a>
                 )}
               </div>
 
-              <div className="w-full h-[75vh] min-h-[600px] relative bg-white">
+              <div className="w-full h-[80vh] min-h-[620px] relative bg-[#f6f3ee]">
                 <iframe
-                  src={`https://www.behance.net/embed/project/${project.behanceId}?ilo0=1`}
+                  src={project.pdfPreviewUrl}
+                  title={project.title}
                   className="absolute inset-0 w-full h-full"
-                  allowFullScreen
+                  allow="autoplay"
                   loading="lazy"
-                  frameBorder="0"
-                  allow="clipboard-write"
-                  referrerPolicy="strict-origin-when-cross-origin"
                 />
               </div>
             </div>

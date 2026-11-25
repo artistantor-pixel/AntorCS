@@ -15,5 +15,5 @@ export default async function PortfolioDetailPage({
   const { project, nextProject } = await getPortfolioProjectBySlug(slug);
   if (!project) notFound();
 
-  return <PortfolioDetailClient project={project} nextProject={nextProject} behanceData={null} />;
+  return <PortfolioDetailClient project={project} nextProject={nextProject} />;
 }
