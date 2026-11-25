@@ -1,17 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { DEFAULT_ORGANIZATIONS, mergeOrganizations } from "@/lib/organizations";
 
 export const dynamic = "force-dynamic";
-
-const REAL_ORGANIZATIONS = [
-  "Canvas",
-  "Deepto TV",
-  "ICT Division",
-  "Bisorgo Technology",
-  "CCJ-B",
-  "Radiant Pharma",
-  "University of Dhaka",
-];
 
 export async function GET() {
   try {
@@ -20,22 +11,22 @@ export async function GET() {
     });
 
     if (!contentRec) {
-      return NextResponse.json(REAL_ORGANIZATIONS);
+      return NextResponse.json(DEFAULT_ORGANIZATIONS);
     }
 
     const rawData: unknown = contentRec.data;
-    const logos =
+    const dbLogos =
       rawData &&
       typeof rawData === "object" &&
       !Array.isArray(rawData) &&
       "logos" in rawData &&
       Array.isArray((rawData as { logos?: unknown }).logos)
         ? (rawData as { logos: string[] }).logos
-        : REAL_ORGANIZATIONS;
-    return NextResponse.json(logos);
+        : [];
+    return NextResponse.json(mergeOrganizations(dbLogos));
   } catch (error) {
     console.error("Failed to fetch social proof:", error);
-    return NextResponse.json(REAL_ORGANIZATIONS);
+    return NextResponse.json(DEFAULT_ORGANIZATIONS);
   }
 }
 

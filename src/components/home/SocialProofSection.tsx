@@ -4,17 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Leaf } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-
-const DEFAULT_ORGANIZATIONS = [
-  "Canvas",
-  "Mont Marte",
-  "Deepto TV",
-  "ICT Division",
-  "Bisorgo Technology",
-  "CCJ-B",
-  "Radiant Pharma",
-  "University of Dhaka",
-];
+import { DEFAULT_ORGANIZATIONS, mergeOrganizations } from "@/lib/organizations";
 
 interface OrgLogoConfig {
   src: string;
@@ -63,30 +53,19 @@ const ORG_LOGOS: Record<string, OrgLogoConfig> = {
 
 export default function SocialProofSection() {
   const { t } = useLanguage();
-  const [logos, setLogos] = useState<string[]>(DEFAULT_ORGANIZATIONS);
-  const [isLoading, setIsLoading] = useState(true);
+  const [logos, setLogos] = useState<string[]>([...DEFAULT_ORGANIZATIONS]);
 
   useEffect(() => {
     const fetchSocialProof = async () => {
       try {
         const res = await fetch("/api/social-proof");
-        if (res.ok) {
-          const data = await res.json();
-          const legacySet = new Set(["Vogue", "Spotify", "Nike", "Netflix", "Sony"]);
-          if (
-            Array.isArray(data) &&
-            data.length > 0 &&
-            !data.every((item: string) => legacySet.has(item))
-          ) {
-            const merged = [...data];
-            if (!merged.includes("Mont Marte")) merged.splice(1, 0, "Mont Marte");
-            setLogos(merged);
-          }
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setLogos(mergeOrganizations(data));
         }
       } catch (err) {
         console.error("Failed to fetch social proof:", err);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -95,11 +74,7 @@ export default function SocialProofSection() {
 
   return (
     <section className="w-full border-y border-border/60 bg-white/40 backdrop-blur-sm py-9 md:py-11 mb-24">
-      <div
-        className={`max-w-7xl mx-auto px-6 flex flex-col items-center gap-6 transition-opacity duration-500 ${
-          isLoading ? "opacity-65" : "opacity-100"
-        }`}
-      >
+      <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-6">
         {/* Minimal Centered Eyebrow */}
         <div className="flex items-center gap-2.5">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-red" />
@@ -118,10 +93,10 @@ export default function SocialProofSection() {
                 key={`${org}-${idx}`}
                 initial={{ opacity: 0, y: 6 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
+                viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.3, delay: Math.min(idx * 0.04, 0.25) }}
                 title={org}
-                className="group h-12 px-4 sm:px-5 rounded-full bg-white/80 hover:bg-white border border-border/75 hover:border-brand-red/30 shadow-[0_2px_10px_rgba(28,27,24,0.02)] hover:shadow-sm transition-all duration-300 flex items-center justify-center gap-2.5 grayscale-[30%] opacity-90 hover:grayscale-0 hover:opacity-100"
+                className="group h-12 px-4 sm:px-5 rounded-full bg-white/85 hover:bg-white border border-border/75 hover:border-brand-red/30 shadow-[0_2px_10px_rgba(28,27,24,0.02)] hover:shadow-sm transition-all duration-300 flex items-center justify-center gap-2.5"
               >
                 {config ? (
                   <>
@@ -130,7 +105,6 @@ export default function SocialProofSection() {
                       src={config.src}
                       alt={org}
                       className={`${config.imgClass} shrink-0 transition-transform duration-300 group-hover:scale-105`}
-                      loading="lazy"
                     />
                     {config.variant === "emblem" && (
                       <span className="text-xs sm:text-sm font-bold tracking-tight text-foreground whitespace-nowrap">
