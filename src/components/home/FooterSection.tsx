@@ -111,7 +111,7 @@ export default function FooterSection() {
               <Link href="/about" className="hover:text-brand-red transition-colors w-fit">{t("nav.about")}</Link>
               <Link href="/portfolio" className="hover:text-brand-red transition-colors w-fit">{t("nav.works")}</Link>
               <Link href="/services" className="hover:text-brand-red transition-colors w-fit">{t("nav.services")}</Link>
-              <Link href="/contact" className="hover:text-brand-red transition-colors w-fit">{t("nav.journal")}</Link>
+              <Link href="/journal" className="hover:text-brand-red transition-colors w-fit">{t("nav.journal")}</Link>
             </div>
 
             {/* Mobile Accordion Links View */}
@@ -127,7 +127,7 @@ export default function FooterSection() {
                   <Link href="/about" className="hover:text-brand-red py-1 transition-colors">{t("nav.about")}</Link>
                   <Link href="/portfolio" className="hover:text-brand-red py-1 transition-colors">{t("nav.works")}</Link>
                   <Link href="/services" className="hover:text-brand-red py-1 transition-colors">{t("nav.services")}</Link>
-                  <Link href="/contact" className="hover:text-brand-red py-1 transition-colors">{t("nav.journal")}</Link>
+                  <Link href="/journal" className="hover:text-brand-red py-1 transition-colors">{t("nav.journal")}</Link>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -152,8 +152,10 @@ export default function FooterSection() {
 
             {/* Desktop Legal Links */}
             <div className="hidden md:flex flex-col gap-3 text-sm text-muted">
-              <Link href="/privacy" className="hover:text-brand-red transition-colors w-fit">{t("footer.privacy")}</Link>
-              <Link href="/terms" className="hover:text-brand-red transition-colors w-fit">{t("footer.terms")}</Link>
+              <Link href="/hire" className="hover:text-brand-red transition-colors w-fit">{t("footer.hire")}</Link>
+              <a href={CONTACT_INFO.cvPath} download={CONTACT_INFO.cvFileName} className="hover:text-brand-red transition-colors w-fit">{t("footer.cv")}</a>
+              <Link href="/contact" className="hover:text-brand-red transition-colors w-fit">{t("footer.contact")}</Link>
+              <a href="https://www.behance.net/antorkumarbiswas" target="_blank" rel="noopener noreferrer" className="hover:text-brand-red transition-colors w-fit">{t("footer.behance")}</a>
             </div>
 
             {/* Mobile Accordion Legal Links */}
@@ -166,8 +168,10 @@ export default function FooterSection() {
                   transition={{ duration: 0.25 }}
                   className="overflow-hidden md:hidden flex flex-col gap-3 text-sm text-muted pt-2 pb-4"
                 >
-                  <Link href="/privacy" className="hover:text-brand-red py-1 transition-colors">{t("footer.privacy")}</Link>
-                  <Link href="/terms" className="hover:text-brand-red py-1 transition-colors">{t("footer.terms")}</Link>
+                  <Link href="/hire" className="hover:text-brand-red py-1 transition-colors">{t("footer.hire")}</Link>
+                  <a href={CONTACT_INFO.cvPath} download={CONTACT_INFO.cvFileName} className="hover:text-brand-red py-1 transition-colors">{t("footer.cv")}</a>
+                  <Link href="/contact" className="hover:text-brand-red py-1 transition-colors">{t("footer.contact")}</Link>
+                  <a href="https://www.behance.net/antorkumarbiswas" target="_blank" rel="noopener noreferrer" className="hover:text-brand-red py-1 transition-colors">{t("footer.behance")}</a>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -177,14 +181,14 @@ export default function FooterSection() {
         {/* Footer Bottom (Copyright, Socials, Back to Top button) */}
         <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-muted">
           <p className="text-center md:text-left order-3 md:order-1">
-            © {new Date().getFullYear()} Antor. {t("footer.rights")}
+            © {new Date().getFullYear()} {CONTACT_INFO.name}. {t("footer.rights")}
           </p>
 
           {/* Social Icons row */}
           <div className="flex gap-6 order-2 md:order-2">
-            <a href="#" className="hover:text-brand-red transition-all duration-300 hover:-translate-y-0.5">Twitter</a>
-            <a href="#" className="hover:text-brand-red transition-all duration-300 hover:-translate-y-0.5">LinkedIn</a>
-            <a href="#" className="hover:text-brand-red transition-all duration-300 hover:-translate-y-0.5">Instagram</a>
+            <a href="https://www.behance.net/antorkumarbiswas" target="_blank" rel="noopener noreferrer" className="hover:text-brand-red transition-all duration-300 hover:-translate-y-0.5">Behance</a>
+            <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="hover:text-brand-red transition-all duration-300 hover:-translate-y-0.5">WhatsApp</a>
+            <a href={`mailto:${CONTACT_INFO.email}`} className="hover:text-brand-red transition-all duration-300 hover:-translate-y-0.5">Email</a>
           </div>
 
           {/* Elegant Back to Top button */}

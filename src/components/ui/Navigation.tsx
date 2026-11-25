@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
-import { Home, Briefcase, User, Calculator, MessageSquare } from "lucide-react";
+import { Home, Briefcase, Layers, User, MessageSquare } from "lucide-react";
 
 
 export default function Navigation() {
@@ -50,18 +50,13 @@ export default function Navigation() {
           </Link>
           
           {/* Center Links */}
-          <div className="hidden md:flex items-center gap-10 text-sm font-medium">
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium">
             <Link href="/" className="hover:text-muted transition-colors">{t('nav.home')}</Link>
             <Link href="/portfolio" className="hover:text-muted transition-colors">{t('nav.works')}</Link>
-            {/* 
-            <Link href="/case-studies" className="hover:text-muted transition-colors">
-              {lang === 'bn' ? 'কেইজ স্টাডি' : 'Case Studies'}
-            </Link>
-            */}
+            <Link href="/services" className="hover:text-muted transition-colors">{t('nav.services')}</Link>
             <Link href="/about" className="hover:text-muted transition-colors">{t('nav.about')}</Link>
             <Link href="/journal" className="hover:text-muted transition-colors">{t('nav.journal')}</Link>
             <Link href="/contact" className="hover:text-muted transition-colors">Contact</Link>
-
           </div>
 
           {/* Right CTA & Lang Switcher */}
@@ -82,8 +77,8 @@ export default function Navigation() {
             </div>
             
             <Link 
-              href="/calculator" 
-              className="bg-brand-red text-white px-7 py-2.5 rounded-full hover:scale-105 transition-transform duration-300 flex items-center gap-2 text-sm font-medium shadow-lg shadow-brand-red/20"
+              href="/hire" 
+              className="bg-brand-red text-white px-7 py-2.5 rounded-full hover:scale-105 transition-transform duration-300 flex items-center gap-2 text-sm font-bold shadow-lg shadow-brand-red/20"
             >
               {t('nav.cta')}
             </Link>
@@ -113,7 +108,7 @@ export default function Navigation() {
               animate={{ x: `${(() => {
                 if (pathname === "/") return 0;
                 if (pathname === "/portfolio") return 1;
-                if (pathname === "/calculator") return 2;
+                if (pathname === "/hire") return 2;
                 if (pathname === "/about") return 3;
                 if (pathname === "/contact") return 4;
                 return 2;
@@ -131,7 +126,7 @@ export default function Navigation() {
               animate={{ x: `${(() => {
                 if (pathname === "/") return 0;
                 if (pathname === "/portfolio") return 1;
-                if (pathname === "/calculator") return 2;
+                if (pathname === "/hire") return 2;
                 if (pathname === "/about") return 3;
                 if (pathname === "/contact") return 4;
                 return 2;
@@ -143,11 +138,11 @@ export default function Navigation() {
                 {(() => {
                   const Icon = (() => {
                     if (pathname === "/") return Home;
-                    if (pathname === "/portfolio") return Briefcase;
-                    if (pathname === "/calculator") return Calculator;
+                    if (pathname === "/portfolio") return Layers;
+                    if (pathname === "/hire") return Briefcase;
                     if (pathname === "/about") return User;
                     if (pathname === "/contact") return MessageSquare;
-                    return Calculator;
+                    return Briefcase;
                   })();
                   return <Icon size={18} className="animate-pulse text-white" />;
                 })()}
@@ -157,15 +152,15 @@ export default function Navigation() {
             {/* 3. Non-active and active links layout */}
             {[
               { href: "/", label: t('nav.home'), icon: Home },
-              { href: "/portfolio", label: t('nav.works'), icon: Briefcase },
-              { href: "/calculator", label: "Estimate", icon: Calculator },
+              { href: "/portfolio", label: t('nav.works'), icon: Layers },
+              { href: "/hire", label: t('nav.cta'), icon: Briefcase },
               { href: "/about", label: t('nav.about'), icon: User },
               { href: "/contact", label: "Contact", icon: MessageSquare },
             ].map((item, idx) => {
               const activeIndex = (() => {
                 if (pathname === "/") return 0;
                 if (pathname === "/portfolio") return 1;
-                if (pathname === "/calculator") return 2;
+                if (pathname === "/hire") return 2;
                 if (pathname === "/about") return 3;
                 if (pathname === "/contact") return 4;
                 return 2;

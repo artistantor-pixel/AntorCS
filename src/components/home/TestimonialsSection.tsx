@@ -12,7 +12,8 @@ interface Review {
 }
 
 export default function TestimonialsSection() {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
+  const isBn = lang === "bn";
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -35,14 +36,35 @@ export default function TestimonialsSection() {
     fetchReviews();
   }, []);
 
-  // Use static reviews if none exist in the database or if loading
-  const displayReviews = reviews.length > 0 ? reviews : [1, 2, 3].map((i) => ({
-    id: `static-${i}`,
-    clientName: t("testimonials.name"),
-    role: t("testimonials.role"),
-    content: t("testimonials.review"),
-    rating: 5,
-  }));
+  const fallbackHighlights: Review[] = [
+    {
+      id: "highlight-1",
+      clientName: t("testimonials.name"),
+      role: t("testimonials.role"),
+      content: t("testimonials.review"),
+      rating: 5,
+    },
+    {
+      id: "highlight-2",
+      clientName: isBn ? "কাইয়ুম চৌধুরী স্মৃতি পুরস্কার" : "Qayyum Chowdhury Memorial Award",
+      role: isBn ? "বার্ষিক প্রদর্শনী, ঢাকা বিশ্ববিদ্যালয় (২০২৫)" : "Graphic Design Annual Exhibition, DU (2025)",
+      content: isBn
+        ? "ঢাকা বিশ্ববিদ্যালয়ের গ্রাফিক ডিজাইন বিভাগের বার্ষিক প্রদর্শনীতে ভিজ্যুয়াল কমিউনিকেশন ও শৈল্পিক দক্ষতার স্বীকৃতিস্বরূপ সম্মাননা অর্জন।"
+        : "Awarded for artistic excellence and visual storytelling at the Graphic Design Department Annual Exhibition, University of Dhaka.",
+      rating: 5,
+    },
+    {
+      id: "highlight-3",
+      clientName: isBn ? "স্পেশাল মেনশন অ্যাওয়ার্ড (TIB)" : "Special Mention Award — TIB",
+      role: isBn ? "২০তম দুর্নীতিবিরোধী কার্টুন প্রতিযোগিতা (২০২৫)" : "20th Anti-Corruption Cartoon Competition (2025)",
+      content: isBn
+        ? "ডিজিটাল কার্টুন ক্যাটাগরিতে প্রভাবশালী ভিজ্যুয়াল কমেন্টারি এবং স্টোরিটেলিংয়ের জন্য ট্রান্সপারেন্সি ইন্টারন্যাশনাল বাংলাদেশ কর্তৃক সম্মানিত।"
+        : "Recognized by Transparency International Bangladesh in the Digital Cartoon category for impactful visual commentary.",
+      rating: 5,
+    },
+  ];
+
+  const displayReviews = reviews.length > 0 ? reviews : fallbackHighlights;
 
   if (isLoading && reviews.length === 0) {
     return (

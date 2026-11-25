@@ -31,11 +31,11 @@ export default function HireMePage() {
 
   // Skill Matrix details
   const skillsList = [
-    { nameEn: "2D/3D Animation & Explainer Videos", nameBn: "২D/৩D অ্যানিমেশন ও ব্যাখ্যামূলক ভিডিও", pct: 95, color: "from-rose-500 to-red-600" },
-    { nameEn: "Storyboarding & Visual Storytelling", nameBn: "স্টোরিবোর্ডিং ও ভিজ্যুয়াল স্টোরিটেলিং", pct: 90, color: "from-red-500 to-orange-500" },
-    { nameEn: "Brand Strategy & Visual Identity", nameBn: "ব্র্যান্ড স্ট্র্যাটেজি ও ভিজ্যুয়াল আইডেন্টিটি", pct: 88, color: "from-orange-500 to-amber-500" },
-    { nameEn: "Creative Direction & Curating", nameBn: "ক্রিয়েটিভ ডিরেকশন ও কিউরেশন", pct: 85, color: "from-rose-600 to-amber-600" },
-    { nameEn: "UI/UX & Interactive Design Systems", nameBn: "UI/UX ও ইন্টারঅ্যাক্টিভ ডিজাইন সিস্টেম", pct: 82, color: "from-red-600 to-rose-500" }
+    { nameEn: "Branding, Packaging & Visual Identity", nameBn: "ব্র্যান্ডিং, প্যাকেজিং ও ভিজ্যুয়াল আইডেন্টিটি", pct: 95, color: "from-rose-500 to-red-600" },
+    { nameEn: "2D Animation & Storyboarding", nameBn: "২D অ্যানিমেশন ও স্টোরিবোর্ডিং", pct: 94, color: "from-red-500 to-orange-500" },
+    { nameEn: "Motion Graphics (After Effects / Premiere)", nameBn: "মোশন গ্রাফিক্স (After Effects / Premiere)", pct: 92, color: "from-orange-500 to-amber-500" },
+    { nameEn: "Illustration (Procreate / Illustrator)", nameBn: "ইলাস্ট্রেশন (Procreate / Illustrator)", pct: 90, color: "from-rose-600 to-amber-600" },
+    { nameEn: "UI Design & Minimalist Layout Systems", nameBn: "UI ডিজাইন ও মিনিমালিস্ট লেআউট", pct: 86, color: "from-red-600 to-rose-500" }
   ];
 
   const handleCopyEmail = () => {
@@ -203,6 +203,31 @@ export default function HireMePage() {
                     <Award size={16} className="mx-auto text-brand-red" />
                     <span className="block text-[10px] text-muted uppercase font-bold tracking-wider">{lang === "bn" ? "প্রজেক্ট" : "Projects"}</span>
                     <span className="block text-sm font-black text-foreground">40+ Done</span>
+                  </div>
+                </div>
+
+                {/* Direct HR Contact Row */}
+                <div className="bg-background border border-border rounded-2xl p-4 space-y-2 text-xs">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-muted font-medium flex items-center gap-2">
+                      <Phone size={13} className="text-brand-red" />
+                      {CONTACT_INFO.phoneDisplay}
+                    </span>
+                    <a
+                      href={`tel:${CONTACT_INFO.phoneRaw}`}
+                      className="text-brand-red font-bold hover:underline"
+                    >
+                      {lang === "bn" ? "কল করুন" : "Call"}
+                    </a>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-muted font-medium flex items-center gap-2">
+                      <Mail size={13} className="text-brand-red" />
+                      {CONTACT_INFO.email}
+                    </span>
+                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                      {lang === "bn" ? "ঢাকা / রিমোট" : "Dhaka / Remote"}
+                    </span>
                   </div>
                 </div>
 
@@ -455,7 +480,7 @@ export default function HireMePage() {
                       </h3>
                       <p className="text-xs text-muted leading-relaxed">
                         {lang === "bn"
-                          ? "আপনার প্রতিষ্ঠানের নিয়োগ প্রপোজালটি সফলভাবে অন্তরBiswas এর ডেসবোর্ডে জমা হয়েছে। আমরা পর্যালোচনা শেষে দ্রুত আপনার প্রোভাইড করা ইমেইল বা ফোন নম্বরে যোগাযোগ করবো।"
+                          ? "আপনার প্রতিষ্ঠানের নিয়োগ প্রপোজালটি সফলভাবে অন্তর কুমার বিশ্বাসের ড্যাশবোর্ডে জমা হয়েছে। আমরা পর্যালোচনা শেষে দ্রুত আপনার দেওয়া ইমেইল বা ফোন নম্বরে যোগাযোগ করবো।"
                           : "Your recruitment specifications have been safely delivered to Antor's inbox. Our team will review the parameters and contact you via your official email shortly."
                         }
                       </p>

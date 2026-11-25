@@ -10,17 +10,17 @@
     "order": 2
   },
   {
-    "id": "features",
+    "id": "experience",
     "enabled": true,
     "order": 3
   },
   {
-    "id": "services",
+    "id": "features",
     "enabled": true,
     "order": 4
   },
   {
-    "id": "experience",
+    "id": "services",
     "enabled": true,
     "order": 5
   },

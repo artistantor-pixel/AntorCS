@@ -22,8 +22,9 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 export const metadata: Metadata = {
-  title: "Antor | Motion & Visual Experiences",
-  description: "Crafting Motion, Identity & Visual Experiences. A digital creative portfolio.",
+  title: "Antor Kumar Biswas | Creative Designer, Animator & Brand Strategist",
+  description:
+    "Portfolio & Resume of Antor Kumar Biswas — Creative Designer, 2D/3D Animator, and Visual Communicator (BFA Graphic Design, University of Dhaka).",
 };
 
 export default function RootLayout({

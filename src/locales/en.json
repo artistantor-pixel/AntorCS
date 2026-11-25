@@ -2,66 +2,50 @@
   "nav": {
     "home": "Home",
     "works": "Works",
-    "services": "Services",
-    "about": "About",
+    "services": "Expertise",
+    "about": "About & CV",
     "journal": "Journal",
-    "cta": "Budget Calculator"
+    "cta": "Hire Me"
   },
   "hero": {
-    "title_1": "Elevate Your Brand,",
-    "title_2": "Dominate Your Market",
-    "subtitle": "Hi, I'm Antor Kumar Biswas, a Creative Designer & Visual Communicator at the University of Dhaka specializing in engaging educational content, e-learning visuals, and branding for large-scale creative events.",
-    "cta": "Hire me",
-    "download_cv": "Download CV"
+    "badge": "Open for Full-Time, Hybrid & Remote Roles · Dhaka",
+    "title_1": "Antor Kumar Biswas",
+    "title_2": "Creative Designer & Animator",
+    "subtitle": "Visual communicator & BFA Graphic Design candidate (University of Dhaka) with 3+ years of production experience across branding, packaging, 30+ national e-learning motion courses, and broadcast animation.",
+    "cta": "Hire Me / Send Offer",
+    "download_cv": "Download CV (PDF)",
+    "view_works": "Explore Portfolio"
   },
   "social_proof": {
-    "title": "Trusted by innovators"
+    "title": "Teams & Initiatives Worked With"
   },
   "features": {
-    "title": "Why Work With Me?",
-    "subtitle": "I blend creativity with purpose—from leading exhibition designs to producing national-level animation series.",
-    "feat1_t": "Graphic & Brand Design",
-    "feat1_d": "Creating unique visual identities, comprehensive branding materials, and illustrations that simplify complex concepts.",
-    "feat2_t": "Motion & Animation",
-    "feat2_d": "Developing engaging storyboards, e-learning animations, and high-impact visual assets for diverse audiences.",
-    "feat3_t": "Creative Leadership",
-    "feat3_d": "Spearheading visual strategies from curation to public promotion for workshops and large-scale creative events."
+    "title": "Why Teams Hire Me",
+    "subtitle": "Combining Fine Arts visual fundamentals with fast, production-ready digital execution across print, motion, and UI.",
+    "feat1_t": "Brand, Packaging & UI Systems",
+    "feat1_d": "End-to-end brand identities, packaging dielines, catalogs, and clean e-commerce UI designed to communicate clearly and convert.",
+    "feat2_t": "Broadcast & E-Learning Motion",
+    "feat2_d": "Proven delivery across 30+ ICT Division (DIKKHA) courses, Deepto TV animation series, and awareness campaigns.",
+    "feat3_t": "Creative Leadership & Reliability",
+    "feat3_d": "Experience leading creative direction at Canvas, curating exhibitions, and delivering crisp assets under tight production deadlines."
   },
   "services": {
-    "title": "My Expertise",
-    "subtitle": "A comprehensive suite of creative services tailored for ambitious brands looking to dominate their market.",
-    "view_all": "View all services",
-    "explore": "Explore",
+    "title": "Core Expertise",
+    "subtitle": "Production-tested capabilities I bring to creative agencies, product teams, and media studios—click any card for details.",
+    "view_all": "View all expertise",
+    "explore": "View Details",
     "items": {
-      "graphic": {
-        "title": "Graphic Design",
-        "desc": "Crafting memorable visual identities, posters, and print materials that resonate with your target audience."
-      },
-      "motion": {
-        "title": "Motion Design",
-        "desc": "Bringing concepts to life through dynamic motion graphics for e-learning, campaigns, and digital media."
-      },
-      "animation": {
-        "title": "Animation",
-        "desc": "Character design, storyboarding, and full-scale 2D/3D animations for storytelling and education."
-      },
-      "illustration": {
-        "title": "Illustration",
-        "desc": "Simplifying complex concepts through engaging digital and vector illustrations."
-      },
-      "uiux": {
-        "title": "UI/UX Design",
-        "desc": "Designing intuitive, user-centric interfaces and digital playgrounds with modern aesthetics."
-      },
-      "creative": {
-        "title": "Creative Direction",
-        "desc": "Guiding visual narratives from concept to completion for exhibitions and national events."
-      }
+      "graphic": { "title": "Graphic Design", "desc": "Brand identity, packaging dielines, catalogs, posters, and print-ready marketing collateral." },
+      "motion": { "title": "Motion Design", "desc": "Dynamic motion graphics, kinetic typography, and explainers for e-learning and digital campaigns." },
+      "animation": { "title": "Animation", "desc": "Storyboarding, character design, backgrounds, and 2D/3D animation for broadcast and education." },
+      "illustration": { "title": "Illustration", "desc": "Digital, vector, and character illustrations that turn complex concepts into engaging visual stories." },
+      "uiux": { "title": "UI/UX Design", "desc": "Clean, user-focused web and e-commerce interfaces, hero concepts, and scalable design systems." },
+      "creative": { "title": "Creative Direction", "desc": "Leading visual strategy from concept to final curation for brands, exhibitions, and events." }
     }
   },
   "experience": {
     "title": "Professional Experience",
-    "subtitle": "A track record of delivering high-impact creative solutions and leadership across various organizations.",
+    "subtitle": "Verified track record across creative leadership, e-commerce branding, broadcast animation, and non-profit initiatives.",
     "jobs": [
       {
         "role": "Creative Head",
@@ -90,55 +74,46 @@
     ]
   },
   "process": {
-    "title": "How I Work",
-    "subtitle": "A streamlined, transparent process designed to deliver exceptional results without the friction of a large agency.",
+    "title": "How I Collaborate in Teams",
+    "subtitle": "A structured, deadline-friendly workflow built for cross-functional creative, marketing, and product teams.",
     "steps": [
-      {
-        "title": "Discovery",
-        "desc": "I dive deep into your brand, audience, and goals to align our vision."
-      },
-      {
-        "title": "Strategy",
-        "desc": "Crafting a tailored blueprint for design, user experience, and technical architecture."
-      },
-      {
-        "title": "Execution",
-        "desc": "I bring the strategy to life with precision design and flawless execution."
-      },
-      {
-        "title": "Launch",
-        "desc": "Rigorous testing, optimization, and finally, launching your new digital presence."
-      }
+      { "title": "Brief & Alignment", "desc": "Clarify objectives, target audience, brand guidelines, and delivery milestones early." },
+      { "title": "Concept & Storyboard", "desc": "Share rough sketches, styleframes, or wireframes early for rapid stakeholder feedback." },
+      { "title": "Production & Polish", "desc": "Execute high-craft graphics, motion, or UI using clean, organized source files." },
+      { "title": "Review & Handoff", "desc": "Deliver print-ready, web-optimized, or broadcast-spec assets cleanly on schedule." }
     ]
   },
   "testimonials": {
-    "title": "Client Stories",
+    "title": "Recognition & Impact",
     "review": "Antor is an exceptional visual communicator. His work on our educational animations significantly improved student engagement, blending artistic brilliance with clear storytelling.",
-    "name": "Project Manager",
-    "role": "E-Learning Initiative"
+    "name": "Production Lead",
+    "role": "E-Learning & Broadcast Projects"
   },
   "faq": {
-    "title": "Questions?",
-    "q1": "How long does a typical project take?",
-    "a1": "Most branding and animation projects take between 2 to 6 weeks depending on the scope and complexity of the requirements.",
-    "q2": "Do you work with international clients?",
-    "a2": "Yes, I work with clients globally. My processes are optimized for remote collaboration across different time zones.",
-    "q3": "What is your pricing structure?",
-    "a3": "You can use the Budget Estimator on my website to get an instant quote based on your specific needs, whether it's branding, motion, or UI/UX.",
-    "q4": "Do you offer post-launch support?",
-    "a4": "Absolutely. I provide ongoing support for design updates and brand consistency to ensure your visuals remain flawless."
+    "title": "For Recruiters & HR",
+    "q1": "What job roles are you currently targeting?",
+    "a1": "I am open to Full-Time, Part-Time, Hybrid, or Remote roles as a Creative Designer, Graphic & Brand Designer, Motion Graphics Designer, 2D Animator, or Visual Storyteller.",
+    "q2": "When are you available to join?",
+    "a2": "I am available immediately for interviews and onboarding, and can collaborate smoothly with teams in Dhaka (on-site/hybrid) or globally (remote).",
+    "q3": "Which design and animation tools do you use daily?",
+    "a3": "My daily production stack includes Adobe Illustrator, Photoshop, After Effects, Premiere Pro, Animate, InDesign, Procreate, CapCut, Blender, and Cinema 4D, along with UI prototyping.",
+    "q4": "How can HR schedule an interview or review my CV?",
+    "a4": "You can download my PDF CV directly from the homepage, submit an offer via the Hire Me page, or reach me directly by email (artistantor@gmail.com) or phone/WhatsApp (+880 1872-185776)."
   },
   "cta": {
-    "title": "Ready to stand out?",
-    "subtitle": "Let's create something extraordinary together. Book a free discovery call to discuss your vision.",
-    "button": "Get Started Now"
+    "title": "Looking for a Creative Designer?",
+    "subtitle": "Ready to contribute visual craft, motion storytelling, and creative leadership to your team. Download my CV or send an interview invite.",
+    "button": "Send Role Offer / Interview",
+    "secondary_button": "Download CV (PDF)"
   },
   "footer": {
-    "desc": "Visual Communicator | Creative Lead | Animator.",
-    "links_title": "Links",
-    "legal_title": "Legal",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
+    "desc": "Creative Designer | Visual Communicator | Animator — BFA Graphic Design, University of Dhaka.",
+    "links_title": "Explore",
+    "legal_title": "For Recruiters",
+    "hire": "Hire Me / Send Offer",
+    "cv": "Download CV (PDF)",
+    "contact": "Contact Details",
+    "behance": "Behance Portfolio",
     "rights": "All rights reserved."
   },
   "portfolio": {

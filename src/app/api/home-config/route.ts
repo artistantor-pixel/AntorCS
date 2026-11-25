@@ -10,9 +10,9 @@ function getConfig() {
     const defaultConfig = [
       { id: "hero",         enabled: true, order: 1 },
       { id: "socialProof",  enabled: true, order: 2 },
-      { id: "features",     enabled: true, order: 3 },
-      { id: "services",     enabled: true, order: 4 },
-      { id: "experience",   enabled: true, order: 5 },
+      { id: "experience",   enabled: true, order: 3 },
+      { id: "features",     enabled: true, order: 4 },
+      { id: "services",     enabled: true, order: 5 },
       { id: "process",      enabled: true, order: 6 },
       { id: "testimonials", enabled: true, order: 7 },
       { id: "faqs",         enabled: true, order: 8 },
