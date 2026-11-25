@@ -5,7 +5,6 @@
     "services": "Services",
     "about": "About",
     "journal": "Journal",
-    "shop": "Shop",
     "cta": "Budget Calculator"
   },
   "hero": {
@@ -34,12 +33,30 @@
     "view_all": "View all services",
     "explore": "Explore",
     "items": {
-      "graphic": { "title": "Graphic Design", "desc": "Crafting memorable visual identities, posters, and print materials that resonate with your target audience." },
-      "motion": { "title": "Motion Design", "desc": "Bringing concepts to life through dynamic motion graphics for e-learning, campaigns, and digital media." },
-      "animation": { "title": "Animation", "desc": "Character design, storyboarding, and full-scale 2D/3D animations for storytelling and education." },
-      "illustration": { "title": "Illustration", "desc": "Simplifying complex concepts through engaging digital and vector illustrations." },
-      "uiux": { "title": "UI/UX Design", "desc": "Designing intuitive, user-centric interfaces and digital playgrounds with modern aesthetics." },
-      "creative": { "title": "Creative Direction", "desc": "Guiding visual narratives from concept to completion for exhibitions and national events." }
+      "graphic": {
+        "title": "Graphic Design",
+        "desc": "Crafting memorable visual identities, posters, and print materials that resonate with your target audience."
+      },
+      "motion": {
+        "title": "Motion Design",
+        "desc": "Bringing concepts to life through dynamic motion graphics for e-learning, campaigns, and digital media."
+      },
+      "animation": {
+        "title": "Animation",
+        "desc": "Character design, storyboarding, and full-scale 2D/3D animations for storytelling and education."
+      },
+      "illustration": {
+        "title": "Illustration",
+        "desc": "Simplifying complex concepts through engaging digital and vector illustrations."
+      },
+      "uiux": {
+        "title": "UI/UX Design",
+        "desc": "Designing intuitive, user-centric interfaces and digital playgrounds with modern aesthetics."
+      },
+      "creative": {
+        "title": "Creative Direction",
+        "desc": "Guiding visual narratives from concept to completion for exhibitions and national events."
+      }
     }
   },
   "experience": {
@@ -76,10 +93,22 @@
     "title": "How I Work",
     "subtitle": "A streamlined, transparent process designed to deliver exceptional results without the friction of a large agency.",
     "steps": [
-      { "title": "Discovery", "desc": "I dive deep into your brand, audience, and goals to align our vision." },
-      { "title": "Strategy", "desc": "Crafting a tailored blueprint for design, user experience, and technical architecture." },
-      { "title": "Execution", "desc": "I bring the strategy to life with precision design and flawless execution." },
-      { "title": "Launch", "desc": "Rigorous testing, optimization, and finally, launching your new digital presence." }
+      {
+        "title": "Discovery",
+        "desc": "I dive deep into your brand, audience, and goals to align our vision."
+      },
+      {
+        "title": "Strategy",
+        "desc": "Crafting a tailored blueprint for design, user experience, and technical architecture."
+      },
+      {
+        "title": "Execution",
+        "desc": "I bring the strategy to life with precision design and flawless execution."
+      },
+      {
+        "title": "Launch",
+        "desc": "Rigorous testing, optimization, and finally, launching your new digital presence."
+      }
     ]
   },
   "testimonials": {

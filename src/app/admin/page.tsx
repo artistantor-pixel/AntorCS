@@ -1164,28 +1164,6 @@ export default function AdminDashboard() {
               Works & Projects
             </button>
             <button
-              onClick={() => { setActiveTab("shop"); setSidebarOpen(false); }}
-              className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all border ${
-                activeTab === "shop" 
-                  ? "bg-brand-red text-white border-brand-red shadow-[0_4px_20px_rgba(225,29,72,0.25)]" 
-                  : "text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] border-transparent"
-              }`}
-            >
-              <Briefcase size={16} />
-              Digital Shop
-            </button>
-            <button
-              onClick={() => { setActiveTab("orders"); setSidebarOpen(false); }}
-              className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all border ${
-                activeTab === "orders" 
-                  ? "bg-brand-red text-white border-brand-red shadow-[0_4px_20px_rgba(225,29,72,0.25)]" 
-                  : "text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] border-transparent"
-              }`}
-            >
-              <ShoppingCart size={16} />
-              Manage Orders
-            </button>
-            <button
               onClick={() => { setActiveTab("recruitment"); setSidebarOpen(false); }}
               className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all border ${
                 activeTab === "recruitment" 
@@ -1228,17 +1206,6 @@ export default function AdminDashboard() {
             >
               <Type size={16} />
               Global Content
-            </button>
-            <button
-              onClick={() => { setActiveTab("users"); setSidebarOpen(false); }}
-              className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all border ${
-                activeTab === "users" 
-                  ? "bg-brand-red text-white border-brand-red shadow-[0_4px_20px_rgba(225,29,72,0.25)]" 
-                  : "text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] border-transparent"
-              }`}
-            >
-              <Users size={16} />
-              Workspace Users
             </button>
             <button
               onClick={() => { setActiveTab("reviews"); setSidebarOpen(false); }}
