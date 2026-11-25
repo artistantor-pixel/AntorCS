@@ -4,6 +4,7 @@ import AdminAuthGuard from "@/components/admin/AdminAuthGuard";
 export const metadata: Metadata = {
   title: "AntorOS | Admin Dashboard",
   description: "Antor Creative Studio Admin Panel",
+  robots: { index: false, follow: false },
 };
 
 export default function AdminLayout({

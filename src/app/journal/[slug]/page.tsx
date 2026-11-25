@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { readJournalEntries } from "@/lib/journal-store";
+import { buildPageMetadata } from "@/lib/seo";
 import JournalDetailClient from "./JournalDetailClient";
 
 export const dynamic = "force-dynamic";
@@ -15,13 +16,15 @@ export async function generateMetadata({
   const entry = entries.find((e) => e.slug === slug || e.id === slug);
 
   if (!entry) {
-    return { title: "Journal Entry Not Found | Antor" };
+    return { title: "Journal Entry Not Found" };
   }
 
-  return {
-    title: `${entry.title} | Antor Journal`,
+  return buildPageMetadata({
+    title: `${entry.title} — Journal`,
     description: entry.excerpt,
-  };
+    path: `/journal/${entry.slug}`,
+    image: entry.image || "/antor-portrait.jpg",
+  });
 }
 
 export default async function JournalArticlePage({

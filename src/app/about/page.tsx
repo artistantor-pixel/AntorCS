@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import ParticleBackground from "@/components/3d/ParticleBackground";
 import { ArrowDown, Award, BookOpen, Briefcase, GraduationCap, Star, Zap } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -10,7 +9,6 @@ export default function AboutPage() {
 
   return (
     <main className="relative min-h-screen bg-transparent overflow-hidden text-foreground pb-32">
-      <ParticleBackground />
 
       <section className="relative min-h-screen w-full flex flex-col items-center justify-center pt-32 px-6 z-10">
         <motion.div

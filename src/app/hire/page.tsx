@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion as motionElement, AnimatePresence } from "framer-motion";
-import ParticleBackground from "@/components/3d/ParticleBackground";
 import {
   ArrowRight, Mail, Phone, Copy, Check, MessageCircle, Clock,
   Sparkles, Send, RefreshCw, Briefcase, Download, GraduationCap,
@@ -114,8 +113,7 @@ export default function HireMePage() {
   };
 
   return (
-    <main className="relative min-h-screen bg-transparent text-foreground pt-32 pb-24 overflow-hidden selection:bg-brand-red selection:text-white">
-      <ParticleBackground />
+    <main className="relative min-h-screen bg-transparent text-foreground pt-32 pb-28 overflow-hidden selection:bg-brand-red selection:text-white">
 
       {/* Premium ambient circles */}
       <div className="absolute top-[-5%] right-[-5%] w-[450px] h-[450px] bg-brand-red/5 rounded-full blur-[140px] pointer-events-none" />

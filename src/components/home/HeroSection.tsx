@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Download, Briefcase, GraduationCap, Layers, Tv } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -11,14 +11,6 @@ export default function HeroSection() {
   const { lang, t } = useLanguage();
   const isBn = lang === "bn";
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
-
-  const yHero = useTransform(scrollYProgress, [0, 1], ["0%", "35%"]);
-  const opacityHero = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
 
   const highlights = [
     {
@@ -79,10 +71,7 @@ export default function HeroSection() {
       </div>
 
       {/* Hero Content */}
-      <motion.div
-        style={{ y: yHero, opacity: opacityHero }}
-        className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col items-center text-center"
-      >
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
         {/* HR Availability Badge */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
@@ -176,7 +165,7 @@ export default function HeroSection() {
             );
           })}
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   );
 }

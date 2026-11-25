@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EXPERTISE_LIST, getExpertiseBySlug } from "@/config/expertise";
+import { buildPageMetadata } from "@/lib/seo";
 import ServiceDetailClient from "./ServiceDetailClient";
 
 export function generateStaticParams() {
@@ -16,13 +17,14 @@ export async function generateMetadata({
   const service = getExpertiseBySlug(slug);
 
   if (!service) {
-    return { title: "Service Not Found | Antor Creative Studio" };
+    return { title: "Expertise Not Found" };
   }
 
-  return {
-    title: `${service.en.title} | Antor Creative Studio`,
+  return buildPageMetadata({
+    title: service.en.title,
     description: service.en.tagline,
-  };
+    path: `/services/${service.slug}`,
+  });
 }
 
 export default async function ServiceDetailPage({
