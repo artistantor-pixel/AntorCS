@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Leaf } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 const DEFAULT_ORGANIZATIONS = [
   "Canvas",
+  "Mont Marte",
   "Deepto TV",
   "ICT Division",
   "Bisorgo Technology",
@@ -14,19 +16,53 @@ const DEFAULT_ORGANIZATIONS = [
   "University of Dhaka",
 ];
 
-const ORG_ROLES: Record<string, { en: string; bn: string }> = {
-  Canvas: { en: "Editorial & Visuals", bn: "ভিজ্যুয়াল ডিজাইন" },
-  "Deepto TV": { en: "Broadcast & 3D", bn: "ব্রডকাস্ট ও ৩ডি" },
-  "ICT Division": { en: "National EdTech", bn: "জাতীয় ই-লার্নিং" },
-  "Bisorgo Technology": { en: "UI & Motion", bn: "UI ও মোশন" },
-  "CCJ-B": { en: "Documentary Media", bn: "ডকুমেন্টারি মিডিয়া" },
-  "Radiant Pharma": { en: "Brand Collateral", bn: "ব্র্যান্ড ডিজাইন" },
-  "University of Dhaka": { en: "Fine Arts & Fest", bn: "চারুকলা ও ফেস্ট" },
+interface OrgLogoConfig {
+  src: string;
+  /** "wordmark" logos already carry the full brand name; "emblem" logos sit beside text. */
+  variant: "wordmark" | "emblem";
+  imgClass: string;
+}
+
+const ORG_LOGOS: Record<string, OrgLogoConfig> = {
+  Canvas: {
+    src: "/logos/canvas.png",
+    variant: "wordmark",
+    imgClass: "h-4 sm:h-5 w-auto object-contain",
+  },
+  "Mont Marte": {
+    src: "/logos/mont-marte.jpg",
+    variant: "wordmark",
+    imgClass: "h-8 sm:h-9 w-auto object-contain mix-blend-multiply",
+  },
+  "Deepto TV": {
+    src: "/logos/deepto-tv.svg",
+    variant: "emblem",
+    imgClass: "h-6 w-6 object-contain",
+  },
+  "ICT Division": {
+    src: "/logos/ict-division.png",
+    variant: "emblem",
+    imgClass: "h-6 w-6 object-contain",
+  },
+  "Bisorgo Technology": {
+    src: "/logos/bisorgo.png",
+    variant: "wordmark",
+    imgClass: "h-5 sm:h-6 w-auto object-contain",
+  },
+  "Radiant Pharma": {
+    src: "/logos/radiant.png",
+    variant: "wordmark",
+    imgClass: "h-6 sm:h-7 w-auto object-contain",
+  },
+  "University of Dhaka": {
+    src: "/logos/dhaka-university.svg",
+    variant: "emblem",
+    imgClass: "h-6 w-6 object-contain",
+  },
 };
 
 export default function SocialProofSection() {
-  const { lang, t } = useLanguage();
-  const isBn = lang === "bn";
+  const { t } = useLanguage();
   const [logos, setLogos] = useState<string[]>(DEFAULT_ORGANIZATIONS);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -42,7 +78,9 @@ export default function SocialProofSection() {
             data.length > 0 &&
             !data.every((item: string) => legacySet.has(item))
           ) {
-            setLogos(data);
+            const merged = [...data];
+            if (!merged.includes("Mont Marte")) merged.splice(1, 0, "Mont Marte");
+            setLogos(merged);
           }
         }
       } catch (err) {
@@ -56,24 +94,25 @@ export default function SocialProofSection() {
   }, []);
 
   return (
-    <section className="w-full border-y border-border/60 bg-white/35 backdrop-blur-sm py-10 md:py-12 mb-24">
+    <section className="w-full border-y border-border/60 bg-white/40 backdrop-blur-sm py-9 md:py-11 mb-24">
       <div
-        className={`max-w-7xl mx-auto px-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-opacity duration-500 ${
-          isLoading ? "opacity-60" : "opacity-100"
+        className={`max-w-7xl mx-auto px-6 flex flex-col items-center gap-6 transition-opacity duration-500 ${
+          isLoading ? "opacity-65" : "opacity-100"
         }`}
       >
-        {/* Minimal Left Eyebrow */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <span className="w-2 h-2 rounded-full bg-brand-red/80" />
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-muted whitespace-nowrap">
+        {/* Minimal Centered Eyebrow */}
+        <div className="flex items-center gap-2.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand-red" />
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-muted text-center">
             {t("social_proof.title")}
           </p>
         </div>
 
-        {/* Clean Minimal Organization Pills */}
-        <div className="flex flex-wrap items-center justify-start lg:justify-end gap-2.5">
+        {/* Clean Minimal Logo Strip */}
+        <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 w-full">
           {logos.map((org, idx) => {
-            const role = ORG_ROLES[org];
+            const config = ORG_LOGOS[org];
+
             return (
               <motion.div
                 key={`${org}-${idx}`}
@@ -81,14 +120,36 @@ export default function SocialProofSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.3, delay: Math.min(idx * 0.04, 0.25) }}
-                className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/75 hover:bg-white border border-border/75 hover:border-brand-red/30 shadow-[0_2px_10px_rgba(28,27,24,0.02)] hover:shadow-sm transition-all duration-300"
+                title={org}
+                className="group h-12 px-4 sm:px-5 rounded-full bg-white/80 hover:bg-white border border-border/75 hover:border-brand-red/30 shadow-[0_2px_10px_rgba(28,27,24,0.02)] hover:shadow-sm transition-all duration-300 flex items-center justify-center gap-2.5 grayscale-[30%] opacity-90 hover:grayscale-0 hover:opacity-100"
               >
-                <span className="text-sm font-bold tracking-tight text-foreground group-hover:text-brand-red transition-colors whitespace-nowrap">
-                  {org}
-                </span>
-                {role && (
-                  <span className="hidden sm:inline-block text-[10px] font-medium text-muted/80 border-l border-border pl-2 whitespace-nowrap">
-                    {isBn ? role.bn : role.en}
+                {config ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={config.src}
+                      alt={org}
+                      className={`${config.imgClass} shrink-0 transition-transform duration-300 group-hover:scale-105`}
+                      loading="lazy"
+                    />
+                    {config.variant === "emblem" && (
+                      <span className="text-xs sm:text-sm font-bold tracking-tight text-foreground whitespace-nowrap">
+                        {org}
+                      </span>
+                    )}
+                  </>
+                ) : org === "CCJ-B" ? (
+                  <>
+                    <span className="w-6 h-6 rounded-full bg-emerald-500/15 text-emerald-700 flex items-center justify-center shrink-0">
+                      <Leaf size={13} />
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold tracking-tight text-foreground whitespace-nowrap">
+                      CCJ-B
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-xs sm:text-sm font-bold tracking-tight text-foreground whitespace-nowrap">
+                    {org}
                   </span>
                 )}
               </motion.div>
